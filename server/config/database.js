@@ -24,7 +24,7 @@ const dbConfig = {
 // Create connection pool
 export const pool = mysql.createPool(dbConfig);
 
-// Test database connection
+// Test database connection and run migrations
 export const connectDB = async () => {
   try {
     const connection = await pool.getConnection();
@@ -41,6 +41,11 @@ export const connectDB = async () => {
     }
     
     connection.release();
+    
+    // Run migrations
+    const { runMigrations } = await import('../migrations/init-database.js');
+    await runMigrations();
+    
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);
     console.error('Connection details:', {
