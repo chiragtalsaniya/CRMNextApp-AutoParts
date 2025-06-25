@@ -4,10 +4,11 @@ import autoTable from 'jspdf-autotable';
 import { Document, Packer, Paragraph, Table, TableCell, TableRow, TextRun, HeadingLevel, AlignmentType } from 'docx';
 import { saveAs } from 'file-saver';
 import { format } from 'date-fns';
-import { Order, OrderStatus } from '../types';
+import { OrderMaster, OrderItem, OrderStatus, timestampToDate, formatCurrency } from '../types';
 
 interface ReportData {
-  orders: Order[];
+  orders: OrderMaster[];
+  orderItems: OrderItem[];
   filters: any;
   stats: {
     totalOrders: number;
@@ -30,8 +31,8 @@ export const exportToExcel = async (data: ReportData, filename: string) => {
     [],
     ['Statistics'],
     ['Total Orders', data.stats.totalOrders],
-    ['Total Revenue', `$${data.stats.totalRevenue.toFixed(2)}`],
-    ['Average Order Value', `$${data.stats.avgOrderValue.toFixed(2)}`],
+    ['Total Revenue', formatCurrency(data.stats.totalRevenue)],
+    ['Average Order Value', formatCurrency(data.stats.avgOrderValue)],
     [],
     ['Status Breakdown'],
     ...Object.entries(data.stats.statusCounts).map(([status, count]) => [
@@ -45,21 +46,25 @@ export const exportToExcel = async (data: ReportData, filename: string) => {
 
   // Orders Sheet
   const ordersData = [
-    ['Order ID', 'Date', 'Status', 'Items Count', 'Total Price', 'Item Details']
+    ['Order ID', 'CRM Order ID', 'PO Number', 'Status', 'Urgency', 'Branch', 'Retailer ID', 'Place Date', 'Place By', 'Total Amount', 'Remarks']
   ];
 
   data.orders.forEach(order => {
-    const itemDetails = order.items.map(item => 
-      `${item.part_name} (Qty: ${item.quantity}, Price: $${item.price_per_unit})`
-    ).join('; ');
+    const orderItems = data.orderItems.filter(item => item.Order_Id === order.Order_Id);
+    const orderTotal = orderItems.reduce((sum, item) => sum + (item.ItemAmount || 0), 0);
 
     ordersData.push([
-      order.id,
-      format(new Date(order.created_at), 'yyyy-MM-dd HH:mm'),
-      order.status,
-      order.items.length,
-      order.total_price,
-      itemDetails
+      order.Order_Id.toString(),
+      order.CRMOrderId || '',
+      order.PO_Number || '',
+      order.Order_Status || '',
+      order.Urgent_Status || '',
+      order.Branch || '',
+      order.Retailer_Id?.toString() || '',
+      order.Place_Date ? format(timestampToDate(order.Place_Date)!, 'yyyy-MM-dd HH:mm') : '',
+      order.Place_By || '',
+      formatCurrency(orderTotal),
+      order.Remark || ''
     ]);
   });
 
@@ -67,12 +72,17 @@ export const exportToExcel = async (data: ReportData, filename: string) => {
   
   // Auto-size columns
   const colWidths = [
-    { wch: 15 }, // Order ID
-    { wch: 20 }, // Date
+    { wch: 10 }, // Order ID
+    { wch: 15 }, // CRM Order ID
+    { wch: 15 }, // PO Number
     { wch: 12 }, // Status
-    { wch: 10 }, // Items Count
-    { wch: 12 }, // Total Price
-    { wch: 50 }  // Item Details
+    { wch: 10 }, // Urgency
+    { wch: 10 }, // Branch
+    { wch: 12 }, // Retailer ID
+    { wch: 20 }, // Place Date
+    { wch: 15 }, // Place By
+    { wch: 12 }, // Total Amount
+    { wch: 30 }  // Remarks
   ];
   ordersSheet['!cols'] = colWidths;
 
@@ -80,26 +90,29 @@ export const exportToExcel = async (data: ReportData, filename: string) => {
 
   // Order Items Detail Sheet
   const itemsData = [
-    ['Order ID', 'Part Name', 'Quantity', 'Unit Price', 'Total Price', 'Order Date', 'Order Status']
+    ['Order ID', 'Item ID', 'Part Admin', 'Part Salesman', 'Order Qty', 'Dispatch Qty', 'MRP', 'Item Amount', 'Status', 'Discounts']
   ];
 
-  data.orders.forEach(order => {
-    order.items.forEach(item => {
-      itemsData.push([
-        order.id,
-        item.part_name || 'Unknown Part',
-        item.quantity,
-        item.price_per_unit,
-        item.quantity * item.price_per_unit,
-        format(new Date(order.created_at), 'yyyy-MM-dd'),
-        order.status
-      ]);
-    });
+  data.orderItems.forEach(item => {
+    const totalDiscount = (item.Discount || 0) + (item.SchemeDisc || 0) + (item.AdditionalDisc || 0);
+    
+    itemsData.push([
+      item.Order_Id?.toString() || '',
+      item.Order_Item_Id.toString(),
+      item.Part_Admin || '',
+      item.Part_Salesman || '',
+      item.Order_Qty?.toString() || '0',
+      item.Dispatch_Qty?.toString() || '0',
+      formatCurrency(item.MRP),
+      formatCurrency(item.ItemAmount),
+      item.OrderItemStatus || '',
+      `${totalDiscount}%`
+    ]);
   });
 
   const itemsSheet = XLSX.utils.aoa_to_sheet(itemsData);
   itemsSheet['!cols'] = [
-    { wch: 15 }, { wch: 25 }, { wch: 10 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 12 }
+    { wch: 10 }, { wch: 10 }, { wch: 20 }, { wch: 20 }, { wch: 10 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 10 }
   ];
   XLSX.utils.book_append_sheet(workbook, itemsSheet, 'Order Items');
 
@@ -129,8 +142,8 @@ export const exportToPDF = async (data: ReportData, filename: string) => {
   const summaryTableData = [
     ['Metric', 'Value'],
     ['Total Orders', data.stats.totalOrders.toString()],
-    ['Total Revenue', `$${data.stats.totalRevenue.toFixed(2)}`],
-    ['Average Order Value', `$${data.stats.avgOrderValue.toFixed(2)}`]
+    ['Total Revenue', formatCurrency(data.stats.totalRevenue)],
+    ['Average Order Value', formatCurrency(data.stats.avgOrderValue)]
   ];
 
   autoTable(doc, {
@@ -166,13 +179,18 @@ export const exportToPDF = async (data: ReportData, filename: string) => {
   doc.setTextColor(0, 51, 102);
   doc.text('Order Details', 20, 20);
 
-  const ordersTableData = data.orders.map(order => [
-    order.id,
-    format(new Date(order.created_at), 'MM/dd/yyyy'),
-    order.status,
-    order.items.length.toString(),
-    `$${order.total_price.toFixed(2)}`
-  ]);
+  const ordersTableData = data.orders.map(order => {
+    const orderItems = data.orderItems.filter(item => item.Order_Id === order.Order_Id);
+    const orderTotal = orderItems.reduce((sum, item) => sum + (item.ItemAmount || 0), 0);
+    
+    return [
+      order.Order_Id.toString(),
+      order.Place_Date ? format(timestampToDate(order.Place_Date)!, 'MM/dd/yyyy') : '',
+      order.Order_Status || '',
+      orderItems.length.toString(),
+      formatCurrency(orderTotal)
+    ];
+  });
 
   autoTable(doc, {
     head: [['Order ID', 'Date', 'Status', 'Items', 'Total']],
@@ -277,7 +295,7 @@ export const exportToWord = async (data: ReportData, filename: string) => {
                   children: [new Paragraph({ children: [new TextRun({ text: "Total Revenue" })] })]
                 }),
                 new TableCell({
-                  children: [new Paragraph({ children: [new TextRun({ text: `$${data.stats.totalRevenue.toFixed(2)}` })] })]
+                  children: [new Paragraph({ children: [new TextRun({ text: formatCurrency(data.stats.totalRevenue) })] })]
                 })
               ]
             }),
@@ -287,7 +305,7 @@ export const exportToWord = async (data: ReportData, filename: string) => {
                   children: [new Paragraph({ children: [new TextRun({ text: "Average Order Value" })] })]
                 }),
                 new TableCell({
-                  children: [new Paragraph({ children: [new TextRun({ text: `$${data.stats.avgOrderValue.toFixed(2)}` })] })]
+                  children: [new Paragraph({ children: [new TextRun({ text: formatCurrency(data.stats.avgOrderValue) })] })]
                 })
               ]
             })
@@ -360,17 +378,20 @@ export const exportToWord = async (data: ReportData, filename: string) => {
                 new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: "Total", bold: true })] })] })
               ]
             }),
-            ...data.orders.slice(0, 20).map(order =>
-              new TableRow({
+            ...data.orders.slice(0, 20).map(order => {
+              const orderItems = data.orderItems.filter(item => item.Order_Id === order.Order_Id);
+              const orderTotal = orderItems.reduce((sum, item) => sum + (item.ItemAmount || 0), 0);
+              
+              return new TableRow({
                 children: [
-                  new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: order.id })] })] }),
-                  new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: format(new Date(order.created_at), 'MM/dd/yyyy') })] })] }),
-                  new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: order.status })] })] }),
-                  new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: order.items.length.toString() })] })] }),
-                  new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: `$${order.total_price.toFixed(2)}` })] })] })
+                  new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: order.Order_Id.toString() })] })] }),
+                  new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: order.Place_Date ? format(timestampToDate(order.Place_Date)!, 'MM/dd/yyyy') : '' })] })] }),
+                  new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: order.Order_Status || '' })] })] }),
+                  new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: orderItems.length.toString() })] })] }),
+                  new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: formatCurrency(orderTotal) })] })] })
                 ]
-              })
-            )
+              });
+            })
           ]
         })
       ]

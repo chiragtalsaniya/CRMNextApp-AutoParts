@@ -93,6 +93,65 @@ export interface Part {
   Last_Sync?: number;
 }
 
+// Updated Order Master structure based on your database schema
+export interface OrderMaster {
+  Order_Id: number;
+  CRMOrderId?: string;
+  Retailer_Id?: number;
+  Transport_Id?: number;
+  TransportBy?: string;
+  Place_By?: string;
+  Place_Date?: number; // decimal timestamp
+  Confirm_By?: string;
+  Confirm_Date?: number; // decimal timestamp
+  Pick_By?: string;
+  Pick_Date?: number; // decimal timestamp
+  Pack_By?: string;
+  Checked_By?: string;
+  Pack_Date?: number; // decimal timestamp
+  Delivered_By?: string;
+  Delivered_Date?: number; // decimal timestamp
+  Order_Status?: OrderStatus;
+  Branch?: string; // Store branch code
+  DispatchId?: number;
+  Remark?: string;
+  PO_Number?: string;
+  PO_Date?: number; // decimal timestamp
+  Urgent_Status?: string;
+  Longitude?: number;
+  IsSync?: boolean;
+  Latitude?: number;
+  Last_Sync?: number; // decimal timestamp
+}
+
+// Updated Order Items structure based on your database schema
+export interface OrderItem {
+  Order_Item_Id: number;
+  Order_Id?: number;
+  Order_Srl?: number; // Serial number within order
+  Part_Admin?: string; // Part number from admin perspective
+  Part_Salesman?: string; // Part number from salesman perspective
+  Order_Qty?: number;
+  Dispatch_Qty?: number;
+  Pick_Date?: number; // decimal timestamp
+  Pick_By?: string;
+  OrderItemStatus?: string;
+  PlaceDate?: number; // decimal timestamp
+  RetailerId?: number;
+  ItemAmount?: number; // Amount in cents/paise
+  SchemeDisc?: number; // Scheme discount percentage
+  AdditionalDisc?: number; // Additional discount percentage
+  Discount?: number; // Basic discount percentage
+  MRP?: number; // Maximum Retail Price in cents/paise
+  FirstOrderDate?: number; // decimal timestamp
+  Urgent_Status?: string;
+  Last_Sync?: number; // decimal timestamp
+}
+
+// Updated Order Status enum
+export type OrderStatus = 'New' | 'Processing' | 'Completed' | 'Hold' | 'Picked' | 'Dispatched' | 'Pending' | 'Cancelled';
+
+// Legacy Order interface for backward compatibility (can be removed later)
 export interface Order {
   id: string;
   retailer_id: string;
@@ -101,12 +160,10 @@ export interface Order {
   status: OrderStatus;
   total_price: number;
   created_at: string;
-  items: OrderItem[];
+  items: LegacyOrderItem[];
 }
 
-export type OrderStatus = 'pending' | 'processing' | 'picked' | 'shipped' | 'delivered' | 'cancelled';
-
-export interface OrderItem {
+export interface LegacyOrderItem {
   id: string;
   order_id: string;
   part_id: string;
@@ -141,3 +198,49 @@ export interface FocusGroup {
   name: string;
   description?: string;
 }
+
+// Helper functions for timestamp conversion
+export const timestampToDate = (timestamp?: number): Date | null => {
+  if (!timestamp) return null;
+  return new Date(timestamp);
+};
+
+export const dateToTimestamp = (date: Date): number => {
+  return date.getTime();
+};
+
+// Helper function to format currency from cents/paise
+export const formatCurrency = (amount?: number): string => {
+  if (!amount) return '$0.00';
+  return `$${(amount / 100).toFixed(2)}`;
+};
+
+// Helper function to get status color
+export const getOrderStatusColor = (status?: OrderStatus): string => {
+  switch (status) {
+    case 'New': return 'bg-blue-100 text-blue-800';
+    case 'Processing': return 'bg-yellow-100 text-yellow-800';
+    case 'Completed': return 'bg-green-100 text-green-800';
+    case 'Hold': return 'bg-red-100 text-red-800';
+    case 'Picked': return 'bg-purple-100 text-purple-800';
+    case 'Dispatched': return 'bg-indigo-100 text-indigo-800';
+    case 'Pending': return 'bg-orange-100 text-orange-800';
+    case 'Cancelled': return 'bg-gray-100 text-gray-800';
+    default: return 'bg-gray-100 text-gray-800';
+  }
+};
+
+// Helper function to get status icon
+export const getOrderStatusIcon = (status?: OrderStatus): string => {
+  switch (status) {
+    case 'New': return 'plus-circle';
+    case 'Processing': return 'clock';
+    case 'Completed': return 'check-circle';
+    case 'Hold': return 'pause-circle';
+    case 'Picked': return 'package';
+    case 'Dispatched': return 'truck';
+    case 'Pending': return 'clock';
+    case 'Cancelled': return 'x-circle';
+    default: return 'circle';
+  }
+};

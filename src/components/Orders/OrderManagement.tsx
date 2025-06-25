@@ -1,75 +1,221 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Eye, Truck, CheckCircle, Clock, AlertCircle, Shield } from 'lucide-react';
-import { Order, OrderStatus } from '../../types';
+import { 
+  Search, 
+  Eye, 
+  Truck, 
+  CheckCircle, 
+  Clock, 
+  AlertCircle, 
+  Shield, 
+  Plus,
+  Edit,
+  Package,
+  PauseCircle,
+  XCircle,
+  PlusCircle,
+  Filter,
+  Download,
+  Upload,
+  Calendar,
+  User,
+  MapPin,
+  FileText
+} from 'lucide-react';
+import { OrderMaster, OrderItem, OrderStatus, getOrderStatusColor, timestampToDate, formatCurrency } from '../../types';
 import { format } from 'date-fns';
 import { useAuth } from '../../context/AuthContext';
 
-const mockOrders: Order[] = [
+const mockOrderMasters: OrderMaster[] = [
   {
-    id: '1',
-    retailer_id: '1',
-    salesman_id: '1',
-    store_id: 'NYC001',
-    status: 'pending',
-    total_price: 156.97,
-    created_at: '2024-01-15T10:30:00Z',
-    items: [
-      { id: '1', order_id: '1', part_id: '1', quantity: 4, price_per_unit: 12.99, part_name: 'NGK Spark Plug' },
-      { id: '2', order_id: '1', part_id: '2', quantity: 2, price_per_unit: 45.99, part_name: 'Brake Pads - Front' }
-    ]
+    Order_Id: 1,
+    CRMOrderId: 'CRM-2024-001',
+    Retailer_Id: 1,
+    Transport_Id: 1,
+    TransportBy: 'Express Delivery',
+    Place_By: 'John Sales',
+    Place_Date: 1704067200000, // Jan 1, 2024
+    Confirm_By: 'Alice Manager',
+    Confirm_Date: 1704070800000,
+    Pick_By: 'Bob Storeman',
+    Pick_Date: 1704074400000,
+    Pack_By: 'Bob Storeman',
+    Checked_By: 'Alice Manager',
+    Pack_Date: 1704078000000,
+    Delivered_By: 'Express Driver',
+    Delivered_Date: 1704153600000,
+    Order_Status: 'Completed',
+    Branch: 'NYC001',
+    DispatchId: 101,
+    Remark: 'Urgent delivery requested',
+    PO_Number: 'PO-2024-001',
+    PO_Date: 1704067200000,
+    Urgent_Status: 'Normal',
+    Longitude: -74.0060,
+    IsSync: true,
+    Latitude: 40.7128,
+    Last_Sync: 1704153600000
   },
   {
-    id: '2',
-    retailer_id: '2',
-    salesman_id: '1',
-    store_id: 'NYC001',
-    status: 'processing',
-    total_price: 89.97,
-    created_at: '2024-01-14T14:15:00Z',
-    items: [
-      { id: '3', order_id: '2', part_id: '3', quantity: 10, price_per_unit: 8.99, part_name: 'Oil Filter' }
-    ]
+    Order_Id: 2,
+    CRMOrderId: 'CRM-2024-002',
+    Retailer_Id: 2,
+    Transport_Id: 2,
+    TransportBy: 'Standard Shipping',
+    Place_By: 'Charlie Sales',
+    Place_Date: 1704153600000,
+    Confirm_By: 'Alice Manager',
+    Confirm_Date: 1704157200000,
+    Pick_By: 'Bob Storeman',
+    Pick_Date: 1704160800000,
+    Order_Status: 'Dispatched',
+    Branch: 'NYC001',
+    DispatchId: 102,
+    Remark: 'Regular order',
+    PO_Number: 'PO-2024-002',
+    PO_Date: 1704153600000,
+    Urgent_Status: 'Normal',
+    Longitude: -74.0060,
+    IsSync: true,
+    Latitude: 40.7128,
+    Last_Sync: 1704160800000
   },
   {
-    id: '3',
-    retailer_id: '3',
-    salesman_id: '2',
-    store_id: 'LA001',
-    status: 'shipped',
-    total_price: 234.50,
-    created_at: '2024-01-13T09:20:00Z',
-    items: [
-      { id: '4', order_id: '3', part_id: '1', quantity: 8, price_per_unit: 12.99, part_name: 'NGK Spark Plug' },
-      { id: '5', order_id: '3', part_id: '4', quantity: 6, price_per_unit: 15.99, part_name: 'Air Filter' }
-    ]
+    Order_Id: 3,
+    CRMOrderId: 'CRM-2024-003',
+    Retailer_Id: 3,
+    Place_By: 'David Sales',
+    Place_Date: 1704240000000,
+    Order_Status: 'Processing',
+    Branch: 'LA001',
+    Remark: 'Large order - multiple items',
+    PO_Number: 'PO-2024-003',
+    PO_Date: 1704240000000,
+    Urgent_Status: 'High',
+    IsSync: false,
+    Last_Sync: 1704240000000
   },
   {
-    id: '4',
-    retailer_id: '1',
-    salesman_id: '1',
-    store_id: 'NYC001',
-    status: 'delivered',
-    total_price: 445.20,
-    created_at: '2024-01-11T11:30:00Z',
-    items: [
-      { id: '6', order_id: '4', part_id: '1', quantity: 12, price_per_unit: 12.99, part_name: 'NGK Spark Plug' },
-      { id: '7', order_id: '4', part_id: '4', quantity: 18, price_per_unit: 15.99, part_name: 'Air Filter' }
-    ]
+    Order_Id: 4,
+    CRMOrderId: 'CRM-2024-004',
+    Retailer_Id: 1,
+    Place_By: 'John Sales',
+    Place_Date: 1704326400000,
+    Order_Status: 'New',
+    Branch: 'NYC001',
+    Remark: 'New order pending confirmation',
+    PO_Number: 'PO-2024-004',
+    PO_Date: 1704326400000,
+    Urgent_Status: 'Normal',
+    IsSync: false,
+    Last_Sync: 1704326400000
+  }
+];
+
+const mockOrderItems: OrderItem[] = [
+  {
+    Order_Item_Id: 1,
+    Order_Id: 1,
+    Order_Srl: 1,
+    Part_Admin: 'SP-001-NGK',
+    Part_Salesman: 'NGK Spark Plug',
+    Order_Qty: 4,
+    Dispatch_Qty: 4,
+    Pick_Date: 1704074400000,
+    Pick_By: 'Bob Storeman',
+    OrderItemStatus: 'Completed',
+    PlaceDate: 1704067200000,
+    RetailerId: 1,
+    ItemAmount: 5196, // $51.96 in cents
+    SchemeDisc: 5,
+    AdditionalDisc: 2,
+    Discount: 3,
+    MRP: 1299, // $12.99 per unit
+    FirstOrderDate: 1704067200000,
+    Urgent_Status: 'Normal',
+    Last_Sync: 1704153600000
+  },
+  {
+    Order_Item_Id: 2,
+    Order_Id: 1,
+    Order_Srl: 2,
+    Part_Admin: 'BP-002-BREMBO',
+    Part_Salesman: 'Brembo Brake Pads',
+    Order_Qty: 2,
+    Dispatch_Qty: 2,
+    Pick_Date: 1704074400000,
+    Pick_By: 'Bob Storeman',
+    OrderItemStatus: 'Completed',
+    PlaceDate: 1704067200000,
+    RetailerId: 1,
+    ItemAmount: 9198, // $91.98 in cents
+    SchemeDisc: 8,
+    AdditionalDisc: 3,
+    Discount: 5,
+    MRP: 4599, // $45.99 per unit
+    FirstOrderDate: 1704067200000,
+    Urgent_Status: 'Normal',
+    Last_Sync: 1704153600000
+  },
+  {
+    Order_Item_Id: 3,
+    Order_Id: 2,
+    Order_Srl: 1,
+    Part_Admin: 'OF-003-MANN',
+    Part_Salesman: 'Mann Oil Filter',
+    Order_Qty: 10,
+    Dispatch_Qty: 10,
+    Pick_Date: 1704160800000,
+    Pick_By: 'Bob Storeman',
+    OrderItemStatus: 'Dispatched',
+    PlaceDate: 1704153600000,
+    RetailerId: 2,
+    ItemAmount: 8991, // $89.91 in cents
+    SchemeDisc: 3,
+    AdditionalDisc: 1,
+    Discount: 2,
+    MRP: 899, // $8.99 per unit
+    FirstOrderDate: 1704153600000,
+    Urgent_Status: 'Normal',
+    Last_Sync: 1704160800000
+  },
+  {
+    Order_Item_Id: 4,
+    Order_Id: 3,
+    Order_Srl: 1,
+    Part_Admin: 'SP-001-NGK',
+    Part_Salesman: 'NGK Spark Plug',
+    Order_Qty: 8,
+    Dispatch_Qty: 0,
+    OrderItemStatus: 'Processing',
+    PlaceDate: 1704240000000,
+    RetailerId: 3,
+    ItemAmount: 10392, // $103.92 in cents
+    SchemeDisc: 5,
+    AdditionalDisc: 2,
+    Discount: 3,
+    MRP: 1299,
+    FirstOrderDate: 1704240000000,
+    Urgent_Status: 'High',
+    Last_Sync: 1704240000000
   }
 ];
 
 export const OrderManagement: React.FC = () => {
   const { user, canAccessStore, getAccessibleStores, getAccessibleRetailers } = useAuth();
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders] = useState<OrderMaster[]>([]);
+  const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
+  const [urgencyFilter, setUrgencyFilter] = useState<string>('all');
+  const [selectedOrder, setSelectedOrder] = useState<OrderMaster | null>(null);
+  const [showOrderDetails, setShowOrderDetails] = useState(false);
 
   // Filter orders based on user access rights
   useEffect(() => {
     const accessibleStoreIds = getAccessibleStores();
     const accessibleRetailerIds = getAccessibleRetailers();
     
-    let filteredOrders = mockOrders;
+    let filteredOrders = mockOrderMasters;
 
     // Apply role-based filtering
     switch (user?.role) {
@@ -78,22 +224,22 @@ export const OrderManagement: React.FC = () => {
         break;
       case 'admin':
         // Can see orders from stores in their company
-        filteredOrders = mockOrders.filter(order => 
-          accessibleStoreIds.includes(order.store_id)
+        filteredOrders = mockOrderMasters.filter(order => 
+          order.Branch && accessibleStoreIds.includes(order.Branch)
         );
         break;
       case 'manager':
       case 'storeman':
       case 'salesman':
         // Can see orders from their specific store
-        filteredOrders = mockOrders.filter(order => 
-          accessibleStoreIds.includes(order.store_id)
+        filteredOrders = mockOrderMasters.filter(order => 
+          order.Branch && accessibleStoreIds.includes(order.Branch)
         );
         break;
       case 'retailer':
         // Can only see their own orders
-        filteredOrders = mockOrders.filter(order => 
-          accessibleRetailerIds.includes(parseInt(order.retailer_id))
+        filteredOrders = mockOrderMasters.filter(order => 
+          order.Retailer_Id && accessibleRetailerIds.includes(order.Retailer_Id)
         );
         break;
       default:
@@ -101,35 +247,56 @@ export const OrderManagement: React.FC = () => {
     }
 
     setOrders(filteredOrders);
+    setOrderItems(mockOrderItems);
   }, [user]);
 
   const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.id.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || order.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesSearch = 
+      order.Order_Id.toString().includes(searchTerm.toLowerCase()) ||
+      (order.CRMOrderId && order.CRMOrderId.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (order.PO_Number && order.PO_Number.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    const matchesStatus = statusFilter === 'all' || order.Order_Status === statusFilter;
+    const matchesUrgency = urgencyFilter === 'all' || order.Urgent_Status === urgencyFilter;
+    
+    return matchesSearch && matchesStatus && matchesUrgency;
   });
 
-  const getStatusIcon = (status: OrderStatus) => {
+  const getStatusIcon = (status?: OrderStatus) => {
     switch (status) {
-      case 'pending': return <Clock className="w-4 h-4" />;
-      case 'processing': return <AlertCircle className="w-4 h-4" />;
-      case 'picked': return <CheckCircle className="w-4 h-4" />;
-      case 'shipped': return <Truck className="w-4 h-4" />;
-      case 'delivered': return <CheckCircle className="w-4 h-4" />;
+      case 'New': return <PlusCircle className="w-4 h-4" />;
+      case 'Processing': return <Clock className="w-4 h-4" />;
+      case 'Completed': return <CheckCircle className="w-4 h-4" />;
+      case 'Hold': return <PauseCircle className="w-4 h-4" />;
+      case 'Picked': return <Package className="w-4 h-4" />;
+      case 'Dispatched': return <Truck className="w-4 h-4" />;
+      case 'Pending': return <Clock className="w-4 h-4" />;
+      case 'Cancelled': return <XCircle className="w-4 h-4" />;
       default: return <Clock className="w-4 h-4" />;
     }
   };
 
-  const getStatusColor = (status: OrderStatus) => {
-    switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'processing': return 'bg-blue-100 text-blue-800';
-      case 'picked': return 'bg-purple-100 text-purple-800';
-      case 'shipped': return 'bg-green-100 text-green-800';
-      case 'delivered': return 'bg-green-100 text-green-800';
-      case 'cancelled': return 'bg-red-100 text-red-800';
+  const getUrgencyColor = (urgency?: string) => {
+    switch (urgency) {
+      case 'High': return 'bg-red-100 text-red-800';
+      case 'Medium': return 'bg-yellow-100 text-yellow-800';
+      case 'Normal': return 'bg-green-100 text-green-800';
       default: return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  const handleViewOrder = (order: OrderMaster) => {
+    setSelectedOrder(order);
+    setShowOrderDetails(true);
+  };
+
+  const getOrderItems = (orderId: number) => {
+    return orderItems.filter(item => item.Order_Id === orderId);
+  };
+
+  const calculateOrderTotal = (orderId: number) => {
+    const items = getOrderItems(orderId);
+    return items.reduce((total, item) => total + (item.ItemAmount || 0), 0);
   };
 
   const getPageTitle = () => {
@@ -156,6 +323,227 @@ export const OrderManagement: React.FC = () => {
     }
   };
 
+  const OrderDetailsModal = () => {
+    if (!showOrderDetails || !selectedOrder) return null;
+
+    const items = getOrderItems(selectedOrder.Order_Id);
+    const orderTotal = calculateOrderTotal(selectedOrder.Order_Id);
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto">
+          <div className="p-6 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-[#003366] rounded-lg flex items-center justify-center">
+                  {getStatusIcon(selectedOrder.Order_Status)}
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">Order #{selectedOrder.Order_Id}</h2>
+                  <p className="text-gray-600">{selectedOrder.CRMOrderId}</p>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1 ${getOrderStatusColor(selectedOrder.Order_Status)}`}>
+                    {selectedOrder.Order_Status}
+                  </span>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowOrderDetails(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <XCircle className="w-6 h-6" />
+              </button>
+            </div>
+          </div>
+
+          <div className="p-6 space-y-6">
+            {/* Order Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900">Order Details</h3>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">PO Number</p>
+                    <p className="text-gray-900">{selectedOrder.PO_Number || 'Not specified'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Branch</p>
+                    <p className="text-gray-900">{selectedOrder.Branch || 'Not specified'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Urgency</p>
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getUrgencyColor(selectedOrder.Urgent_Status)}`}>
+                      {selectedOrder.Urgent_Status || 'Normal'}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Transport</p>
+                    <p className="text-gray-900">{selectedOrder.TransportBy || 'Not assigned'}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900">Timeline</h3>
+                <div className="space-y-3">
+                  {selectedOrder.Place_Date && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Placed</p>
+                      <p className="text-gray-900">{format(timestampToDate(selectedOrder.Place_Date)!, 'MMM dd, yyyy HH:mm')}</p>
+                      <p className="text-xs text-gray-500">by {selectedOrder.Place_By}</p>
+                    </div>
+                  )}
+                  {selectedOrder.Confirm_Date && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Confirmed</p>
+                      <p className="text-gray-900">{format(timestampToDate(selectedOrder.Confirm_Date)!, 'MMM dd, yyyy HH:mm')}</p>
+                      <p className="text-xs text-gray-500">by {selectedOrder.Confirm_By}</p>
+                    </div>
+                  )}
+                  {selectedOrder.Pick_Date && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Picked</p>
+                      <p className="text-gray-900">{format(timestampToDate(selectedOrder.Pick_Date)!, 'MMM dd, yyyy HH:mm')}</p>
+                      <p className="text-xs text-gray-500">by {selectedOrder.Pick_By}</p>
+                    </div>
+                  )}
+                  {selectedOrder.Delivered_Date && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Delivered</p>
+                      <p className="text-gray-900">{format(timestampToDate(selectedOrder.Delivered_Date)!, 'MMM dd, yyyy HH:mm')}</p>
+                      <p className="text-xs text-gray-500">by {selectedOrder.Delivered_By}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900">Summary</h3>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Total Items</p>
+                    <p className="text-gray-900">{items.length}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Total Amount</p>
+                    <p className="text-2xl font-bold text-[#003366]">{formatCurrency(orderTotal)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Retailer ID</p>
+                    <p className="text-gray-900">{selectedOrder.Retailer_Id || 'Not specified'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Dispatch ID</p>
+                    <p className="text-gray-900">{selectedOrder.DispatchId || 'Not assigned'}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Remarks */}
+            {selectedOrder.Remark && (
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Remarks</h3>
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <p className="text-gray-700">{selectedOrder.Remark}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Order Items */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Order Items</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full border border-gray-200 rounded-lg">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">MRP</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Discounts</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {items.map((item) => (
+                      <tr key={item.Order_Item_Id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3">
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">{item.Part_Salesman}</p>
+                            <p className="text-xs text-gray-500">{item.Part_Admin}</p>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div>
+                            <p className="text-sm text-gray-900">Ordered: {item.Order_Qty}</p>
+                            <p className="text-xs text-gray-500">Dispatched: {item.Dispatch_Qty || 0}</p>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {formatCurrency(item.MRP)}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="text-xs space-y-1">
+                            <p>Basic: {item.Discount || 0}%</p>
+                            <p>Scheme: {item.SchemeDisc || 0}%</p>
+                            <p>Additional: {item.AdditionalDisc || 0}%</p>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                          {formatCurrency(item.ItemAmount)}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                            item.OrderItemStatus === 'Completed' ? 'bg-green-100 text-green-800' :
+                            item.OrderItemStatus === 'Dispatched' ? 'bg-blue-100 text-blue-800' :
+                            item.OrderItemStatus === 'Processing' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {item.OrderItemStatus}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Location Information */}
+            {(selectedOrder.Latitude && selectedOrder.Longitude) && (
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Delivery Location</h3>
+                <div className="bg-gray-50 p-4 rounded-lg flex items-center space-x-3">
+                  <MapPin className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-900">
+                      Coordinates: {selectedOrder.Latitude}, {selectedOrder.Longitude}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
+            <button
+              onClick={() => setShowOrderDetails(false)}
+              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Close
+            </button>
+            {user?.role !== 'retailer' && (
+              <button className="px-6 py-3 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2">
+                <Edit className="w-4 h-4" />
+                <span>Edit Order</span>
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -166,45 +554,87 @@ export const OrderManagement: React.FC = () => {
             Showing {filteredOrders.length} orders accessible to your role
           </p>
         </div>
+        <div className="flex space-x-3">
+          <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2">
+            <Upload className="w-5 h-5" />
+            <span>Import</span>
+          </button>
+          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+            <Download className="w-5 h-5" />
+            <span>Export</span>
+          </button>
+          {user?.role !== 'retailer' && (
+            <button className="bg-[#003366] text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2">
+              <Plus className="w-5 h-5" />
+              <span>New Order</span>
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search orders..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
-              />
-            </div>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as OrderStatus | 'all')}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
-            >
-              <option value="all">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="processing">Processing</option>
-              <option value="picked">Picked</option>
-              <option value="shipped">Shipped</option>
-              <option value="delivered">Delivered</option>
-              <option value="cancelled">Cancelled</option>
-            </select>
+      {/* Filters */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="flex items-center space-x-3 mb-4">
+          <Filter className="w-5 h-5 text-[#003366]" />
+          <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search orders..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+            />
+          </div>
+          
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as OrderStatus | 'all')}
+            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+          >
+            <option value="all">All Status</option>
+            <option value="New">New</option>
+            <option value="Processing">Processing</option>
+            <option value="Completed">Completed</option>
+            <option value="Hold">Hold</option>
+            <option value="Picked">Picked</option>
+            <option value="Dispatched">Dispatched</option>
+            <option value="Pending">Pending</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+
+          <select
+            value={urgencyFilter}
+            onChange={(e) => setUrgencyFilter(e.target.value)}
+            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+          >
+            <option value="all">All Urgency</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Normal">Normal</option>
+          </select>
+
+          <div className="text-sm text-gray-600 flex items-center">
+            <span className="font-medium">{filteredOrders.length}</span> orders found
           </div>
         </div>
+      </div>
 
+      {/* Orders Table */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Urgency</th>
                 {user?.role !== 'retailer' && (
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Store</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Branch</th>
                 )}
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
@@ -213,44 +643,63 @@ export const OrderManagement: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredOrders.map((order) => (
-                <tr key={order.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">#{order.id}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
-                      {getStatusIcon(order.status)}
-                      <span className="ml-1 capitalize">{order.status}</span>
-                    </span>
-                  </td>
-                  {user?.role !== 'retailer' && (
+              {filteredOrders.map((order) => {
+                const items = getOrderItems(order.Order_Id);
+                const orderTotal = calculateOrderTotal(order.Order_Id);
+                
+                return (
+                  <tr key={order.Order_Id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{order.store_id}</div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">#{order.Order_Id}</div>
+                        <div className="text-sm text-gray-500">{order.CRMOrderId}</div>
+                        {order.PO_Number && (
+                          <div className="text-xs text-gray-400">PO: {order.PO_Number}</div>
+                        )}
+                      </div>
                     </td>
-                  )}
-                  <td className="px-6 py-4">
-                    <div className="text-sm text-gray-900">
-                      {order.items.length} item{order.items.length > 1 ? 's' : ''}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {order.items.slice(0, 2).map(item => item.part_name).join(', ')}
-                      {order.items.length > 2 && '...'}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    ${order.total_price.toFixed(2)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {format(new Date(order.created_at), 'MMM dd, yyyy')}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors">
-                      <Eye className="w-4 h-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getOrderStatusColor(order.Order_Status)}`}>
+                        {getStatusIcon(order.Order_Status)}
+                        <span className="ml-1">{order.Order_Status}</span>
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getUrgencyColor(order.Urgent_Status)}`}>
+                        {order.Urgent_Status || 'Normal'}
+                      </span>
+                    </td>
+                    {user?.role !== 'retailer' && (
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">{order.Branch || 'Not assigned'}</div>
+                      </td>
+                    )}
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-gray-900">
+                        {items.length} item{items.length > 1 ? 's' : ''}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {items.slice(0, 2).map(item => item.Part_Salesman).join(', ')}
+                        {items.length > 2 && '...'}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {formatCurrency(orderTotal)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {order.Place_Date ? format(timestampToDate(order.Place_Date)!, 'MMM dd, yyyy') : 'Not set'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <button 
+                        onClick={() => handleViewOrder(order)}
+                        className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -268,6 +717,9 @@ export const OrderManagement: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Order Details Modal */}
+      <OrderDetailsModal />
     </div>
   );
 };
