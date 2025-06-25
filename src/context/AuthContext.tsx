@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, UserRole } from '../types';
-import { supabase } from '../lib/supabase';
 import { authAPI } from '../services/api';
 
 interface AuthContextType {
@@ -31,17 +30,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        // Check if user is already authenticated with Supabase
-        const { data: { session } } = await supabase.auth.getSession();
+        // Check if user is already authenticated
+        const token = localStorage.getItem('auth_token');
         
-        if (session) {
+        if (token) {
           // Get user profile data
           try {
             const response = await authAPI.getProfile();
             setUser(response.data);
           } catch (error) {
             console.error('Failed to get user profile:', error);
-            await supabase.auth.signOut();
+            localStorage.removeItem('auth_token');
           }
         }
       } catch (error) {
@@ -51,33 +50,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
 
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === 'SIGNED_IN' && session) {
-          try {
-            const response = await authAPI.getProfile();
-            setUser(response.data);
-          } catch (error) {
-            console.error('Failed to get user profile:', error);
-          }
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
-        }
-      }
-    );
-
     initializeAuth();
-
-    // Cleanup subscription
-    return () => {
-      subscription.unsubscribe();
-    };
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       const response = await authAPI.login(email, password);
+      
+      // Store token in localStorage
+      if (response.data.token) {
+        localStorage.setItem('auth_token', response.data.token);
+      }
+      
       setUser(response.data.user);
       return true;
     } catch (error) {
