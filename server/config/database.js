@@ -5,7 +5,7 @@ dotenv.config();
 
 // Database configuration
 const dbConfig = {
-  host: process.env.DB_HOST || 'localhost',
+  host: process.env.DB_HOST || '173.249.33.63',
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'nextapp_crm',
@@ -15,7 +15,10 @@ const dbConfig = {
   queueLimit: 0,
   acquireTimeout: 60000,
   timeout: 60000,
-  reconnect: true
+  reconnect: true,
+  ssl: false, // Set to true if your remote MySQL requires SSL
+  connectTimeout: 60000,
+  charset: 'utf8mb4'
 };
 
 // Create connection pool
@@ -27,9 +30,25 @@ export const connectDB = async () => {
     const connection = await pool.getConnection();
     console.log('✅ MySQL Database connected successfully');
     console.log(`📍 Connected to: ${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`);
+    
+    // Test if database exists, if not create it
+    try {
+      await connection.execute(`CREATE DATABASE IF NOT EXISTS ${dbConfig.database}`);
+      await connection.execute(`USE ${dbConfig.database}`);
+      console.log(`📊 Database '${dbConfig.database}' is ready`);
+    } catch (dbError) {
+      console.warn('⚠️ Database creation/selection warning:', dbError.message);
+    }
+    
     connection.release();
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);
+    console.error('Connection details:', {
+      host: dbConfig.host,
+      port: dbConfig.port,
+      user: dbConfig.user,
+      database: dbConfig.database
+    });
     process.exit(1);
   }
 };
