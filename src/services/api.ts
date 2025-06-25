@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://sunny-dragon-b7689a.netlify.app/api',
+  baseURL: 'https://sunny-dragon-b7689a.netlify.app/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
