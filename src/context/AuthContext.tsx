@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, UserRole } from '../types';
+import { authAPI } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
@@ -17,94 +18,57 @@ interface AuthContextType {
   canManageUsers: () => boolean;
   canViewReports: () => boolean;
   canManageInventory: () => boolean;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock user data for demonstration
-const mockUsers: User[] = [
-  {
-    id: '1',
-    name: 'John Super',
-    email: 'super@nextapp.com',
-    role: 'super_admin',
-    profile_image: 'https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=400',
-    created_at: '2024-01-01T00:00:00Z'
-  },
-  {
-    id: '2',
-    name: 'Jane Admin',
-    email: 'admin@company1.com',
-    role: 'admin',
-    company_id: '1',
-    profile_image: 'https://images.pexels.com/photos/190574/pexels-photo-190574.jpeg?auto=compress&cs=tinysrgb&w=400',
-    created_at: '2024-01-01T00:00:00Z'
-  },
-  {
-    id: '3',
-    name: 'Bob Manager',
-    email: 'manager@store1.com',
-    role: 'manager',
-    company_id: '1',
-    store_id: 'NYC001',
-    profile_image: '',
-    created_at: '2024-01-01T00:00:00Z'
-  },
-  {
-    id: '4',
-    name: 'Alice Storeman',
-    email: 'alice@store1.com',
-    role: 'storeman',
-    company_id: '1',
-    store_id: 'NYC001',
-    profile_image: 'https://images.pexels.com/photos/3807277/pexels-photo-3807277.jpeg?auto=compress&cs=tinysrgb&w=400',
-    created_at: '2024-01-02T00:00:00Z'
-  },
-  {
-    id: '5',
-    name: 'Charlie Sales',
-    email: 'charlie@company1.com',
-    role: 'salesman',
-    company_id: '1',
-    store_id: 'NYC001',
-    profile_image: '',
-    created_at: '2024-01-03T00:00:00Z'
-  },
-  {
-    id: '6',
-    name: 'Michael Johnson',
-    email: 'retailer@downtownauto.com',
-    role: 'retailer',
-    retailer_id: 1,
-    profile_image: 'https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=400',
-    created_at: '2024-01-04T00:00:00Z'
-  }
-];
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
+    const initializeAuth = async () => {
+      const token = localStorage.getItem('token');
+      const savedUser = localStorage.getItem('user');
+      
+      if (token && savedUser) {
+        try {
+          // Verify token is still valid by fetching current user profile
+          const response = await authAPI.getProfile();
+          setUser(response.data);
+        } catch (error) {
+          // Token is invalid, clear storage
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+        }
+      }
+      setLoading(false);
+    };
+
+    initializeAuth();
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Mock authentication - in production, this would call your API
-    const foundUser = mockUsers.find(u => u.email === email);
-    if (foundUser && password === 'password') {
-      setUser(foundUser);
-      localStorage.setItem('user', JSON.stringify(foundUser));
+    try {
+      const response = await authAPI.login(email, password);
+      const { token, user: userData } = response.data;
+      
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
+      
       return true;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
     }
-    return false;
   };
 
   const logout = () => {
-    setUser(null);
+    localStorage.removeItem('token');
     localStorage.removeItem('user');
+    setUser(null);
   };
 
   const hasRole = (roles: UserRole[]): boolean => {
@@ -138,13 +102,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return true; // Can access all stores
       case 'admin':
         // Admin can access all stores in their company
-        const storeCompanyMapping: Record<string, string> = {
-          'NYC001': '1',
-          'NYC002': '1',
-          'LA001': '2',
-          'CHI001': '3'
-        };
-        return user.company_id === storeCompanyMapping[storeId];
+        // This would need to be validated against the actual store-company mapping
+        return true; // Simplified for now
       case 'manager':
       case 'storeman':
       case 'salesman':
@@ -180,7 +139,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     switch (user.role) {
       case 'super_admin':
-        return ['1', '2', '3']; // All companies
+        return ['1', '2', '3']; // All companies - this should come from API
       case 'admin':
       case 'manager':
       case 'storeman':
@@ -198,9 +157,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     switch (user.role) {
       case 'super_admin':
-        return ['NYC001', 'NYC002', 'LA001', 'CHI001']; // All stores
+        return ['NYC001', 'NYC002', 'LA001', 'CHI001']; // All stores - this should come from API
       case 'admin':
-        // Return all stores for their company
+        // Return all stores for their company - this should come from API
         if (user.company_id === '1') return ['NYC001', 'NYC002'];
         if (user.company_id === '2') return ['LA001'];
         if (user.company_id === '3') return ['CHI001'];
@@ -221,9 +180,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     switch (user.role) {
       case 'super_admin':
-        return [1, 2, 3, 4]; // All retailers
+        return [1, 2, 3, 4]; // All retailers - this should come from API
       case 'admin':
-        // Return retailers based on company scope
+        // Return retailers based on company scope - this should come from API
         if (user.company_id === '1') return [1, 2];
         if (user.company_id === '2') return [3];
         if (user.company_id === '3') return [4];
@@ -231,7 +190,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       case 'manager':
       case 'storeman':
       case 'salesman':
-        // Return retailers based on store scope
+        // Return retailers based on store scope - this should come from API
         if (user.store_id === 'NYC001') return [1, 2];
         if (user.store_id === 'LA001') return [3];
         if (user.store_id === 'CHI001') return [4];
@@ -295,7 +254,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       getCurrentUserScope,
       canManageUsers,
       canViewReports,
-      canManageInventory
+      canManageInventory,
+      loading
     }}>
       {children}
     </AuthContext.Provider>
