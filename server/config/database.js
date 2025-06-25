@@ -7,7 +7,7 @@ dotenv.config();
 const dbConfig = {
   host: process.env.DB_HOST || '173.249.33.63',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
+  password: process.env.DB_PASSWORD || 'kcZjwhGD4MN56',
   database: process.env.DB_NAME || 'nextapp_crm',
   port: process.env.DB_PORT || 3306,
   waitForConnections: true,
