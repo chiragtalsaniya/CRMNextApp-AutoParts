@@ -26,181 +26,7 @@ import { OrderMaster, OrderItem, OrderStatus, NewOrderForm, getOrderStatusColor,
 import { format } from 'date-fns';
 import { useAuth } from '../../context/AuthContext';
 import { NewOrderFormModal } from './NewOrderForm';
-
-const mockOrderMasters: OrderMaster[] = [
-  {
-    Order_Id: 1,
-    CRMOrderId: 'CRM-2024-001',
-    Retailer_Id: 1,
-    Transport_Id: 1,
-    TransportBy: 'Express Delivery',
-    Place_By: 'John Sales',
-    Place_Date: 1704067200000, // Jan 1, 2024
-    Confirm_By: 'Alice Manager',
-    Confirm_Date: 1704070800000,
-    Pick_By: 'Bob Storeman',
-    Pick_Date: 1704074400000,
-    Pack_By: 'Bob Storeman',
-    Checked_By: 'Alice Manager',
-    Pack_Date: 1704078000000,
-    Delivered_By: 'Express Driver',
-    Delivered_Date: 1704153600000,
-    Order_Status: 'Completed',
-    Branch: 'NYC001',
-    DispatchId: 101,
-    Remark: 'Urgent delivery requested',
-    PO_Number: 'PO-2024-001',
-    PO_Date: 1704067200000,
-    Urgent_Status: true,
-    Longitude: -74.0060,
-    IsSync: true,
-    Latitude: 40.7128,
-    Last_Sync: 1704153600000
-  },
-  {
-    Order_Id: 2,
-    CRMOrderId: 'CRM-2024-002',
-    Retailer_Id: 2,
-    Transport_Id: 2,
-    TransportBy: 'Standard Shipping',
-    Place_By: 'Charlie Sales',
-    Place_Date: 1704153600000,
-    Confirm_By: 'Alice Manager',
-    Confirm_Date: 1704157200000,
-    Pick_By: 'Bob Storeman',
-    Pick_Date: 1704160800000,
-    Order_Status: 'Dispatched',
-    Branch: 'NYC001',
-    DispatchId: 102,
-    Remark: 'Regular order',
-    PO_Number: 'PO-2024-002',
-    PO_Date: 1704153600000,
-    Urgent_Status: false,
-    Longitude: -74.0060,
-    IsSync: true,
-    Latitude: 40.7128,
-    Last_Sync: 1704160800000
-  },
-  {
-    Order_Id: 3,
-    CRMOrderId: 'CRM-2024-003',
-    Retailer_Id: 3,
-    Place_By: 'David Sales',
-    Place_Date: 1704240000000,
-    Order_Status: 'Processing',
-    Branch: 'LA001',
-    Remark: 'Large order - multiple items',
-    PO_Number: 'PO-2024-003',
-    PO_Date: 1704240000000,
-    Urgent_Status: true,
-    IsSync: false,
-    Last_Sync: 1704240000000
-  },
-  {
-    Order_Id: 4,
-    CRMOrderId: 'CRM-2024-004',
-    Retailer_Id: 1,
-    Place_By: 'John Sales',
-    Place_Date: 1704326400000,
-    Order_Status: 'New',
-    Branch: 'NYC001',
-    Remark: 'New order pending confirmation',
-    PO_Number: 'PO-2024-004',
-    PO_Date: 1704326400000,
-    Urgent_Status: false,
-    IsSync: false,
-    Last_Sync: 1704326400000
-  }
-];
-
-const mockOrderItems: OrderItem[] = [
-  {
-    Order_Item_Id: 1,
-    Order_Id: 1,
-    Order_Srl: 1,
-    Part_Admin: 'SP-001-NGK',
-    Part_Salesman: 'NGK Spark Plug',
-    Order_Qty: 4,
-    Dispatch_Qty: 4,
-    Pick_Date: 1704074400000,
-    Pick_By: 'Bob Storeman',
-    OrderItemStatus: 'Completed',
-    PlaceDate: 1704067200000,
-    RetailerId: 1,
-    ItemAmount: 5196, // $51.96 in cents
-    SchemeDisc: 5,
-    AdditionalDisc: 2,
-    Discount: 3,
-    MRP: 1299, // $12.99 per unit
-    FirstOrderDate: 1704067200000,
-    Urgent_Status: true,
-    Last_Sync: 1704153600000
-  },
-  {
-    Order_Item_Id: 2,
-    Order_Id: 1,
-    Order_Srl: 2,
-    Part_Admin: 'BP-002-BREMBO',
-    Part_Salesman: 'Brembo Brake Pads',
-    Order_Qty: 2,
-    Dispatch_Qty: 2,
-    Pick_Date: 1704074400000,
-    Pick_By: 'Bob Storeman',
-    OrderItemStatus: 'Completed',
-    PlaceDate: 1704067200000,
-    RetailerId: 1,
-    ItemAmount: 9198, // $91.98 in cents
-    SchemeDisc: 8,
-    AdditionalDisc: 3,
-    Discount: 5,
-    MRP: 4599, // $45.99 per unit
-    FirstOrderDate: 1704067200000,
-    Urgent_Status: false,
-    Last_Sync: 1704153600000
-  },
-  {
-    Order_Item_Id: 3,
-    Order_Id: 2,
-    Order_Srl: 1,
-    Part_Admin: 'OF-003-MANN',
-    Part_Salesman: 'Mann Oil Filter',
-    Order_Qty: 10,
-    Dispatch_Qty: 10,
-    Pick_Date: 1704160800000,
-    Pick_By: 'Bob Storeman',
-    OrderItemStatus: 'Dispatched',
-    PlaceDate: 1704153600000,
-    RetailerId: 2,
-    ItemAmount: 8991, // $89.91 in cents
-    SchemeDisc: 3,
-    AdditionalDisc: 1,
-    Discount: 2,
-    MRP: 899, // $8.99 per unit
-    FirstOrderDate: 1704153600000,
-    Urgent_Status: false,
-    Last_Sync: 1704160800000
-  },
-  {
-    Order_Item_Id: 4,
-    Order_Id: 3,
-    Order_Srl: 1,
-    Part_Admin: 'SP-001-NGK',
-    Part_Salesman: 'NGK Spark Plug',
-    Order_Qty: 8,
-    Dispatch_Qty: 0,
-    OrderItemStatus: 'Processing',
-    PlaceDate: 1704240000000,
-    RetailerId: 3,
-    ItemAmount: 10392, // $103.92 in cents
-    SchemeDisc: 5,
-    AdditionalDisc: 2,
-    Discount: 3,
-    MRP: 1299,
-    FirstOrderDate: 1704240000000,
-    Urgent_Status: true,
-    Last_Sync: 1704240000000
-  }
-];
+import { ordersAPI } from '../../services/api';
 
 export const OrderManagement: React.FC = () => {
   const { user, canAccessStore, getAccessibleStores, getAccessibleRetailers } = useAuth();
@@ -212,45 +38,42 @@ export const OrderManagement: React.FC = () => {
   const [selectedOrder, setSelectedOrder] = useState<OrderMaster | null>(null);
   const [showOrderDetails, setShowOrderDetails] = useState(false);
   const [showNewOrderForm, setShowNewOrderForm] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Filter orders based on user access rights
+  // Load orders from API
   useEffect(() => {
-    const accessibleStoreIds = getAccessibleStores();
-    const accessibleRetailerIds = getAccessibleRetailers();
-    
-    let filteredOrders = mockOrderMasters;
+    const loadOrders = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-    // Apply role-based filtering
-    switch (user?.role) {
-      case 'super_admin':
-        // Can see all orders
-        break;
-      case 'admin':
-        // Can see orders from stores in their company
-        filteredOrders = mockOrderMasters.filter(order => 
-          order.Branch && accessibleStoreIds.includes(order.Branch)
-        );
-        break;
-      case 'manager':
-      case 'storeman':
-      case 'salesman':
-        // Can see orders from their specific store
-        filteredOrders = mockOrderMasters.filter(order => 
-          order.Branch && accessibleStoreIds.includes(order.Branch)
-        );
-        break;
-      case 'retailer':
-        // Can only see their own orders
-        filteredOrders = mockOrderMasters.filter(order => 
-          order.Retailer_Id && accessibleRetailerIds.includes(order.Retailer_Id)
-        );
-        break;
-      default:
-        filteredOrders = [];
+        const params: any = {};
+        
+        // Add role-based filtering
+        if (user?.role === 'retailer') {
+          params.retailer_id = user.retailer_id;
+        } else if (user?.role !== 'super_admin') {
+          if (user?.store_id) {
+            params.branch = user.store_id;
+          } else if (user?.company_id) {
+            // Company-level filtering will be handled by backend
+          }
+        }
+
+        const response = await ordersAPI.getOrders(params);
+        setOrders(response.data.orders || []);
+      } catch (err) {
+        console.error('Failed to load orders:', err);
+        setError('Failed to load orders. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user) {
+      loadOrders();
     }
-
-    setOrders(filteredOrders);
-    setOrderItems(mockOrderItems);
   }, [user]);
 
   const filteredOrders = orders.filter(order => {
@@ -281,60 +104,40 @@ export const OrderManagement: React.FC = () => {
     }
   };
 
-  const handleViewOrder = (order: OrderMaster) => {
-    setSelectedOrder(order);
-    setShowOrderDetails(true);
+  const handleViewOrder = async (order: OrderMaster) => {
+    try {
+      setLoading(true);
+      const response = await ordersAPI.getOrder(order.Order_Id);
+      const orderWithItems = response.data;
+      
+      setSelectedOrder(orderWithItems);
+      setOrderItems(orderWithItems.items || []);
+      setShowOrderDetails(true);
+    } catch (err) {
+      console.error('Failed to load order details:', err);
+      setError('Failed to load order details. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleNewOrder = (orderData: NewOrderForm) => {
-    // Generate new order ID
-    const newOrderId = Math.max(...orders.map(o => o.Order_Id)) + 1;
-    
-    // Create new order master
-    const newOrderMaster: OrderMaster = {
-      Order_Id: newOrderId,
-      CRMOrderId: `CRM-${new Date().getFullYear()}-${newOrderId.toString().padStart(3, '0')}`,
-      Retailer_Id: orderData.retailer_id,
-      Place_By: user?.name || 'Unknown',
-      Place_Date: dateToTimestamp(new Date()),
-      Order_Status: 'New',
-      Branch: user?.store_id || 'UNKNOWN',
-      Remark: orderData.remark,
-      PO_Number: orderData.po_number,
-      PO_Date: orderData.po_date ? dateToTimestamp(orderData.po_date) : undefined,
-      Urgent_Status: orderData.urgent,
-      IsSync: false,
-      Last_Sync: dateToTimestamp(new Date())
-    };
-
-    // Create order items
-    const newOrderItems: OrderItem[] = orderData.items.map((item, index) => ({
-      Order_Item_Id: Math.max(...orderItems.map(oi => oi.Order_Item_Id)) + index + 1,
-      Order_Id: newOrderId,
-      Order_Srl: index + 1,
-      Part_Admin: item.part_number,
-      Part_Salesman: item.part_name,
-      Order_Qty: item.quantity,
-      Dispatch_Qty: 0,
-      OrderItemStatus: 'New',
-      PlaceDate: dateToTimestamp(new Date()),
-      RetailerId: orderData.retailer_id,
-      ItemAmount: Math.round(item.mrp * item.quantity * (1 - (item.basic_discount + item.scheme_discount + item.additional_discount) / 100)),
-      SchemeDisc: item.scheme_discount,
-      AdditionalDisc: item.additional_discount,
-      Discount: item.basic_discount,
-      MRP: item.mrp,
-      FirstOrderDate: dateToTimestamp(new Date()),
-      Urgent_Status: item.urgent,
-      Last_Sync: dateToTimestamp(new Date())
-    }));
-
-    // Update state
-    setOrders(prev => [newOrderMaster, ...prev]);
-    setOrderItems(prev => [...newOrderItems, ...prev]);
-    
-    // Show success message
-    alert(`Order #${newOrderId} created successfully!`);
+  const handleNewOrder = async (orderData: NewOrderForm) => {
+    try {
+      setLoading(true);
+      const response = await ordersAPI.createOrder(orderData);
+      
+      // Refresh orders list
+      const ordersResponse = await ordersAPI.getOrders();
+      setOrders(ordersResponse.data.orders || []);
+      
+      setShowNewOrderForm(false);
+      alert('Order created successfully!');
+    } catch (err) {
+      console.error('Failed to create order:', err);
+      alert('Failed to create order. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getOrderItems = (orderId: number) => {
@@ -373,8 +176,8 @@ export const OrderManagement: React.FC = () => {
   const OrderDetailsModal = () => {
     if (!showOrderDetails || !selectedOrder) return null;
 
-    const items = getOrderItems(selectedOrder.Order_Id);
-    const orderTotal = calculateOrderTotal(selectedOrder.Order_Id);
+    const items = selectedOrder.items || [];
+    const orderTotal = items.reduce((total, item) => total + (item.ItemAmount || 0), 0);
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -422,7 +225,7 @@ export const OrderManagement: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-600">Branch</p>
-                    <p className="text-gray-900">{selectedOrder.Branch || 'Not specified'}</p>
+                    <p className="text-gray-900">{selectedOrder.Branch_Name || selectedOrder.Branch || 'Not specified'}</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-600">Urgency</p>
@@ -492,8 +295,8 @@ export const OrderManagement: React.FC = () => {
                     <p className="text-2xl font-bold text-[#003366]">{formatCurrency(orderTotal)}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Retailer ID</p>
-                    <p className="text-gray-900">{selectedOrder.Retailer_Id || 'Not specified'}</p>
+                    <p className="text-sm font-medium text-gray-600">Retailer</p>
+                    <p className="text-gray-900">{selectedOrder.Retailer_Name || `ID: ${selectedOrder.Retailer_Id}` || 'Not specified'}</p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-600">Dispatch ID</p>
@@ -703,30 +506,47 @@ export const OrderManagement: React.FC = () => {
         </div>
       </div>
 
+      {/* Loading and Error States */}
+      {loading && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+          <div className="w-12 h-12 border-4 border-t-[#003366] border-gray-200 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading orders...</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+          <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <p className="text-red-700 font-medium">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
       {/* Orders Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Urgency</th>
-                {user?.role !== 'retailer' && (
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Branch</th>
-                )}
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredOrders.map((order) => {
-                const items = getOrderItems(order.Order_Id);
-                const orderTotal = calculateOrderTotal(order.Order_Id);
-                
-                return (
+      {!loading && !error && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Urgency</th>
+                  {user?.role !== 'retailer' && (
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Branch</th>
+                  )}
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Retailer</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredOrders.map((order) => (
                   <tr key={order.Order_Id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
@@ -757,20 +577,11 @@ export const OrderManagement: React.FC = () => {
                     </td>
                     {user?.role !== 'retailer' && (
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{order.Branch || 'Not assigned'}</div>
+                        <div className="text-sm text-gray-900">{order.Branch_Name || order.Branch || 'Not assigned'}</div>
                       </td>
                     )}
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">
-                        {items.length} item{items.length > 1 ? 's' : ''}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {items.slice(0, 2).map(item => item.Part_Salesman).join(', ')}
-                        {items.length > 2 && '...'}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {formatCurrency(orderTotal)}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{order.Retailer_Name || `ID: ${order.Retailer_Id}` || 'Unknown'}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {order.Place_Date ? format(timestampToDate(order.Place_Date)!, 'MMM dd, yyyy') : 'Not set'}
@@ -784,25 +595,25 @@ export const OrderManagement: React.FC = () => {
                       </button>
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        {filteredOrders.length === 0 && (
-          <div className="text-center py-12">
-            <Shield className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No orders found</h3>
-            <p className="text-gray-600">
-              {user?.role === 'retailer' 
-                ? "You haven't placed any orders yet." 
-                : "No orders match your search criteria or access level."
-              }
-            </p>
+                ))}
+              </tbody>
+            </table>
           </div>
-        )}
-      </div>
+
+          {filteredOrders.length === 0 && !loading && (
+            <div className="text-center py-12">
+              <Shield className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No orders found</h3>
+              <p className="text-gray-600">
+                {user?.role === 'retailer' 
+                  ? "You haven't placed any orders yet." 
+                  : "No orders match your search criteria or access level."
+                }
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Order Details Modal */}
       <OrderDetailsModal />

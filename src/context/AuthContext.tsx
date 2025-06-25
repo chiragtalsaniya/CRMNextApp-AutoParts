@@ -41,6 +41,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Token is invalid, clear storage
           localStorage.removeItem('token');
           localStorage.removeItem('user');
+          console.error('Token validation failed:', error);
         }
       }
       setLoading(false);
@@ -103,7 +104,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       case 'admin':
         // Admin can access all stores in their company
         // This would need to be validated against the actual store-company mapping
-        return true; // Simplified for now
+        return true; // Simplified for now - should check via API
       case 'manager':
       case 'storeman':
       case 'salesman':
