@@ -1,4 +1,6 @@
 import express from 'express';
+import https from 'https';
+import fs from 'fs';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -51,7 +53,7 @@ app.use('/api/', limiter);
 app.use(cors({
   origin: process.env.NODE_ENV === 'production' 
     ? ['https://your-domain.com'] 
-    : ['http://localhost:5173', 'http://localhost:3000'],
+    : ['https://localhost:5173', 'http://localhost:3000'],
   credentials: true
 }));
 
@@ -100,9 +102,17 @@ app.use('*', (req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📊 API Documentation: http://localhost:${PORT}/api/health`);
+// HTTPS server configuration for development
+const httpsOptions = {
+  key: fs.readFileSync(path.join(__dirname, '../certs/localhost.key')),
+  cert: fs.readFileSync(path.join(__dirname, '../certs/localhost.crt'))
+};
+
+const server = https.createServer(httpsOptions, app);
+
+server.listen(PORT, () => {
+  console.log(`🚀 HTTPS Server running on port ${PORT}`);
+  console.log(`📊 API Documentation: https://localhost:${PORT}/api/health`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
