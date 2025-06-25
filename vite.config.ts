@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     https: true,
     host: 'localhost',
-    port: 3001,
+    port: 5173,
     strictPort: true,
   },
   optimizeDeps: {
