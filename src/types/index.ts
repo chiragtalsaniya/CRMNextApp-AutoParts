@@ -93,6 +93,39 @@ export interface Part {
   Last_Sync?: number;
 }
 
+// New Item Status interface for store-wise part status tracking
+export interface ItemStatus {
+  Branch_Code: string;
+  Part_No: string;
+  Part_Branch: string; // Primary key: Branch_Code-Part_No
+  Part_A?: string; // Stock level A
+  Part_B?: string; // Stock level B
+  Part_C?: string; // Stock level C
+  Part_Max?: string; // Maximum stock level
+  Part_Rack?: string; // Rack location
+  LastSale?: number; // Last sale timestamp
+  LastPurchase?: number; // Last purchase timestamp
+  Narr?: string; // Narrative/Notes
+  Last_Sync?: number; // Last sync timestamp
+  created_at?: string;
+  updated_at?: string;
+  // Joined fields from related tables
+  Branch_Name?: string;
+  Company_Name?: string;
+  Part_Name?: string;
+  Part_Price?: number;
+  Part_MinQty?: number;
+  Part_Catagory?: string;
+  Focus_Group?: string;
+  Part_Image?: string;
+  // Calculated fields
+  total_stock?: number;
+  max_stock?: number;
+  stock_percentage?: number;
+  stock_level?: 'critical' | 'low' | 'medium' | 'good';
+  urgency?: 'critical' | 'low';
+}
+
 // Updated Order Master structure based on your database schema
 export interface OrderMaster {
   Order_Id: number;
@@ -264,4 +297,34 @@ export const getOrderStatusIcon = (status?: OrderStatus): string => {
     case 'Cancelled': return 'x-circle';
     default: return 'circle';
   }
+};
+
+// Helper functions for item status
+export const getStockLevelColor = (level?: string): string => {
+  switch (level) {
+    case 'critical': return 'bg-red-100 text-red-800';
+    case 'low': return 'bg-orange-100 text-orange-800';
+    case 'medium': return 'bg-yellow-100 text-yellow-800';
+    case 'good': return 'bg-green-100 text-green-800';
+    default: return 'bg-gray-100 text-gray-800';
+  }
+};
+
+export const calculateStockLevel = (current: number, max: number): string => {
+  if (max === 0) return 'unknown';
+  const percentage = (current / max) * 100;
+  
+  if (percentage < 20) return 'critical';
+  if (percentage < 40) return 'low';
+  if (percentage < 70) return 'medium';
+  return 'good';
+};
+
+export const formatStockDisplay = (partA?: string, partB?: string, partC?: string): string => {
+  const a = parseInt(partA || '0');
+  const b = parseInt(partB || '0');
+  const c = parseInt(partC || '0');
+  const total = a + b + c;
+  
+  return `${total} (A:${a}, B:${b}, C:${c})`;
 };

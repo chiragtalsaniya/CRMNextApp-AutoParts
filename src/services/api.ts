@@ -193,6 +193,36 @@ export const regionsAPI = {
     api.delete(`/regions/${id}`),
 };
 
+// Item Status API
+export const itemStatusAPI = {
+  getItemStatus: (params?: any) =>
+    api.get('/item-status', { params }),
+  
+  getItemStatusByStoreAndPart: (branchCode: string, partNo: string) =>
+    api.get(`/item-status/${branchCode}/${partNo}`),
+  
+  createOrUpdateItemStatus: (itemData: any) =>
+    api.post('/item-status', itemData),
+  
+  updateStockLevels: (branchCode: string, partNo: string, stockData: any) =>
+    api.patch(`/item-status/${branchCode}/${partNo}/stock`, stockData),
+  
+  updateRackLocation: (branchCode: string, partNo: string, rackData: any) =>
+    api.patch(`/item-status/${branchCode}/${partNo}/rack`, rackData),
+  
+  recordSale: (branchCode: string, partNo: string, saleData: any) =>
+    api.post(`/item-status/${branchCode}/${partNo}/sale`, saleData),
+  
+  recordPurchase: (branchCode: string, partNo: string, purchaseData: any) =>
+    api.post(`/item-status/${branchCode}/${partNo}/purchase`, purchaseData),
+  
+  getLowStockItems: (params?: any) =>
+    api.get('/item-status/alerts/low-stock', { params }),
+  
+  getItemStatusStats: (branchCode: string) =>
+    api.get(`/item-status/stats/${branchCode}`),
+};
+
 // Reports API
 export const reportsAPI = {
   getOrderReport: (params: any) =>

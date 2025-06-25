@@ -17,6 +17,7 @@ import partRoutes from './routes/parts.js';
 import orderRoutes from './routes/orders.js';
 import regionRoutes from './routes/regions.js';
 import reportRoutes from './routes/reports.js';
+import itemStatusRoutes from './routes/item-status.js';
 
 // Import database connection
 import { connectDB } from './config/database.js';
@@ -74,6 +75,7 @@ app.use('/api/parts', partRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/regions', regionRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/item-status', itemStatusRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

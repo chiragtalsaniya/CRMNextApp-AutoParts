@@ -12,6 +12,7 @@ import { Retailers } from './pages/Retailers';
 import { Regions } from './pages/Regions';
 import { Parts } from './pages/Parts';
 import { Orders } from './pages/Orders';
+import { ItemStatus } from './pages/ItemStatus';
 import { Reports } from './pages/Reports';
 import { Settings } from './pages/Settings';
 import { Unauthorized } from './pages/Unauthorized';
@@ -37,7 +38,7 @@ const AppRoutes: React.FC = () => {
       } />
       
       <Route path="/dashboard" element={
-        <ProtectedRoute allowedRoles={['super_admin', 'admin', 'manager', 'storeman']}>
+        <ProtectedRoute allowedRoles={['super_admin', 'admin', 'manager', 'storeman', 'salesman', 'retailer']}>
           <DashboardLayout>
             <Dashboard />
           </DashboardLayout>
@@ -69,7 +70,7 @@ const AppRoutes: React.FC = () => {
       } />
       
       <Route path="/retailers" element={
-        <ProtectedRoute allowedRoles={['super_admin', 'admin', 'manager']}>
+        <ProtectedRoute allowedRoles={['super_admin', 'admin', 'manager', 'storeman', 'salesman']}>
           <DashboardLayout>
             <Retailers />
           </DashboardLayout>
@@ -93,9 +94,17 @@ const AppRoutes: React.FC = () => {
       } />
       
       <Route path="/orders" element={
-        <ProtectedRoute allowedRoles={['super_admin', 'admin', 'manager', 'storeman']}>
+        <ProtectedRoute allowedRoles={['super_admin', 'admin', 'manager', 'storeman', 'salesman', 'retailer']}>
           <DashboardLayout>
             <Orders />
+          </DashboardLayout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/item-status" element={
+        <ProtectedRoute allowedRoles={['super_admin', 'admin', 'manager', 'storeman']}>
+          <DashboardLayout>
+            <ItemStatus />
           </DashboardLayout>
         </ProtectedRoute>
       } />
@@ -109,7 +118,7 @@ const AppRoutes: React.FC = () => {
       } />
       
       <Route path="/settings" element={
-        <ProtectedRoute allowedRoles={['super_admin', 'admin', 'manager', 'storeman']}>
+        <ProtectedRoute allowedRoles={['super_admin', 'admin', 'manager', 'storeman', 'salesman', 'retailer']}>
           <DashboardLayout>
             <Settings />
           </DashboardLayout>

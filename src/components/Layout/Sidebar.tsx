@@ -15,7 +15,9 @@ import {
   Menu,
   X,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Warehouse,
+  Database
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -34,6 +36,7 @@ const navItems: NavItem[] = [
   { to: '/retailers', icon: UserCheck, label: 'Retailers', roles: ['super_admin', 'admin', 'manager', 'storeman', 'salesman'] },
   { to: '/regions', icon: MapPin, label: 'Regions', roles: ['super_admin', 'admin', 'manager'] },
   { to: '/parts', icon: Package, label: 'Parts Inventory', roles: ['super_admin', 'admin', 'manager', 'storeman'] },
+  { to: '/item-status', icon: Warehouse, label: 'Item Status', roles: ['super_admin', 'admin', 'manager', 'storeman'] },
   { to: '/orders', icon: ShoppingCart, label: 'Orders', roles: ['super_admin', 'admin', 'manager', 'storeman', 'salesman', 'retailer'] },
   { to: '/transport', icon: Truck, label: 'Transport', roles: ['super_admin', 'admin', 'manager'] },
   { to: '/reports', icon: BarChart3, label: 'Reports', roles: ['super_admin', 'admin', 'manager'] },
