@@ -117,7 +117,7 @@ export interface OrderMaster {
   Remark?: string;
   PO_Number?: string;
   PO_Date?: number; // decimal timestamp
-  Urgent_Status?: string;
+  Urgent_Status?: boolean; // Changed to boolean as requested
   Longitude?: number;
   IsSync?: boolean;
   Latitude?: number;
@@ -144,12 +144,33 @@ export interface OrderItem {
   Discount?: number; // Basic discount percentage
   MRP?: number; // Maximum Retail Price in cents/paise
   FirstOrderDate?: number; // decimal timestamp
-  Urgent_Status?: string;
+  Urgent_Status?: boolean; // Changed to boolean as requested
   Last_Sync?: number; // decimal timestamp
 }
 
 // Updated Order Status enum
 export type OrderStatus = 'New' | 'Processing' | 'Completed' | 'Hold' | 'Picked' | 'Dispatched' | 'Pending' | 'Cancelled';
+
+// New Order Form interface for creating orders
+export interface NewOrderForm {
+  retailer_id: number;
+  po_number?: string;
+  po_date?: Date;
+  urgent: boolean;
+  remark?: string;
+  items: NewOrderItemForm[];
+}
+
+export interface NewOrderItemForm {
+  part_number: string;
+  part_name?: string;
+  quantity: number;
+  mrp: number;
+  basic_discount: number;
+  scheme_discount: number;
+  additional_discount: number;
+  urgent: boolean;
+}
 
 // Legacy Order interface for backward compatibility (can be removed later)
 export interface Order {

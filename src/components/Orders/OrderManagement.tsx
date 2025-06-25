@@ -5,7 +5,7 @@ import {
   Truck, 
   CheckCircle, 
   Clock, 
-  AlertCircle, 
+  AlertTriangle, 
   Shield, 
   Plus,
   Edit,
@@ -19,11 +19,13 @@ import {
   Calendar,
   User,
   MapPin,
-  FileText
+  FileText,
+  Zap
 } from 'lucide-react';
-import { OrderMaster, OrderItem, OrderStatus, getOrderStatusColor, timestampToDate, formatCurrency } from '../../types';
+import { OrderMaster, OrderItem, OrderStatus, NewOrderForm, getOrderStatusColor, timestampToDate, formatCurrency, dateToTimestamp } from '../../types';
 import { format } from 'date-fns';
 import { useAuth } from '../../context/AuthContext';
+import { NewOrderForm as NewOrderFormComponent } from './NewOrderForm';
 
 const mockOrderMasters: OrderMaster[] = [
   {
@@ -49,7 +51,7 @@ const mockOrderMasters: OrderMaster[] = [
     Remark: 'Urgent delivery requested',
     PO_Number: 'PO-2024-001',
     PO_Date: 1704067200000,
-    Urgent_Status: 'Normal',
+    Urgent_Status: true,
     Longitude: -74.0060,
     IsSync: true,
     Latitude: 40.7128,
@@ -73,7 +75,7 @@ const mockOrderMasters: OrderMaster[] = [
     Remark: 'Regular order',
     PO_Number: 'PO-2024-002',
     PO_Date: 1704153600000,
-    Urgent_Status: 'Normal',
+    Urgent_Status: false,
     Longitude: -74.0060,
     IsSync: true,
     Latitude: 40.7128,
@@ -90,7 +92,7 @@ const mockOrderMasters: OrderMaster[] = [
     Remark: 'Large order - multiple items',
     PO_Number: 'PO-2024-003',
     PO_Date: 1704240000000,
-    Urgent_Status: 'High',
+    Urgent_Status: true,
     IsSync: false,
     Last_Sync: 1704240000000
   },
@@ -105,7 +107,7 @@ const mockOrderMasters: OrderMaster[] = [
     Remark: 'New order pending confirmation',
     PO_Number: 'PO-2024-004',
     PO_Date: 1704326400000,
-    Urgent_Status: 'Normal',
+    Urgent_Status: false,
     IsSync: false,
     Last_Sync: 1704326400000
   }
@@ -131,7 +133,7 @@ const mockOrderItems: OrderItem[] = [
     Discount: 3,
     MRP: 1299, // $12.99 per unit
     FirstOrderDate: 1704067200000,
-    Urgent_Status: 'Normal',
+    Urgent_Status: true,
     Last_Sync: 1704153600000
   },
   {
@@ -153,7 +155,7 @@ const mockOrderItems: OrderItem[] = [
     Discount: 5,
     MRP: 4599, // $45.99 per unit
     FirstOrderDate: 1704067200000,
-    Urgent_Status: 'Normal',
+    Urgent_Status: false,
     Last_Sync: 1704153600000
   },
   {
@@ -175,7 +177,7 @@ const mockOrderItems: OrderItem[] = [
     Discount: 2,
     MRP: 899, // $8.99 per unit
     FirstOrderDate: 1704153600000,
-    Urgent_Status: 'Normal',
+    Urgent_Status: false,
     Last_Sync: 1704160800000
   },
   {
@@ -195,7 +197,7 @@ const mockOrderItems: OrderItem[] = [
     Discount: 3,
     MRP: 1299,
     FirstOrderDate: 1704240000000,
-    Urgent_Status: 'High',
+    Urgent_Status: true,
     Last_Sync: 1704240000000
   }
 ];
@@ -209,6 +211,7 @@ export const OrderManagement: React.FC = () => {
   const [urgencyFilter, setUrgencyFilter] = useState<string>('all');
   const [selectedOrder, setSelectedOrder] = useState<OrderMaster | null>(null);
   const [showOrderDetails, setShowOrderDetails] = useState(false);
+  const [showNewOrderForm, setShowNewOrderForm] = useState(false);
 
   // Filter orders based on user access rights
   useEffect(() => {
@@ -257,7 +260,9 @@ export const OrderManagement: React.FC = () => {
       (order.PO_Number && order.PO_Number.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesStatus = statusFilter === 'all' || order.Order_Status === statusFilter;
-    const matchesUrgency = urgencyFilter === 'all' || order.Urgent_Status === urgencyFilter;
+    const matchesUrgency = urgencyFilter === 'all' || 
+      (urgencyFilter === 'urgent' && order.Urgent_Status === true) ||
+      (urgencyFilter === 'normal' && order.Urgent_Status === false);
     
     return matchesSearch && matchesStatus && matchesUrgency;
   });
@@ -276,18 +281,60 @@ export const OrderManagement: React.FC = () => {
     }
   };
 
-  const getUrgencyColor = (urgency?: string) => {
-    switch (urgency) {
-      case 'High': return 'bg-red-100 text-red-800';
-      case 'Medium': return 'bg-yellow-100 text-yellow-800';
-      case 'Normal': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
   const handleViewOrder = (order: OrderMaster) => {
     setSelectedOrder(order);
     setShowOrderDetails(true);
+  };
+
+  const handleNewOrder = (orderData: NewOrderForm) => {
+    // Generate new order ID
+    const newOrderId = Math.max(...orders.map(o => o.Order_Id)) + 1;
+    
+    // Create new order master
+    const newOrderMaster: OrderMaster = {
+      Order_Id: newOrderId,
+      CRMOrderId: `CRM-${new Date().getFullYear()}-${newOrderId.toString().padStart(3, '0')}`,
+      Retailer_Id: orderData.retailer_id,
+      Place_By: user?.name || 'Unknown',
+      Place_Date: dateToTimestamp(new Date()),
+      Order_Status: 'New',
+      Branch: user?.store_id || 'UNKNOWN',
+      Remark: orderData.remark,
+      PO_Number: orderData.po_number,
+      PO_Date: orderData.po_date ? dateToTimestamp(orderData.po_date) : undefined,
+      Urgent_Status: orderData.urgent,
+      IsSync: false,
+      Last_Sync: dateToTimestamp(new Date())
+    };
+
+    // Create order items
+    const newOrderItems: OrderItem[] = orderData.items.map((item, index) => ({
+      Order_Item_Id: Math.max(...orderItems.map(oi => oi.Order_Item_Id)) + index + 1,
+      Order_Id: newOrderId,
+      Order_Srl: index + 1,
+      Part_Admin: item.part_number,
+      Part_Salesman: item.part_name,
+      Order_Qty: item.quantity,
+      Dispatch_Qty: 0,
+      OrderItemStatus: 'New',
+      PlaceDate: dateToTimestamp(new Date()),
+      RetailerId: orderData.retailer_id,
+      ItemAmount: Math.round(item.mrp * item.quantity * (1 - (item.basic_discount + item.scheme_discount + item.additional_discount) / 100)),
+      SchemeDisc: item.scheme_discount,
+      AdditionalDisc: item.additional_discount,
+      Discount: item.basic_discount,
+      MRP: item.mrp,
+      FirstOrderDate: dateToTimestamp(new Date()),
+      Urgent_Status: item.urgent,
+      Last_Sync: dateToTimestamp(new Date())
+    }));
+
+    // Update state
+    setOrders(prev => [newOrderMaster, ...prev]);
+    setOrderItems(prev => [...newOrderItems, ...prev]);
+    
+    // Show success message
+    alert(`Order #${newOrderId} created successfully!`);
   };
 
   const getOrderItems = (orderId: number) => {
@@ -341,9 +388,17 @@ export const OrderManagement: React.FC = () => {
                 <div>
                   <h2 className="text-xl font-bold text-gray-900">Order #{selectedOrder.Order_Id}</h2>
                   <p className="text-gray-600">{selectedOrder.CRMOrderId}</p>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1 ${getOrderStatusColor(selectedOrder.Order_Status)}`}>
-                    {selectedOrder.Order_Status}
-                  </span>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getOrderStatusColor(selectedOrder.Order_Status)}`}>
+                      {selectedOrder.Order_Status}
+                    </span>
+                    {selectedOrder.Urgent_Status && (
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                        <Zap className="w-3 h-3 mr-1" />
+                        Urgent
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
               <button 
@@ -371,8 +426,17 @@ export const OrderManagement: React.FC = () => {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-600">Urgency</p>
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getUrgencyColor(selectedOrder.Urgent_Status)}`}>
-                      {selectedOrder.Urgent_Status || 'Normal'}
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      selectedOrder.Urgent_Status ? 'bg-orange-100 text-orange-800' : 'bg-green-100 text-green-800'
+                    }`}>
+                      {selectedOrder.Urgent_Status ? (
+                        <>
+                          <Zap className="w-3 h-3 mr-1" />
+                          Urgent
+                        </>
+                      ) : (
+                        'Normal'
+                      )}
                     </span>
                   </div>
                   <div>
@@ -462,6 +526,7 @@ export const OrderManagement: React.FC = () => {
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Discounts</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Urgency</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
@@ -501,6 +566,18 @@ export const OrderManagement: React.FC = () => {
                           }`}>
                             {item.OrderItemStatus}
                           </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          {item.Urgent_Status ? (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                              <Zap className="w-3 h-3 mr-1" />
+                              Urgent
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              Normal
+                            </span>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -564,7 +641,10 @@ export const OrderManagement: React.FC = () => {
             <span>Export</span>
           </button>
           {user?.role !== 'retailer' && (
-            <button className="bg-[#003366] text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2">
+            <button 
+              onClick={() => setShowNewOrderForm(true)}
+              className="bg-[#003366] text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
+            >
               <Plus className="w-5 h-5" />
               <span>New Order</span>
             </button>
@@ -613,9 +693,8 @@ export const OrderManagement: React.FC = () => {
             className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
           >
             <option value="all">All Urgency</option>
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Normal">Normal</option>
+            <option value="urgent">Urgent Only</option>
+            <option value="normal">Normal Only</option>
           </select>
 
           <div className="text-sm text-gray-600 flex items-center">
@@ -665,9 +744,16 @@ export const OrderManagement: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getUrgencyColor(order.Urgent_Status)}`}>
-                        {order.Urgent_Status || 'Normal'}
-                      </span>
+                      {order.Urgent_Status ? (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                          <Zap className="w-3 h-3 mr-1" />
+                          Urgent
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          Normal
+                        </span>
+                      )}
                     </td>
                     {user?.role !== 'retailer' && (
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -720,6 +806,13 @@ export const OrderManagement: React.FC = () => {
 
       {/* Order Details Modal */}
       <OrderDetailsModal />
+
+      {/* New Order Form Modal */}
+      <NewOrderFormComponent 
+        isOpen={showNewOrderForm}
+        onClose={() => setShowNewOrderForm(false)}
+        onSubmit={handleNewOrder}
+      />
     </div>
   );
 };
