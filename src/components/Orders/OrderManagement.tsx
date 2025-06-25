@@ -25,7 +25,7 @@ import {
 import { OrderMaster, OrderItem, OrderStatus, NewOrderForm, getOrderStatusColor, timestampToDate, formatCurrency, dateToTimestamp } from '../../types';
 import { format } from 'date-fns';
 import { useAuth } from '../../context/AuthContext';
-import { NewOrderForm as NewOrderFormComponent } from './NewOrderForm';
+import { NewOrderFormModal } from './NewOrderForm';
 
 const mockOrderMasters: OrderMaster[] = [
   {
@@ -808,7 +808,7 @@ export const OrderManagement: React.FC = () => {
       <OrderDetailsModal />
 
       {/* New Order Form Modal */}
-      <NewOrderFormComponent 
+      <NewOrderFormModal 
         isOpen={showNewOrderForm}
         onClose={() => setShowNewOrderForm(false)}
         onSubmit={handleNewOrder}

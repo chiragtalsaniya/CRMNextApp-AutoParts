@@ -48,7 +48,7 @@ const mockRetailers: Retailer[] = [
   }
 ];
 
-export const NewOrderForm: React.FC<NewOrderFormProps> = ({ isOpen, onClose, onSubmit }) => {
+export const NewOrderFormModal: React.FC<NewOrderFormProps> = ({ isOpen, onClose, onSubmit }) => {
   const { user } = useAuth();
   const [formData, setFormData] = useState<NewOrderForm>({
     retailer_id: 0,
