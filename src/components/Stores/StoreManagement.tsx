@@ -23,9 +23,10 @@ import { Store, Company } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { storesAPI } from '../../services/api';
 import { companiesAPI } from '../../services/api';
+import { Tooltip } from 'react-tooltip'; // Add a tooltip library if not present
 
 export const StoreManagement: React.FC = () => {
-  const { user, canAccessStore, getAccessibleStores, getAccessibleCompanies } = useAuth();
+  const { user, canAccessStore } = useAuth();
   const [stores, setStores] = useState<Store[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -534,6 +535,35 @@ export const StoreManagement: React.FC = () => {
     );
   };
 
+  // Loading and error UI
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <svg className="animate-spin h-10 w-10 text-blue-600 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+          </svg>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">Loading stores...</h3>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <svg className="h-10 w-10 text-red-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">{error}</h3>
+          <button onClick={() => window.location.reload()} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Retry</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -678,20 +708,29 @@ export const StoreManagement: React.FC = () => {
                       <button 
                         onClick={() => handleViewStore(store)}
                         className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                        data-tooltip-id={`view-store-${store.Branch_Code}`}
+                        aria-label="View Store"
                       >
                         <Eye className="w-4 h-4" />
+                        <Tooltip id={`view-store-${store.Branch_Code}`}>View Store</Tooltip>
                       </button>
                       <button 
                         onClick={() => handleEditStore(store)}
                         className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                        data-tooltip-id={`edit-store-${store.Branch_Code}`}
+                        aria-label="Edit Store"
                       >
                         <Edit className="w-4 h-4" />
+                        <Tooltip id={`edit-store-${store.Branch_Code}`}>Edit Store</Tooltip>
                       </button>
                       <button 
                         onClick={() => handleDeleteStore(store.Branch_Code)}
                         className="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 rounded-lg transition-colors"
+                        data-tooltip-id={`delete-store-${store.Branch_Code}`}
+                        aria-label="Delete Store"
                       >
                         <Trash2 className="w-4 h-4" />
+                        <Tooltip id={`delete-store-${store.Branch_Code}`}>Delete Store</Tooltip>
                       </button>
                     </div>
                   </td>
