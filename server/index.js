@@ -1,5 +1,5 @@
 import express from 'express';
-import https from 'https';
+import http from 'http';
 import fs from 'fs';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -43,26 +43,27 @@ app.use(helmet({
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // limit each IP to 100 requests per windowMs
   message: 'Too many requests from this IP, please try again later.'
 });
 app.use('/api/', limiter);
 
 // CORS configuration
-app.use(cors({
+const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
-    ? ['https://your-domain.com'] 
+    ? process.env.CORS_ORIGIN?.split(',') || ['https://your-production-domain.com']
     : ['https://localhost:5173', 'http://localhost:3000'],
   credentials: true
-}));
+};
+app.use(cors(corsOptions));
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Logging middleware
-app.use(morgan('combined'));
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 // Static files for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -84,9 +85,26 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    version: '1.0.0'
+    version: process.env.VITE_APP_VERSION || '1.0.0',
+    environment: process.env.NODE_ENV || 'development'
   });
 });
+
+// Serve static files in production
+if (process.env.NODE_ENV === 'production') {
+  // Serve frontend static files
+  const frontendPath = path.join(__dirname, '../dist');
+  if (fs.existsSync(frontendPath)) {
+    app.use(express.static(frontendPath));
+    
+    // Handle SPA routing - send all non-API requests to index.html
+    app.get('*', (req, res) => {
+      if (!req.path.startsWith('/api/') && !req.path.startsWith('/uploads/')) {
+        res.sendFile(path.join(frontendPath, 'index.html'));
+      }
+    });
+  }
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -99,20 +117,19 @@ app.use((err, req, res, next) => {
 
 // 404 handler
 app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+  if (req.path.startsWith('/api/')) {
+    res.status(404).json({ error: 'API route not found' });
+  } else {
+    res.status(404).send('Not found');
+  }
 });
 
-// HTTPS server configuration for development
-const httpsOptions = {
-  key: fs.readFileSync(path.join(__dirname, '../certs/localhost.key')),
-  cert: fs.readFileSync(path.join(__dirname, '../certs/localhost.crt'))
-};
-
-const server = https.createServer(httpsOptions, app);
+// Create HTTP server
+const server = http.createServer(app);
 
 server.listen(PORT, () => {
-  console.log(`🚀 HTTPS Server running on port ${PORT}`);
-  console.log(`📊 API Documentation: https://localhost:${PORT}/api/health`);
+  console.log(`🚀 HTTP Server running on port ${PORT}`);
+  console.log(`📊 API Documentation: http://localhost:${PORT}/api/health`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
