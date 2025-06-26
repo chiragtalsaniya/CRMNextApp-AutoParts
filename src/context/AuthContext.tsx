@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, UserRole } from '../types';
-import { authAPI } from '../services/api';
+import { authAPI, companiesAPI } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
@@ -26,6 +26,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [allCompanyIds, setAllCompanyIds] = useState<string[]>([]);
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -52,6 +53,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     initializeAuth();
   }, []);
+
+  useEffect(() => {
+    // Fetch all companies if user is super_admin
+    const fetchAllCompanies = async () => {
+      if (user?.role === 'super_admin') {
+        try {
+          const response = await companiesAPI.getCompanies();
+          // response.data is an array of companies
+          setAllCompanyIds(Array.isArray(response.data) ? response.data.map((c: any) => c.id) : []);
+        } catch (err) {
+          setAllCompanyIds([]);
+        }
+      } else {
+        setAllCompanyIds([]);
+      }
+    };
+    fetchAllCompanies();
+  }, [user]);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
@@ -147,7 +166,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     switch (user.role) {
       case 'super_admin':
-        return ['1', '2', '3']; // All companies - this should come from API
+        return allCompanyIds;
       case 'admin':
       case 'manager':
       case 'storeman':

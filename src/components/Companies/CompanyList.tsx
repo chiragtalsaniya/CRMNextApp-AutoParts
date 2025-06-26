@@ -17,15 +17,6 @@ export const CompanyList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Filter companies based on user access rights
-  useEffect(() => {
-    const accessibleCompanyIds = getAccessibleCompanies();
-    const filteredCompanies = companies.filter(company => 
-      accessibleCompanyIds.includes(company.id)
-    );
-    setCompanies(filteredCompanies);
-  }, [user]);
-
   // Load companies from API
   useEffect(() => {
     const loadCompanies = async () => {
@@ -56,9 +47,11 @@ export const CompanyList: React.FC = () => {
     );
   }
 
+  // Filter companies by access and search
   const filteredCompanies = companies.filter(company =>
-    company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    company.contact_email.toLowerCase().includes(searchTerm.toLowerCase())
+    getAccessibleCompanies().includes(company.id) &&
+    (company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      company.contact_email.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const handleAddCompany = () => {

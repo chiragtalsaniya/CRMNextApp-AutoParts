@@ -54,6 +54,8 @@ router.get('/', authenticateToken, async (req, res) => {
     const countResult = await executeQuery(countQuery, queryParams);
     const total = countResult[0].total;
 
+    // Ensure queryParams is always an array
+    const safeQueryParams = Array.isArray(queryParams) ? queryParams : [];
     // Get retailers with pagination
     const offset = (page - 1) * limit;
     const retailersQuery = `
@@ -63,7 +65,7 @@ router.get('/', authenticateToken, async (req, res) => {
       LIMIT ? OFFSET ?
     `;
 
-    const retailers = await executeQuery(retailersQuery, [...queryParams, parseInt(limit), offset]);
+    const retailers = await executeQuery(retailersQuery, [...safeQueryParams, parseInt(limit), offset]);
 
     res.json({
       retailers,
