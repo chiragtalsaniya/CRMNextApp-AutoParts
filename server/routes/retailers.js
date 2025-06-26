@@ -60,6 +60,9 @@ router.get('/', authenticateToken, async (req, res) => {
     const safeLimit = Number.isFinite(Number(limit)) && Number(limit) > 0 ? Number(limit) : 50;
     const safePage = Number.isFinite(Number(page)) && Number(page) > 0 ? Number(page) : 1;
     const offset = (safePage - 1) * safeLimit;
+    const finalLimit = Number.isFinite(safeLimit) ? safeLimit : 50;
+    const finalOffset = Number.isFinite(offset) ? offset : 0;
+    console.log('Retailers query params:', finalLimit, finalOffset); // Debug log
     const retailersQuery = `
       SELECT * FROM retailers 
       ${whereClause}
@@ -67,7 +70,7 @@ router.get('/', authenticateToken, async (req, res) => {
       LIMIT ? OFFSET ?
     `;
 
-    const retailers = await executeQuery(retailersQuery, [...safeQueryParams, safeLimit, offset]);
+    const retailers = await executeQuery(retailersQuery, [...safeQueryParams, finalLimit, finalOffset]);
 
     res.json({
       retailers,

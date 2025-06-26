@@ -73,7 +73,10 @@ router.get('/', authenticateToken, async (req, res) => {
     const total = countResult[0].total;
 
     // Get users with pagination
-    const offset = (page - 1) * limit;
+    const safeLimit = Number.isFinite(Number(limit)) && Number(limit) > 0 ? Number(limit) : 50;
+    const safePage = Number.isFinite(Number(page)) && Number(page) > 0 ? Number(page) : 1;
+    const offset = (safePage - 1) * safeLimit;
+    console.log('Users query params:', safeLimit, offset);
     const usersQuery = `
       SELECT id, name, email, role, company_id, store_id, region_id, retailer_id, 
              profile_image, is_active, last_login, created_at, updated_at
@@ -83,7 +86,7 @@ router.get('/', authenticateToken, async (req, res) => {
       LIMIT ? OFFSET ?
     `;
 
-    const users = await executeQuery(usersQuery, [...queryParams, parseInt(limit), offset]);
+    const users = await executeQuery(usersQuery, [...queryParams, safeLimit, offset]);
 
     res.json({
       users,
