@@ -74,18 +74,21 @@ export const StoreManagement: React.FC = () => {
     );
   }
 
-  // Restrict companies for non-super_admin
-  const visibleCompanies = user?.role === 'super_admin'
-    ? companies
-    : companies.filter(c => c.id === user?.company_id);
-
-  const filteredStores = stores.filter(store => {
-    const matchesSearch = 
+  // Filter logic and UI
+  const isSuperAdmin = user?.role === 'super_admin';
+  const visibleCompanies = isSuperAdmin ? companies : companies.filter((c) => c.id === user?.company_id);
+  const visibleStores = isSuperAdmin
+    ? stores
+    : stores.filter((s) => s.company_id === user?.company_id);
+  const filteredStores = visibleStores.filter((store) => {
+    const matchesSearch =
       store.Branch_Code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (store.Branch_Name && store.Branch_Name.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (store.Company_Name && store.Company_Name.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (store.Branch_Manager && store.Branch_Manager.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCompany = selectedCompanyId === 'All' || store.company_id === selectedCompanyId;
+    const matchesCompany = isSuperAdmin
+      ? selectedCompanyId === 'All' || store.company_id === selectedCompanyId
+      : true;
     return matchesSearch && matchesCompany;
   });
 
@@ -611,18 +614,18 @@ export const StoreManagement: React.FC = () => {
               className="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
             />
           </div>
-          
-          <select
-            value={selectedCompanyId}
-            onChange={(e) => setSelectedCompanyId(e.target.value)}
-            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
-          >
-            <option value="All">All Companies</option>
-            {visibleCompanies.map(company => (
-              <option key={company.id} value={company.id}>{company.name}</option>
-            ))}
-          </select>
-
+          {isSuperAdmin && (
+            <select
+              value={selectedCompanyId}
+              onChange={(e) => setSelectedCompanyId(e.target.value)}
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+            >
+              <option value="All">All Companies</option>
+              {visibleCompanies.map((company) => (
+                <option key={company.id} value={company.id}>{company.name}</option>
+              ))}
+            </select>
+          )}
           <div className="text-sm text-gray-600 flex items-center">
             <span className="font-medium">{filteredStores.length}</span> stores found
           </div>
@@ -632,15 +635,15 @@ export const StoreManagement: React.FC = () => {
       {/* Stores Table */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100">
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full min-w-[700px] md:min-w-0">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Store</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Manager</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Store</th>
+                <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+                <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Manager</th>
+                <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                <th className="px-4 md:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
