@@ -5,9 +5,9 @@ dotenv.config();
 
 // ✅ Valid MySQL pool configuration
 const dbConfig = {
-  host: process.env.DB_HOST || '173.249.33.63',
+  host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'kcZjwhGD4MN56',
+  password: process.env.DB_PASSWORD || '8V4S6o7XDQHh',
   database: process.env.DB_NAME || 'nextapp_crm',
   port: Number(process.env.DB_PORT) || 3306,
   waitForConnections: true,
