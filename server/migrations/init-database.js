@@ -8,12 +8,12 @@ export const runMigrations = async () => {
     const connection = await pool.getConnection();
     
     // Create database if it doesn't exist
-    await connection.execute(`CREATE DATABASE IF NOT EXISTS nextapp_crm`);
-    await connection.execute(`USE nextapp_crm`);
+    await connection.query(`CREATE DATABASE IF NOT EXISTS nextapp_crm`);
+    await connection.query(`USE nextapp_crm`);
     console.log('✅ Database nextapp_crm ready');
 
     // Companies table
-    await connection.execute(`
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS companies (
         id VARCHAR(50) PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
@@ -29,7 +29,7 @@ export const runMigrations = async () => {
     console.log('✅ Companies table created');
 
     // Stores/Branches table
-    await connection.execute(`
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS stores (
         Branch_Code VARCHAR(15) PRIMARY KEY,
         Branch_Name VARCHAR(255),
@@ -49,7 +49,7 @@ export const runMigrations = async () => {
     console.log('✅ Stores table created');
 
     // Users table
-    await connection.execute(`
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS users (
         id VARCHAR(50) PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
@@ -70,7 +70,7 @@ export const runMigrations = async () => {
     console.log('✅ Users table created');
 
     // Retailers table
-    await connection.execute(`
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS retailers (
         Retailer_Id INT AUTO_INCREMENT PRIMARY KEY,
         RetailerCRMId VARCHAR(25),
@@ -103,7 +103,7 @@ export const runMigrations = async () => {
     console.log('✅ Retailers table created');
 
     // Parts table
-    await connection.execute(`
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS parts (
         Part_Number VARCHAR(100) PRIMARY KEY,
         Part_Name VARCHAR(255),
@@ -137,7 +137,7 @@ export const runMigrations = async () => {
     console.log('✅ Parts table created');
 
     // Order Master table
-    await connection.execute(`
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS order_master (
         Order_Id INT AUTO_INCREMENT PRIMARY KEY,
         CRMOrderId VARCHAR(25),
@@ -173,7 +173,7 @@ export const runMigrations = async () => {
     console.log('✅ Order Master table created');
 
     // Order Items table
-    await connection.execute(`
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS order_items (
         Order_Item_Id INT AUTO_INCREMENT PRIMARY KEY,
         Order_Id INT,
@@ -202,7 +202,7 @@ export const runMigrations = async () => {
     console.log('✅ Order Items table created');
 
     // Item Status table
-    await connection.execute(`
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS item_status (
         Branch_Code VARCHAR(10) NOT NULL,
         Part_No VARCHAR(50) NOT NULL,
@@ -223,7 +223,7 @@ export const runMigrations = async () => {
     console.log('✅ Item Status table created');
 
     // Regions table
-    await connection.execute(`
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS regions (
         id VARCHAR(50) PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
@@ -236,7 +236,7 @@ export const runMigrations = async () => {
     console.log('✅ Regions table created');
 
     // Transport table
-    await connection.execute(`
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS transport (
         id INT AUTO_INCREMENT PRIMARY KEY,
         store_id VARCHAR(15),
@@ -250,7 +250,7 @@ export const runMigrations = async () => {
     console.log('✅ Transport table created');
 
     // API Keys table
-    await connection.execute(`
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS api_keys (
         id INT AUTO_INCREMENT PRIMARY KEY,
         key_name VARCHAR(255) NOT NULL,
@@ -266,7 +266,7 @@ export const runMigrations = async () => {
     console.log('✅ API Keys table created');
 
     // Audit log table
-    await connection.execute(`
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS audit_logs (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id VARCHAR(50),
@@ -310,7 +310,7 @@ export const runMigrations = async () => {
 
     for (const indexQuery of indexes) {
       try {
-        await connection.execute(indexQuery);
+        await connection.query(indexQuery);
       } catch (error) {
         // Ignore if index already exists
         if (!error.message.includes('Duplicate key name')) {
@@ -327,7 +327,7 @@ export const runMigrations = async () => {
     const hashedPassword = await bcrypt.hash('password', 10);
 
     // Insert companies
-    await connection.execute(`
+    await connection.query(`
       INSERT IGNORE INTO companies (id, name, address, contact_email, contact_phone, created_by) VALUES 
       ('1', 'AutoParts Plus', '123 Main St, New York, NY 10001', 'info@autopartsplus.com', '+1 (555) 123-4567', '1'),
       ('2', 'Premier Auto Supply', '456 Oak Ave, Los Angeles, CA 90210', 'contact@premierautosupply.com', '+1 (555) 987-6543', '1'),
@@ -335,7 +335,7 @@ export const runMigrations = async () => {
     `);
 
     // Insert stores
-    await connection.execute(`
+    await connection.query(`
       INSERT IGNORE INTO stores (Branch_Code, Branch_Name, Company_Name, Branch_Address, company_id) VALUES 
       ('NYC001', 'Manhattan Central Store', 'AutoParts Plus', '123 Broadway, New York, NY 10001', '1'),
       ('NYC002', 'Brooklyn East Store', 'AutoParts Plus', '456 Atlantic Ave, Brooklyn, NY 11217', '1'),
@@ -344,7 +344,7 @@ export const runMigrations = async () => {
     `);
 
     // Insert retailers
-    await connection.execute(`
+    await connection.query(`
       INSERT IGNORE INTO retailers (Retailer_Id, Retailer_Name, Contact_Person, Retailer_Email, Credit_Limit) VALUES 
       (1, 'Downtown Auto Parts', 'Michael Johnson', 'michael@downtownauto.com', 50000),
       (2, 'Quick Fix Auto', 'Sarah Williams', 'sarah@quickfixauto.com', 75000),
@@ -353,7 +353,7 @@ export const runMigrations = async () => {
     `);
 
     // Insert users
-    await connection.execute(`
+    await connection.query(`
       INSERT IGNORE INTO users (id, name, email, password_hash, role, company_id, store_id, retailer_id) VALUES 
       ('1', 'System Administrator', 'super@nextapp.com', ?, 'super_admin', NULL, NULL, NULL),
       ('2', 'Jane Admin', 'admin@company1.com', ?, 'admin', '1', NULL, NULL),
@@ -364,7 +364,7 @@ export const runMigrations = async () => {
     `, [hashedPassword, hashedPassword, hashedPassword, hashedPassword, hashedPassword, hashedPassword]);
 
     // Insert parts
-    await connection.execute(`
+    await connection.query(`
       INSERT IGNORE INTO parts (Part_Number, Part_Name, Part_Price, Part_MinQty, Part_BasicDisc, Part_SchemeDisc, Part_AdditionalDisc, Part_Application, Focus_Group, Part_Catagory, Item_Status) VALUES 
       ('SP-001-NGK', 'NGK Spark Plug - Standard', 1299, 10, 5, 3, 2, 'Honda Civic, Toyota Corolla, Nissan Sentra', 'Engine Components', 'Ignition System', 'Active'),
       ('BP-002-BREMBO', 'Brembo Brake Pads - Front Set', 4599, 5, 8, 5, 3, 'BMW 3 Series, Mercedes C-Class, Audi A4', 'Brake System', 'Brake Pads', 'Active'),
@@ -372,7 +372,7 @@ export const runMigrations = async () => {
     `);
 
     // Insert item status
-    await connection.execute(`
+    await connection.query(`
       INSERT IGNORE INTO item_status (Branch_Code, Part_No, Part_Branch, Part_A, Part_B, Part_C, Part_Max, Part_Rack, LastSale, LastPurchase, Narr, Last_Sync) VALUES 
       ('NYC001', 'SP-001-NGK', 'NYC001-SP-001-NGK', '50', '30', '20', '100', 'A-01-001', 1704067200000, 1703980800000, 'Fast moving item', 1704067200000),
       ('NYC001', 'BP-002-BREMBO', 'NYC001-BP-002-BREMBO', '25', '15', '10', '50', 'B-02-003', 1704153600000, 1704067200000, 'Premium brake pads', 1704153600000),
