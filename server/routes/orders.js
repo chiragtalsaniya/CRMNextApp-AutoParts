@@ -97,7 +97,7 @@ router.get('/', authenticateToken, async (req, res) => {
       LIMIT ? OFFSET ?
     `;
 
-    const orders = await executeQuery(ordersQuery, [...queryParams, parseInt(limit), offset]);
+   const orders = await executeQuery(ordersQuery, [...queryParams, parseInt(limit), offset]);
 
     res.json({
       orders,
