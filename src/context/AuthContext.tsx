@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, UserRole } from '../types';
-import { authAPI, companiesAPI } from '../services/api';
+import { authAPI, companiesAPI, storesAPI, retailersAPI } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
@@ -27,6 +27,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [allCompanyIds, setAllCompanyIds] = useState<string[]>([]);
+  const [allStoreIds, setAllStoreIds] = useState<string[]>([]);
+  const [allRetailerIds, setAllRetailerIds] = useState<number[]>([]);
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -70,6 +72,55 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
     fetchAllCompanies();
+  }, [user]);
+
+  useEffect(() => {
+    // Fetch all stores for super_admin or company stores for admin
+    const fetchAllStores = async () => {
+      if (user?.role === 'super_admin') {
+        try {
+          const response = await storesAPI.getStores();
+          // response.data.stores is an array of stores
+          setAllStoreIds(Array.isArray(response.data.stores) ? response.data.stores.map((s: any) => s.Branch_Code) : []);
+        } catch (err) {
+          setAllStoreIds([]);
+        }
+      } else if (user?.role === 'admin' && user.company_id) {
+        try {
+          const response = await storesAPI.getStores({ company_id: user.company_id });
+          setAllStoreIds(Array.isArray(response.data.stores) ? response.data.stores.map((s: any) => s.Branch_Code) : []);
+        } catch (err) {
+          setAllStoreIds([]);
+        }
+      } else {
+        setAllStoreIds([]);
+      }
+    };
+    fetchAllStores();
+  }, [user]);
+
+  useEffect(() => {
+    // Fetch all retailers for super_admin or company retailers for admin
+    const fetchAllRetailers = async () => {
+      if (user?.role === 'super_admin') {
+        try {
+          const response = await retailersAPI.getRetailers();
+          setAllRetailerIds(Array.isArray(response.data.retailers) ? response.data.retailers.map((r: any) => r.Retailer_Id) : []);
+        } catch (err) {
+          setAllRetailerIds([]);
+        }
+      } else if (user?.role === 'admin' && user.company_id) {
+        try {
+          const response = await retailersAPI.getRetailers({ company_id: user.company_id });
+          setAllRetailerIds(Array.isArray(response.data.retailers) ? response.data.retailers.map((r: any) => r.Retailer_Id) : []);
+        } catch (err) {
+          setAllRetailerIds([]);
+        }
+      } else {
+        setAllRetailerIds([]);
+      }
+    };
+    fetchAllRetailers();
   }, [user]);
 
   const login = async (email: string, password: string): Promise<boolean> => {
@@ -184,13 +235,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     switch (user.role) {
       case 'super_admin':
-        return ['NYC001', 'NYC002', 'LA001', 'CHI001']; // All stores - this should come from API
+        return allStoreIds;
       case 'admin':
-        // Return all stores for their company - this should come from API
-        if (user.company_id === '1') return ['NYC001', 'NYC002'];
-        if (user.company_id === '2') return ['LA001'];
-        if (user.company_id === '3') return ['CHI001'];
-        return [];
+        return allStoreIds.filter((s: any) => s.company_id === user.company_id || s.Company_Id === user.company_id || s.company_id?.toString() === user.company_id?.toString());
       case 'manager':
       case 'storeman':
       case 'salesman':
@@ -204,24 +251,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const getAccessibleRetailers = (): number[] => {
     if (!user) return [];
-    
     switch (user.role) {
       case 'super_admin':
-        return [1, 2, 3, 4]; // All retailers - this should come from API
+        return allRetailerIds;
       case 'admin':
-        // Return retailers based on company scope - this should come from API
-        if (user.company_id === '1') return [1, 2];
-        if (user.company_id === '2') return [3];
-        if (user.company_id === '3') return [4];
-        return [];
+        // Only retailers for admin's company
+        return allRetailerIds.filter((r: any) => r.company_id === user.company_id || r.Company_Id === user.company_id || r.company_id?.toString() === user.company_id?.toString());
       case 'manager':
       case 'storeman':
       case 'salesman':
-        // Return retailers based on store scope - this should come from API
-        if (user.store_id === 'NYC001') return [1, 2];
-        if (user.store_id === 'LA001') return [3];
-        if (user.store_id === 'CHI001') return [4];
-        return [];
+        // Only retailers for user's store
+        return allRetailerIds.filter((r: any) => r.store_id === user.store_id || r.Store_Id === user.store_id || r.store_id?.toString() === user.store_id?.toString());
       case 'retailer':
         return user.retailer_id ? [user.retailer_id] : [];
       default:
