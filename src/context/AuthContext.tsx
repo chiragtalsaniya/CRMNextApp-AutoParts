@@ -59,14 +59,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Fetch all companies if user is super_admin
     const fetchAllCompanies = async () => {
+      console.log('AuthContext: fetchAllCompanies user', user);
       if (user?.role === 'super_admin') {
         try {
           const response = await companiesAPI.getCompanies();
-          // response.data is an array of companies
           setAllCompanyIds(Array.isArray(response.data) ? response.data.map((c: any) => c.id) : []);
           console.log('AuthContext: setAllCompanyIds', Array.isArray(response.data) ? response.data.map((c: any) => c.id) : []);
         } catch (err) {
           setAllCompanyIds([]);
+          console.error('AuthContext: fetchAllCompanies error', err);
         }
       } else {
         setAllCompanyIds([]);
