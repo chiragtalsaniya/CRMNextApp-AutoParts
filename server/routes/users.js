@@ -77,15 +77,9 @@ router.get('/', authenticateToken, async (req, res) => {
     const safePage = Number.isFinite(Number(page)) && Number(page) > 0 ? Number(page) : 1;
     const offset = (safePage - 1) * safeLimit;
     console.log('Users query params:', safeLimit, offset);
-    const usersQuery = `
-      SELECT id, name, email, role, company_id, store_id, region_id, retailer_id, 
-             profile_image, is_active, last_login, created_at, updated_at
-      FROM users 
-      ${whereClause}
-      ORDER BY created_at DESC
-      LIMIT ? OFFSET ?
-    `;
-
+    let usersQuery = 'SELECT id, name, email, role, company_id, store_id, region_id, retailer_id, profile_image, is_active, last_login, created_at, updated_at FROM users';
+    if (whereClause) usersQuery += ` ${whereClause}`;
+    usersQuery += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
     const usersParams = [...queryParams, safeLimit, offset];
     console.log('Users SQL:', usersQuery);
     console.log('Users params:', usersParams);
