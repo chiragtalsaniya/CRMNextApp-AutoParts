@@ -57,6 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   useEffect(() => {
+    if (loading) return;
     // Fetch all companies if user is super_admin
     const fetchAllCompanies = async () => {
       console.log('AuthContext: fetchAllCompanies user', user);
@@ -69,12 +70,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setAllCompanyIds([]);
           console.error('AuthContext: fetchAllCompanies error', err);
         }
+      } else if (user?.role === 'admin' && user.company_id) {
+        setAllCompanyIds([user.company_id]);
       } else {
         setAllCompanyIds([]);
       }
     };
     fetchAllCompanies();
-  }, [user]);
+  }, [user, loading]);
 
   useEffect(() => {
     // Fetch all stores for super_admin or company stores for admin
