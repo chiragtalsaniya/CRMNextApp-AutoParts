@@ -23,18 +23,28 @@ router.get('/', authenticateToken, async (req, res) => {
     let queryParams = [];
 
     // Role-based filtering
-    if (req.user.role === 'retailer') {
-      whereConditions.push('om.Retailer_Id = ?');
-      queryParams.push(req.user.retailer_id);
-    } else if (req.user.role !== 'super_admin') {
-      if (req.user.store_id) {
-        whereConditions.push('om.Branch = ?');
-        queryParams.push(req.user.store_id);
-      } else if (req.user.company_id) {
-        whereConditions.push('s.company_id = ?');
-        queryParams.push(req.user.company_id);
-      }
-    }
+   // Role-based filtering with conflict-safe branch filter
+let branchAlreadyFiltered = false;
+
+if (req.user.role === 'retailer') {
+  whereConditions.push('om.Retailer_Id = ?');
+  queryParams.push(req.user.retailer_id);
+} else if (req.user.role !== 'super_admin') {
+  if (req.user.store_id) {
+    whereConditions.push('om.Branch = ?');
+    queryParams.push(req.user.store_id);
+    branchAlreadyFiltered = true;
+  } else if (req.user.company_id) {
+    whereConditions.push('s.company_id = ?');
+    queryParams.push(req.user.company_id);
+  }
+}
+
+if (branch && !branchAlreadyFiltered) {
+  whereConditions.push('om.Branch = ?');
+  queryParams.push(branch);
+}
+
 
     // Additional filters
     if (status) {
@@ -52,10 +62,7 @@ router.get('/', authenticateToken, async (req, res) => {
       queryParams.push(retailer_id);
     }
 
-    if (branch) {
-      whereConditions.push('om.Branch = ?');
-      queryParams.push(branch);
-    }
+   
 
     if (start_date) {
       whereConditions.push('om.Place_Date >= ?');
