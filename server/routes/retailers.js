@@ -57,7 +57,9 @@ router.get('/', authenticateToken, async (req, res) => {
     // Ensure queryParams is always an array
     const safeQueryParams = Array.isArray(queryParams) ? queryParams : [];
     // Get retailers with pagination
-    const offset = (page - 1) * limit;
+    const safeLimit = Number.isFinite(Number(limit)) && Number(limit) > 0 ? Number(limit) : 50;
+    const safePage = Number.isFinite(Number(page)) && Number(page) > 0 ? Number(page) : 1;
+    const offset = (safePage - 1) * safeLimit;
     const retailersQuery = `
       SELECT * FROM retailers 
       ${whereClause}
@@ -65,7 +67,7 @@ router.get('/', authenticateToken, async (req, res) => {
       LIMIT ? OFFSET ?
     `;
 
-    const retailers = await executeQuery(retailersQuery, [...safeQueryParams, parseInt(limit), offset]);
+    const retailers = await executeQuery(retailersQuery, [...safeQueryParams, safeLimit, offset]);
 
     res.json({
       retailers,

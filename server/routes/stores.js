@@ -50,7 +50,9 @@ router.get('/', authenticateToken, async (req, res) => {
     // Ensure queryParams is always an array
     const safeQueryParams = Array.isArray(queryParams) ? queryParams : [];
     // Get stores with pagination
-    const offset = (page - 1) * limit;
+    const safeLimit = Number.isFinite(Number(limit)) && Number(limit) > 0 ? Number(limit) : 50;
+    const safePage = Number.isFinite(Number(page)) && Number(page) > 0 ? Number(page) : 1;
+    const offset = (safePage - 1) * safeLimit;
     const storesQuery = `
       SELECT s.*, c.name as company_name 
       FROM stores s
@@ -60,7 +62,7 @@ router.get('/', authenticateToken, async (req, res) => {
       LIMIT ? OFFSET ?
     `;
 
-    const stores = await executeQuery(storesQuery, [...safeQueryParams, parseInt(limit), offset]);
+    const stores = await executeQuery(storesQuery, [...safeQueryParams, safeLimit, offset]);
 
     res.json({
       stores,
