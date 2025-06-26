@@ -24,7 +24,7 @@ export const CompanyList: React.FC = () => {
         setLoading(true);
         setError(null);
         const response = await companiesAPI.getCompanies();
-        setCompanies(response.data.companies || []);
+        setCompanies(Array.isArray(response.data) ? response.data : []);
       } catch (err) {
         setError('Failed to load companies. Please try again.');
       } finally {
@@ -90,7 +90,7 @@ export const CompanyList: React.FC = () => {
       }
       // Refresh list
       const response = await companiesAPI.getCompanies();
-      setCompanies(response.data.companies || []);
+      setCompanies(Array.isArray(response.data) ? response.data : []);
       setShowEditModal(false);
       setShowAddModal(false);
     } catch (err) {
