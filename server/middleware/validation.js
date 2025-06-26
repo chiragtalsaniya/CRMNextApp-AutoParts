@@ -100,12 +100,14 @@ export const partCreateSchema = Joi.object({
 // Order validation schemas
 export const orderCreateSchema = Joi.object({
   retailer_id: Joi.number().required(),
-  po_number: Joi.string().max(50),
+  po_number: Joi.string().max(50).allow(''),
+  po_date: Joi.date().iso(), // optional but validated if present
   urgent: Joi.boolean(),
-  remark: Joi.string().max(1000),
+  remark: Joi.string().max(1000).allow(''),
   items: Joi.array().items(
     Joi.object({
       part_number: Joi.string().required(),
+      part_name: Joi.string().max(100).optional(), // allow but not required
       quantity: Joi.number().min(1).required(),
       mrp: Joi.number().min(0).required(),
       basic_discount: Joi.number().min(0).max(100),
