@@ -1,5 +1,5 @@
 import express from 'express';
-import { executeQuery, executeTransaction } from '../config/database.js';
+import { executeQuery, executeTransaction, pool } from '../config/database.js';
 import { authenticateToken, authorizeRoles } from '../middleware/auth.js';
 import { validateRequest, orderCreateSchema } from '../middleware/validation.js';
 
