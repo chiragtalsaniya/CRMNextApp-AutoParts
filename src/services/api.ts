@@ -47,7 +47,10 @@ export const usersAPI = {
 // Companies API
 export const companiesAPI = {
   getCompanies: (params?: any) => 
-    api.get('/companies', { params }),
+    api.get('/companies', { params }).then(res => {
+      console.log('API /companies response:', res.data);
+      return res;
+    }),
   
   getCompany: (id: string) => 
     api.get(`/companies/${id}`),

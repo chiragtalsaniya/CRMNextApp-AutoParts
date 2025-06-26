@@ -19,6 +19,7 @@ export const CompanyList: React.FC = () => {
 
   // Load companies from API
   useEffect(() => {
+    console.log('CompanyList user:', user);
     const loadCompanies = async () => {
       try {
         setLoading(true);
