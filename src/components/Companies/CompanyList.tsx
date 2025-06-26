@@ -34,6 +34,14 @@ export const CompanyList: React.FC = () => {
     loadCompanies();
   }, [user]);
 
+  // Debug: Log accessible company IDs and fetched company IDs
+  useEffect(() => {
+    if (companies.length > 0) {
+      console.log('Accessible Company IDs:', getAccessibleCompanies());
+      console.log('Fetched Company IDs:', companies.map(c => c.id));
+    }
+  }, [companies, getAccessibleCompanies]);
+
   // Only super_admin can access companies
   if (user?.role !== 'super_admin') {
     return (
