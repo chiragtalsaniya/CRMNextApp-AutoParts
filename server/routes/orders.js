@@ -103,7 +103,11 @@ router.get('/', authenticateToken, async (req, res) => {
     // Convert limit and offset to numbers to avoid SQL type issues
     const limitNum = parseInt(limit);
     const offsetNum = parseInt(offset);
-    
+    console.log('ordersQuery:', ordersQuery);
+console.log('queryParams:', [...queryParams, limitNum, offsetNum]);
+console.log('Placeholder Count:', (ordersQuery.match(/\?/g) || []).length);
+console.log('Parameter Count:', [...queryParams, limitNum, offsetNum].length);
+
     const orders = await executeQuery(ordersQuery, [...queryParams, limitNum, offsetNum]);
 
     res.json({
