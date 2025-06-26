@@ -22,29 +22,27 @@ router.get('/', authenticateToken, async (req, res) => {
     let whereConditions = [];
     let queryParams = [];
 
-    // Role-based filtering
-   // Role-based filtering with conflict-safe branch filter
-let branchAlreadyFiltered = false;
+    // Role-based filtering with conflict-safe branch filter
+    let branchAlreadyFiltered = false;
 
-if (req.user.role === 'retailer') {
-  whereConditions.push('om.Retailer_Id = ?');
-  queryParams.push(req.user.retailer_id);
-} else if (req.user.role !== 'super_admin') {
-  if (req.user.store_id) {
-    whereConditions.push('om.Branch = ?');
-    queryParams.push(req.user.store_id);
-    branchAlreadyFiltered = true;
-  } else if (req.user.company_id) {
-    whereConditions.push('s.company_id = ?');
-    queryParams.push(req.user.company_id);
-  }
-}
+    if (req.user.role === 'retailer') {
+      whereConditions.push('om.Retailer_Id = ?');
+      queryParams.push(req.user.retailer_id);
+    } else if (req.user.role !== 'super_admin') {
+      if (req.user.store_id) {
+        whereConditions.push('om.Branch = ?');
+        queryParams.push(req.user.store_id);
+        branchAlreadyFiltered = true;
+      } else if (req.user.company_id) {
+        whereConditions.push('s.company_id = ?');
+        queryParams.push(req.user.company_id);
+      }
+    }
 
-if (branch && !branchAlreadyFiltered) {
-  whereConditions.push('om.Branch = ?');
-  queryParams.push(branch);
-}
-
+    if (branch && !branchAlreadyFiltered) {
+      whereConditions.push('om.Branch = ?');
+      queryParams.push(branch);
+    }
 
     // Additional filters
     if (status) {
@@ -54,15 +52,13 @@ if (branch && !branchAlreadyFiltered) {
 
     if (urgent !== undefined) {
       whereConditions.push('om.Urgent_Status = ?');
-      queryParams.push(urgent === 'true');
+      queryParams.push(urgent === 'true' ? 1 : 0); // Convert string to boolean for MySQL
     }
 
     if (retailer_id) {
       whereConditions.push('om.Retailer_Id = ?');
       queryParams.push(retailer_id);
     }
-
-   
 
     if (start_date) {
       whereConditions.push('om.Place_Date >= ?');
@@ -104,8 +100,11 @@ if (branch && !branchAlreadyFiltered) {
       LIMIT ? OFFSET ?
     `;
 
-   const orders = await executeQuery(ordersQuery, [...queryParams, parseInt(limit), parseInt(offset)]);
-
+    // Convert limit and offset to numbers to avoid SQL type issues
+    const limitNum = parseInt(limit);
+    const offsetNum = parseInt(offset);
+    
+    const orders = await executeQuery(ordersQuery, [...queryParams, limitNum, offsetNum]);
 
     res.json({
       orders,
@@ -198,7 +197,7 @@ router.post('/',
         INSERT INTO order_master (
           CRMOrderId, Retailer_Id, Place_By, Place_Date, Order_Status,
           Branch, Remark, PO_Number, PO_Date, Urgent_Status, IsSync, Last_Sync
-        ) VALUES (?, ?, ?, ?, 'New', ?, ?, ?, ?, FALSE, ?)
+        ) VALUES (?, ?, ?, ?, 'New', ?, ?, ?, ?, ?, ?, ?)
       `;
 
       const orderMasterParams = [
@@ -210,7 +209,8 @@ router.post('/',
         remark || null,
         po_number || null,
         po_number ? placeDate : null,
-        urgent || false,
+        urgent ? 1 : 0, // Convert boolean to 0/1 for MySQL
+        0, // IsSync
         placeDate
       ];
 
@@ -228,7 +228,7 @@ router.post('/',
               Dispatch_Qty, OrderItemStatus, PlaceDate, RetailerId,
               ItemAmount, SchemeDisc, AdditionalDisc, Discount, MRP,
               FirstOrderDate, Urgent_Status, Last_Sync
-            ) VALUES (?, ?, ?, ?, ?, 0, 'New', ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, 0, 'New', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
           `,
           params: [
             null, // Will be set after order creation
@@ -244,7 +244,7 @@ router.post('/',
             item.basic_discount || 0,
             item.mrp,
             placeDate,
-            item.urgent || false,
+            item.urgent ? 1 : 0, // Convert boolean to 0/1 for MySQL
             placeDate
           ]
         };
