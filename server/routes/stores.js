@@ -59,10 +59,15 @@ router.get('/', authenticateToken, async (req, res) => {
       LEFT JOIN companies c ON s.company_id = c.id
       ${whereClause}
       ORDER BY s.Branch_Name
-      LIMIT ? OFFSET ?
-    `;
+      LIMIT ? OFFSET ?`;
 
-    const stores = await executeQuery(storesQuery, [...safeQueryParams, safeLimit, offset]);
+    // Defensive: ensure safeLimit and offset are always numbers
+    const finalLimit = Number.isFinite(safeLimit) ? safeLimit : 50;
+    const finalOffset = Number.isFinite(offset) ? offset : 0;
+    console.log('Stores SQL:', storesQuery);
+    console.log('Stores Params:', [...safeQueryParams, finalLimit, finalOffset], 'Types:', typeof finalLimit, typeof finalOffset);
+
+    const stores = await executeQuery(storesQuery, [...safeQueryParams, finalLimit, finalOffset]);
 
     res.json({
       stores,
