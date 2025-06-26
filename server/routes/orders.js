@@ -88,7 +88,7 @@ if (branch && !branchAlreadyFiltered) {
     const total = countResult[0].total;
 
     // Get orders with pagination
-    const offset = (page - 1) * limit;
+    const offset = (parseInt(page) - 1) * parseInt(limit);
     const ordersQuery = `
       SELECT 
         om.*,
