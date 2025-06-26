@@ -284,35 +284,34 @@ export const runMigrations = async () => {
 
     // Create indexes
     console.log('🔄 Creating indexes...');
-    
+
     const indexes = [
-      'CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)',
-      'CREATE INDEX IF NOT EXISTS idx_users_role ON users(role)',
-      'CREATE INDEX IF NOT EXISTS idx_users_company ON users(company_id)',
-      'CREATE INDEX IF NOT EXISTS idx_users_store ON users(store_id)',
-      'CREATE INDEX IF NOT EXISTS idx_retailers_status ON retailers(Retailer_Status)',
-      'CREATE INDEX IF NOT EXISTS idx_retailers_area ON retailers(Area_Id)',
-      'CREATE INDEX IF NOT EXISTS idx_parts_status ON parts(Item_Status)',
-      'CREATE INDEX IF NOT EXISTS idx_parts_category ON parts(Part_Catagory)',
-      'CREATE INDEX IF NOT EXISTS idx_orders_status ON order_master(Order_Status)',
-      'CREATE INDEX IF NOT EXISTS idx_orders_retailer ON order_master(Retailer_Id)',
-      'CREATE INDEX IF NOT EXISTS idx_orders_branch ON order_master(Branch)',
-      'CREATE INDEX IF NOT EXISTS idx_orders_date ON order_master(Place_Date)',
-      'CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(Order_Id)',
-      'CREATE INDEX IF NOT EXISTS idx_order_items_part ON order_items(Part_Admin)',
-      'CREATE INDEX IF NOT EXISTS idx_item_status_branch ON item_status(Branch_Code)',
-      'CREATE INDEX IF NOT EXISTS idx_item_status_part ON item_status(Part_No)',
-      'CREATE INDEX IF NOT EXISTS idx_item_status_rack ON item_status(Part_Rack)',
-      'CREATE INDEX IF NOT EXISTS idx_audit_logs_user ON audit_logs(user_id)',
-      'CREATE INDEX IF NOT EXISTS idx_audit_logs_action ON audit_logs(action)',
-      'CREATE INDEX IF NOT EXISTS idx_audit_logs_date ON audit_logs(created_at)'
+      'CREATE INDEX idx_users_email ON users(email)',
+      'CREATE INDEX idx_users_role ON users(role)',
+      'CREATE INDEX idx_users_company ON users(company_id)',
+      'CREATE INDEX idx_users_store ON users(store_id)',
+      'CREATE INDEX idx_retailers_status ON retailers(Retailer_Status)',
+      'CREATE INDEX idx_retailers_area ON retailers(Area_Id)',
+      'CREATE INDEX idx_parts_status ON parts(Item_Status)',
+      'CREATE INDEX idx_parts_category ON parts(Part_Catagory)',
+      'CREATE INDEX idx_orders_status ON order_master(Order_Status)',
+      'CREATE INDEX idx_orders_retailer ON order_master(Retailer_Id)',
+      'CREATE INDEX idx_orders_branch ON order_master(Branch)',
+      'CREATE INDEX idx_orders_date ON order_master(Place_Date)',
+      'CREATE INDEX idx_order_items_order ON order_items(Order_Id)',
+      'CREATE INDEX idx_order_items_part ON order_items(Part_Admin)',
+      'CREATE INDEX idx_item_status_branch ON item_status(Branch_Code)',
+      'CREATE INDEX idx_item_status_part ON item_status(Part_No)',
+      'CREATE INDEX idx_item_status_rack ON item_status(Part_Rack)',
+      'CREATE INDEX idx_audit_logs_user ON audit_logs(user_id)',
+      'CREATE INDEX idx_audit_logs_action ON audit_logs(action)',
+      'CREATE INDEX idx_audit_logs_date ON audit_logs(created_at)'
     ];
 
     for (const indexQuery of indexes) {
       try {
         await connection.query(indexQuery);
       } catch (error) {
-        // Ignore if index already exists
         if (!error.message.includes('Duplicate key name')) {
           console.warn('Index creation warning:', error.message);
         }
