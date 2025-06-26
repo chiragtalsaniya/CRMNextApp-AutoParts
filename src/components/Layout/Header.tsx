@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, LogOut, Settings, Menu, ChevronDown, Building2, Store } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -9,9 +9,15 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const { user, logout, getCurrentUserScope, getAccessibleCompanies, getAccessibleStores } = useAuth();
   const [showScopeDropdown, setShowScopeDropdown] = useState(false);
+  const [accessibleCompanies, setAccessibleCompanies] = useState<string[]>([]);
+  const [accessibleStores, setAccessibleStores] = useState<string[]>([]);
 
-  const accessibleCompanies = getAccessibleCompanies();
-  const accessibleStores = getAccessibleStores();
+  useEffect(() => {
+    setAccessibleCompanies(getAccessibleCompanies());
+    setAccessibleStores(getAccessibleStores());
+    console.log('Header accessibleCompanies:', getAccessibleCompanies());
+    console.log('Header accessibleStores:', getAccessibleStores());
+  }, [getAccessibleCompanies, getAccessibleStores]);
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30">
