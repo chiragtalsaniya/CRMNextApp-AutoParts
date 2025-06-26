@@ -29,7 +29,7 @@ export const StoreManagement: React.FC = () => {
   const [stores, setStores] = useState<Store[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCompany, setSelectedCompany] = useState('All');
+  const [selectedCompanyId, setSelectedCompanyId] = useState('All');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -73,15 +73,18 @@ export const StoreManagement: React.FC = () => {
     );
   }
 
+  // Restrict companies for non-super_admin
+  const visibleCompanies = user?.role === 'super_admin'
+    ? companies
+    : companies.filter(c => c.id === user?.company_id);
+
   const filteredStores = stores.filter(store => {
     const matchesSearch = 
-      store.Branch_Code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      store.Branch_Code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (store.Branch_Name && store.Branch_Name.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (store.Company_Name && store.Company_Name.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (store.Branch_Manager && store.Branch_Manager.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    const matchesCompany = selectedCompany === 'All' || store.Company_Name === selectedCompany;
-    
+    const matchesCompany = selectedCompanyId === 'All' || store.company_id === selectedCompanyId;
     return matchesSearch && matchesCompany;
   });
 
@@ -580,13 +583,13 @@ export const StoreManagement: React.FC = () => {
           </div>
           
           <select
-            value={selectedCompany}
-            onChange={(e) => setSelectedCompany(e.target.value)}
+            value={selectedCompanyId}
+            onChange={(e) => setSelectedCompanyId(e.target.value)}
             className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
           >
             <option value="All">All Companies</option>
-            {companies.map(company => (
-              <option key={company.id} value={company.name}>{company.name}</option>
+            {visibleCompanies.map(company => (
+              <option key={company.id} value={company.id}>{company.name}</option>
             ))}
           </select>
 
@@ -635,7 +638,7 @@ export const StoreManagement: React.FC = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <Building2 className="w-4 h-4 text-gray-400 mr-2" />
-                      <span className="text-sm text-gray-900">{store.Company_Name}</span>
+                      <span className="text-sm text-gray-900">{store.Company_Name || 'Unknown'}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -702,7 +705,7 @@ export const StoreManagement: React.FC = () => {
           <div className="text-center py-12">
             <StoreIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No stores found</h3>
-            <p className="text-gray-600">Try adjusting your search criteria or add a new store.</p>
+            <p className="text-gray-600">Try adjusting your search criteria, company filter, or add a new store.</p>
           </div>
         )}
       </div>
