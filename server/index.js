@@ -81,6 +81,15 @@ app.use('/api/regions', regionRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/item-status', itemStatusRoutes);
 
+// No-cache headers for all API responses
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  res.set('Surrogate-Control', 'no-store');
+  next();
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ 
