@@ -3,49 +3,44 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Database configuration
+// ✅ Valid MySQL pool configuration
 const dbConfig = {
   host: process.env.DB_HOST || '173.249.33.63',
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || 'kcZjwhGD4MN56',
   database: process.env.DB_NAME || 'nextapp_crm',
-  port: process.env.DB_PORT || 3306,
+  port: Number(process.env.DB_PORT) || 3306,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  acquireTimeout: 60000,
-  timeout: 60000,
-  reconnect: true,
-  ssl: false, // Set to true if your remote MySQL requires SSL
   connectTimeout: 60000,
-  charset: 'utf8mb4'
+  charset: 'utf8mb4',
+  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: true } : false,
 };
 
 // Create connection pool
 export const pool = mysql.createPool(dbConfig);
 
-// Test database connection and run migrations
+// ✅ Test DB connection and run migrations
 export const connectDB = async () => {
   try {
     const connection = await pool.getConnection();
     console.log('✅ MySQL Database connected successfully');
     console.log(`📍 Connected to: ${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`);
-    
-    // Test if database exists, if not create it
+
     try {
-      await connection.execute(`CREATE DATABASE IF NOT EXISTS ${dbConfig.database}`);
-      await connection.execute(`USE ${dbConfig.database}`);
+      await connection.execute(`CREATE DATABASE IF NOT EXISTS \`${dbConfig.database}\``);
+      await connection.execute(`USE \`${dbConfig.database}\``);
       console.log(`📊 Database '${dbConfig.database}' is ready`);
     } catch (dbError) {
       console.warn('⚠️ Database creation/selection warning:', dbError.message);
     }
-    
+
     connection.release();
-    
-    // Run migrations
+
     const { runMigrations } = await import('../migrations/init-database.js');
     await runMigrations();
-    
+
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);
     console.error('Connection details:', {
@@ -58,28 +53,29 @@ export const connectDB = async () => {
   }
 };
 
-// Database helper functions
+// ✅ Execute basic query
 export const executeQuery = async (query, params = []) => {
   try {
     const [rows] = await pool.execute(query, params);
     return rows;
   } catch (error) {
-    console.error('Database query error:', error);
+    console.error('❌ Database query error:', error);
     throw error;
   }
 };
 
+// ✅ Transaction helper
 export const executeTransaction = async (queries) => {
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
-    
+
     const results = [];
     for (const { query, params } of queries) {
       const [result] = await connection.execute(query, params);
       results.push(result);
     }
-    
+
     await connection.commit();
     return results;
   } catch (error) {
