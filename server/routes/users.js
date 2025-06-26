@@ -86,7 +86,10 @@ router.get('/', authenticateToken, async (req, res) => {
       LIMIT ? OFFSET ?
     `;
 
-    const users = await executeQuery(usersQuery, [...queryParams, safeLimit, offset]);
+    const usersParams = [...queryParams, safeLimit, offset];
+    console.log('Users SQL:', usersQuery);
+    console.log('Users params:', usersParams);
+    const users = await executeQuery(usersQuery, usersParams);
 
     res.json({
       users,

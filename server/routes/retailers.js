@@ -70,7 +70,10 @@ router.get('/', authenticateToken, async (req, res) => {
       LIMIT ? OFFSET ?
     `;
 
-    const retailers = await executeQuery(retailersQuery, [...safeQueryParams, finalLimit, finalOffset]);
+    const retailersParams = [...safeQueryParams, finalLimit, finalOffset];
+    console.log('Retailers SQL:', retailersQuery);
+    console.log('Retailers params:', retailersParams);
+    const retailers = await executeQuery(retailersQuery, retailersParams);
 
     res.json({
       retailers,
