@@ -83,43 +83,41 @@ router.get('/', authenticateToken, async (req, res) => {
     const countResult = await executeQuery(countQuery, queryParams);
     const total = countResult[0].total;
 
-    // Get orders with pagination
-    const offset = (parseInt(page) - 1) * parseInt(limit);
-    const ordersQuery = `
-      SELECT 
-        om.*,
-        r.Retailer_Name,
-        r.Contact_Person,
-        s.Branch_Name,
-        s.Company_Name
-      FROM order_master om
-      LEFT JOIN retailers r ON om.Retailer_Id = r.Retailer_Id
-      LEFT JOIN stores s ON om.Branch = s.Branch_Code
-      ${whereClause}
-      ORDER BY om.Place_Date DESC
-      LIMIT ? OFFSET ?
-    `;
+    const limitNum = parseInt(limit, 10);
+const pageNum = parseInt(page, 10);
+const offsetNum = (pageNum - 1) * limitNum;
 
-    // Convert limit and offset to numbers to avoid SQL type issues
-    const limitNum = parseInt(limit);
-    const offsetNum = parseInt(offset);
+// Safe and compatible: inline LIMIT/OFFSET into SQL (not as ? placeholders)
+const ordersQuery = `
+  SELECT 
+    om.*,
+    r.Retailer_Name,
+    r.Contact_Person,
+    s.Branch_Name,
+    s.Company_Name
+  FROM order_master om
+  LEFT JOIN retailers r ON om.Retailer_Id = r.Retailer_Id
+  LEFT JOIN stores s ON om.Branch = s.Branch_Code
+  ${whereClause}
+  ORDER BY om.Place_Date DESC
+  LIMIT ${limitNum} OFFSET ${offsetNum}
+`;
 
-    console.log('Final SQL Query:', ordersQuery);
-console.log('Final Parameters:', [...queryParams, limitNum, offsetNum]);
-console.log('Types:', [...queryParams, limitNum, offsetNum].map(v => typeof v));
+const orders = await executeQuery(ordersQuery, queryParams); // Only for WHERE placeholders
 
+res.json({
+  orders,
+  pagination: {
+    page: pageNum,
+    limit: limitNum,
+    total,
+    pages: Math.ceil(total / limitNum)
+  }
+});
 
-    const orders = await executeQuery(ordersQuery, [...queryParams, limitNum, offsetNum]);
+  
 
-    res.json({
-      orders,
-      pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
-        total,
-        pages: Math.ceil(total / limit)
-      }
-    });
+    
   } catch (error) {
     console.error('Get orders error:', error);
     res.status(500).json({ error: 'Internal server error' });
