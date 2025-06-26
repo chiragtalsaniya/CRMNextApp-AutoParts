@@ -64,6 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const response = await companiesAPI.getCompanies();
           // response.data is an array of companies
           setAllCompanyIds(Array.isArray(response.data) ? response.data.map((c: any) => c.id) : []);
+          console.log('AuthContext: setAllCompanyIds', Array.isArray(response.data) ? response.data.map((c: any) => c.id) : []);
         } catch (err) {
           setAllCompanyIds([]);
         }
@@ -214,20 +215,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const getAccessibleCompanies = (): string[] => {
     if (!user) return [];
-    
-    switch (user.role) {
-      case 'super_admin':
-        return allCompanyIds;
-      case 'admin':
-      case 'manager':
-      case 'storeman':
-      case 'salesman':
-        return user.company_id ? [user.company_id] : [];
-      case 'retailer':
-        return []; // No company access
-      default:
-        return [];
-    }
+    const result = (() => {
+      switch (user.role) {
+        case 'super_admin':
+          return allCompanyIds;
+        case 'admin':
+        case 'manager':
+        case 'storeman':
+        case 'salesman':
+          return user.company_id ? [user.company_id] : [];
+        case 'retailer':
+          return [];
+        default:
+          return [];
+      }
+    })();
+    console.log('AuthContext: getAccessibleCompanies returns', result);
+    return result;
   };
 
   const getAccessibleStores = (): string[] => {
