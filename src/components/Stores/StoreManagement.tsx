@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { 
   Plus, 
   Search, 
@@ -21,94 +21,8 @@ import {
 } from 'lucide-react';
 import { Store, Company } from '../../types';
 import { useAuth } from '../../context/AuthContext';
-
-const mockCompanies: Company[] = [
-  {
-    id: '1',
-    name: 'AutoParts Plus',
-    address: '123 Main St, New York, NY 10001',
-    contact_email: 'info@autopartsplus.com',
-    contact_phone: '+1 (555) 123-4567',
-    logo_url: 'https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=400',
-    created_by: '1',
-    created_at: '2024-01-15T00:00:00Z'
-  },
-  {
-    id: '2',
-    name: 'Premier Auto Supply',
-    address: '456 Oak Ave, Los Angeles, CA 90210',
-    contact_email: 'contact@premierautosupply.com',
-    contact_phone: '+1 (555) 987-6543',
-    logo_url: 'https://images.pexels.com/photos/190574/pexels-photo-190574.jpeg?auto=compress&cs=tinysrgb&w=400',
-    created_by: '1',
-    created_at: '2024-01-20T00:00:00Z'
-  },
-  {
-    id: '3',
-    name: 'Metro Parts Distribution',
-    address: '789 Elm St, Chicago, IL 60601',
-    contact_email: 'sales@metroparts.com',
-    contact_phone: '+1 (555) 456-7890',
-    logo_url: '',
-    created_by: '1',
-    created_at: '2024-02-01T00:00:00Z'
-  }
-];
-
-const mockStores: Store[] = [
-  {
-    Branch_Code: 'NYC001',
-    Branch_Name: 'Manhattan Central Store',
-    Company_Name: 'AutoParts Plus',
-    Branch_Address: '123 Broadway, New York, NY 10001',
-    Branch_Phone: '+1 (555) 123-4567',
-    Branch_Email: 'manhattan@autopartsplus.com',
-    Branch_Manager: 'John Smith',
-    Branch_URL: 'manhattan.autopartsplus.com',
-    Branch_Manager_Mobile: '+1 (555) 123-4568',
-    store_image: 'https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=400',
-    company_id: '1'
-  },
-  {
-    Branch_Code: 'NYC002',
-    Branch_Name: 'Brooklyn East Store',
-    Company_Name: 'AutoParts Plus',
-    Branch_Address: '456 Atlantic Ave, Brooklyn, NY 11217',
-    Branch_Phone: '+1 (555) 234-5678',
-    Branch_Email: 'brooklyn@autopartsplus.com',
-    Branch_Manager: 'Sarah Johnson',
-    Branch_URL: 'brooklyn.autopartsplus.com',
-    Branch_Manager_Mobile: '+1 (555) 234-5679',
-    store_image: 'https://images.pexels.com/photos/190574/pexels-photo-190574.jpeg?auto=compress&cs=tinysrgb&w=400',
-    company_id: '1'
-  },
-  {
-    Branch_Code: 'LA001',
-    Branch_Name: 'Hollywood Store',
-    Company_Name: 'Premier Auto Supply',
-    Branch_Address: '789 Sunset Blvd, Los Angeles, CA 90028',
-    Branch_Phone: '+1 (555) 345-6789',
-    Branch_Email: 'hollywood@premierautosupply.com',
-    Branch_Manager: 'Mike Davis',
-    Branch_URL: 'hollywood.premierautosupply.com',
-    Branch_Manager_Mobile: '+1 (555) 345-6790',
-    store_image: '',
-    company_id: '2'
-  },
-  {
-    Branch_Code: 'CHI001',
-    Branch_Name: 'Downtown Chicago Store',
-    Company_Name: 'Metro Parts Distribution',
-    Branch_Address: '321 Michigan Ave, Chicago, IL 60601',
-    Branch_Phone: '+1 (555) 456-7890',
-    Branch_Email: 'downtown@metroparts.com',
-    Branch_Manager: 'Lisa Wilson',
-    Branch_URL: 'downtown.metroparts.com',
-    Branch_Manager_Mobile: '+1 (555) 456-7891',
-    store_image: 'https://images.pexels.com/photos/3807277/pexels-photo-3807277.jpeg?auto=compress&cs=tinysrgb&w=400',
-    company_id: '3'
-  }
-];
+import { storesAPI } from '../../services/api';
+import { companiesAPI } from '../../services/api';
 
 export const StoreManagement: React.FC = () => {
   const { user, canAccessStore, getAccessibleStores, getAccessibleCompanies } = useAuth();
@@ -122,22 +36,28 @@ export const StoreManagement: React.FC = () => {
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
   const [formData, setFormData] = useState<Partial<Store>>({});
   const [storeImagePreview, setStoreImagePreview] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Filter stores and companies based on user access rights
+  // Load stores and companies from API
   useEffect(() => {
-    const accessibleStoreIds = getAccessibleStores();
-    const accessibleCompanyIds = getAccessibleCompanies();
-    
-    const filteredStores = mockStores.filter(store => 
-      accessibleStoreIds.includes(store.Branch_Code)
-    );
-    
-    const filteredCompanies = mockCompanies.filter(company => 
-      accessibleCompanyIds.includes(company.id)
-    );
-    
-    setStores(filteredStores);
-    setCompanies(filteredCompanies);
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const [storesRes, companiesRes] = await Promise.all([
+          storesAPI.getStores(),
+          companiesAPI.getCompanies()
+        ]);
+        setStores(storesRes.data.stores || []);
+        setCompanies(companiesRes.data.companies || []);
+      } catch (err) {
+        setError('Failed to load stores or companies. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
   }, [user]);
 
   // Check if user can access store management
@@ -197,36 +117,52 @@ export const StoreManagement: React.FC = () => {
     setShowViewModal(true);
   };
 
-  const handleSaveStore = () => {
-    if (showEditModal && selectedStore) {
-      setStores(prev => prev.map(s => 
-        s.Branch_Code === selectedStore.Branch_Code ? { ...formData as Store } : s
-      ));
+  const handleSaveStore = async () => {
+    try {
+      setLoading(true);
+      if (showEditModal && selectedStore) {
+        await storesAPI.updateStore(selectedStore.Branch_Code, formData);
+      } else if (showAddModal) {
+        await storesAPI.createStore(formData);
+      }
+      // Refresh list
+      const storesRes = await storesAPI.getStores();
+      setStores(storesRes.data.stores || []);
       setShowEditModal(false);
-    } else if (showAddModal) {
-      setStores(prev => [...prev, { ...formData as Store }]);
       setShowAddModal(false);
+    } catch (err) {
+      setError('Failed to save store. Please try again.');
+    } finally {
+      setLoading(false);
+      setFormData({});
+      setSelectedStore(null);
+      setStoreImagePreview('');
     }
-    setFormData({});
-    setSelectedStore(null);
-    setStoreImagePreview('');
   };
 
-  const handleDeleteStore = (branchCode: string) => {
+  const handleDeleteStore = async (branchCode: string) => {
     if (!canAccessStore(branchCode)) return;
-    if (confirm('Are you sure you want to delete this store?')) {
-      setStores(prev => prev.filter(s => s.Branch_Code !== branchCode));
+    if (window.confirm('Are you sure you want to delete this store?')) {
+      try {
+        setLoading(true);
+        await storesAPI.deleteStore(branchCode);
+        setStores(prev => prev.filter((s: Store) => s.Branch_Code !== branchCode));
+      } catch (err) {
+        setError('Failed to delete store. Please try again.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
-  const handleStoreImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleStoreImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
         setStoreImagePreview(result);
-        setFormData(prev => ({ ...prev, store_image: result }));
+        setFormData((prev: Partial<Store>) => ({ ...prev, store_image: result }));
       };
       reader.readAsDataURL(file);
     }
