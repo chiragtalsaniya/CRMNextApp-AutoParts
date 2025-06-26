@@ -63,13 +63,11 @@ router.get('/', authenticateToken, async (req, res) => {
     const finalLimit = Number.isFinite(safeLimit) ? safeLimit : 50;
     const finalOffset = Number.isFinite(offset) ? offset : 0;
     console.log('Retailers query params:', finalLimit, finalOffset); // Debug log
-    let retailersQuery = 'SELECT * FROM retailers';
-    if (whereClause) retailersQuery += ` ${whereClause}`;
-    retailersQuery += ' ORDER BY Retailer_Name ASC LIMIT ? OFFSET ?';
-    const retailersParams = [...safeQueryParams, finalLimit, finalOffset];
+    // Build SQL with direct interpolation for LIMIT/OFFSET
+    const retailersQuery = `SELECT * FROM retailers${whereClause ? ' ' + whereClause : ''} ORDER BY Retailer_Name ASC LIMIT ${finalLimit} OFFSET ${finalOffset}`;
     console.log('Retailers SQL:', retailersQuery);
-    console.log('Retailers params:', retailersParams);
-    const retailers = await executeQuery(retailersQuery, retailersParams);
+    console.log('Retailers params:', safeQueryParams);
+    const retailers = await executeQuery(retailersQuery, safeQueryParams);
 
     res.json({
       retailers,
