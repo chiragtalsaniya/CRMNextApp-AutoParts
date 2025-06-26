@@ -104,7 +104,8 @@ if (branch && !branchAlreadyFiltered) {
       LIMIT ? OFFSET ?
     `;
 
-   const orders = await executeQuery(ordersQuery, [...queryParams, parseInt(limit), offset]);
+   const orders = await executeQuery(ordersQuery, [...queryParams, parseInt(limit), parseInt(offset)]);
+
 
     res.json({
       orders,
