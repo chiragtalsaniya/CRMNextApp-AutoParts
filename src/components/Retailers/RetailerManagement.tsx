@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { 
   Plus, 
   Search, 
@@ -26,131 +26,21 @@ import {
   DollarSign
 } from 'lucide-react';
 import { Retailer } from '../../types';
-
-const mockRetailers: Retailer[] = [
-  {
-    Retailer_Id: 1,
-    RetailerCRMId: 'CRM001',
-    Retailer_Name: 'Downtown Auto Parts',
-    RetailerImage: 'https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=400',
-    Retailer_Address: '123 Main St, New York, NY 10001',
-    Retailer_Mobile: '+1 (555) 123-4567',
-    Retailer_TFAT_Id: 'TFAT001',
-    Retailer_Status: 1,
-    Area_Name: 'Manhattan Downtown',
-    Contact_Person: 'Michael Johnson',
-    Pincode: '10001',
-    Mobile_Order: '+1 (555) 123-4568',
-    Mobile_Account: '+1 (555) 123-4569',
-    Owner_Mobile: '+1 (555) 123-4570',
-    Area_Id: 1,
-    GST_No: 'GST123456789',
-    Credit_Limit: 50000,
-    Type_Id: 1,
-    Confirm: 1,
-    Retailer_Tour_Id: 1,
-    Retailer_Email: 'michael@downtownauto.com',
-    latitude: 40.7128,
-    logitude: -74.0060,
-    Last_Sync: 1704067200000
-  },
-  {
-    Retailer_Id: 2,
-    RetailerCRMId: 'CRM002',
-    Retailer_Name: 'Quick Fix Auto',
-    RetailerImage: 'https://images.pexels.com/photos/190574/pexels-photo-190574.jpeg?auto=compress&cs=tinysrgb&w=400',
-    Retailer_Address: '456 Broadway, New York, NY 10013',
-    Retailer_Mobile: '+1 (555) 234-5678',
-    Retailer_TFAT_Id: 'TFAT002',
-    Retailer_Status: 1,
-    Area_Name: 'SoHo District',
-    Contact_Person: 'Sarah Williams',
-    Pincode: '10013',
-    Mobile_Order: '+1 (555) 234-5679',
-    Mobile_Account: '+1 (555) 234-5680',
-    Owner_Mobile: '+1 (555) 234-5681',
-    Area_Id: 2,
-    GST_No: 'GST987654321',
-    Credit_Limit: 75000,
-    Type_Id: 2,
-    Confirm: 1,
-    Retailer_Tour_Id: 1,
-    Retailer_Email: 'sarah@quickfixauto.com',
-    latitude: 40.7209,
-    logitude: -74.0007,
-    Last_Sync: 1704067200000
-  },
-  {
-    Retailer_Id: 3,
-    RetailerCRMId: 'CRM003',
-    Retailer_Name: 'Sunset Auto Supply',
-    RetailerImage: 'https://images.pexels.com/photos/3807277/pexels-photo-3807277.jpeg?auto=compress&cs=tinysrgb&w=400',
-    Retailer_Address: '789 Sunset Blvd, Los Angeles, CA 90028',
-    Retailer_Mobile: '+1 (555) 345-6789',
-    Retailer_TFAT_Id: 'TFAT003',
-    Retailer_Status: 1,
-    Area_Name: 'Hollywood',
-    Contact_Person: 'David Chen',
-    Pincode: '90028',
-    Mobile_Order: '+1 (555) 345-6790',
-    Mobile_Account: '+1 (555) 345-6791',
-    Owner_Mobile: '+1 (555) 345-6792',
-    Area_Id: 3,
-    GST_No: 'GST456789123',
-    Credit_Limit: 100000,
-    Type_Id: 1,
-    Confirm: 1,
-    Retailer_Tour_Id: 2,
-    Retailer_Email: 'david@sunsetauto.com',
-    latitude: 34.0928,
-    logitude: -118.3287,
-    Last_Sync: 1704067200000
-  },
-  {
-    Retailer_Id: 4,
-    RetailerCRMId: 'CRM004',
-    Retailer_Name: 'Brooklyn Parts Hub',
-    RetailerImage: '',
-    Retailer_Address: '321 Atlantic Ave, Brooklyn, NY 11217',
-    Retailer_Mobile: '+1 (555) 456-7890',
-    Retailer_TFAT_Id: 'TFAT004',
-    Retailer_Status: 0,
-    Area_Name: 'Brooklyn Heights',
-    Contact_Person: 'Lisa Rodriguez',
-    Pincode: '11217',
-    Mobile_Order: '+1 (555) 456-7891',
-    Mobile_Account: '+1 (555) 456-7892',
-    Owner_Mobile: '+1 (555) 456-7893',
-    Area_Id: 4,
-    GST_No: 'GST789123456',
-    Credit_Limit: 25000,
-    Type_Id: 3,
-    Confirm: 0,
-    Retailer_Tour_Id: 1,
-    Retailer_Email: 'lisa@brooklynparts.com',
-    latitude: 40.6892,
-    logitude: -73.9442,
-    Last_Sync: 1704067200000
-  }
-];
-
-const mockAreas = [
-  { id: 1, name: 'Manhattan Downtown' },
-  { id: 2, name: 'SoHo District' },
-  { id: 3, name: 'Hollywood' },
-  { id: 4, name: 'Brooklyn Heights' }
-];
-
-const mockRetailerTypes = [
-  { id: 1, name: 'Premium Dealer' },
-  { id: 2, name: 'Standard Dealer' },
-  { id: 3, name: 'Basic Dealer' }
-];
+import { retailersAPI } from '../../services/api';
 
 export const RetailerManagement: React.FC = () => {
-  const [retailers, setRetailers] = useState<Retailer[]>(mockRetailers);
-  const [areas] = useState(mockAreas);
-  const [retailerTypes] = useState(mockRetailerTypes);
+  const [retailers, setRetailers] = useState<Retailer[]>([]);
+  const [areas] = useState([
+    { id: 1, name: 'Manhattan Downtown' },
+    { id: 2, name: 'SoHo District' },
+    { id: 3, name: 'Hollywood' },
+    { id: 4, name: 'Brooklyn Heights' }
+  ]);
+  const [retailerTypes] = useState([
+    { id: 1, name: 'Premium Dealer' },
+    { id: 2, name: 'Standard Dealer' },
+    { id: 3, name: 'Basic Dealer' }
+  ]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedArea, setSelectedArea] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
@@ -160,8 +50,27 @@ export const RetailerManagement: React.FC = () => {
   const [selectedRetailer, setSelectedRetailer] = useState<Retailer | null>(null);
   const [formData, setFormData] = useState<Partial<Retailer>>({});
   const [retailerImagePreview, setRetailerImagePreview] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredRetailers = retailers.filter(retailer => {
+  // Load retailers from API
+  useEffect(() => {
+    const loadRetailers = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await retailersAPI.getRetailers();
+        setRetailers(response.data.retailers || []);
+      } catch (err) {
+        setError('Failed to load retailers. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadRetailers();
+  }, []);
+
+  const filteredRetailers = retailers.filter((retailer: Retailer) => {
     const matchesSearch = 
       (retailer.Retailer_Name && retailer.Retailer_Name.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (retailer.Contact_Person && retailer.Contact_Person.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -215,40 +124,51 @@ export const RetailerManagement: React.FC = () => {
     setShowViewModal(true);
   };
 
-  const handleSaveRetailer = () => {
-    if (showEditModal && selectedRetailer) {
-      setRetailers(prev => prev.map(r => 
-        r.Retailer_Id === selectedRetailer.Retailer_Id ? { ...formData as Retailer } : r
-      ));
+  const handleSaveRetailer = async () => {
+    try {
+      setLoading(true);
+      if (showEditModal && selectedRetailer) {
+        await retailersAPI.updateRetailer(selectedRetailer.Retailer_Id, formData);
+      } else if (showAddModal) {
+        await retailersAPI.createRetailer(formData);
+      }
+      // Refresh list
+      const response = await retailersAPI.getRetailers();
+      setRetailers(response.data.retailers || []);
       setShowEditModal(false);
-    } else if (showAddModal) {
-      const newRetailer: Retailer = {
-        ...formData as Retailer,
-        Retailer_Id: Math.max(...retailers.map(r => r.Retailer_Id)) + 1,
-        Last_Sync: Date.now()
-      };
-      setRetailers(prev => [...prev, newRetailer]);
       setShowAddModal(false);
-    }
-    setFormData({});
-    setSelectedRetailer(null);
-    setRetailerImagePreview('');
-  };
-
-  const handleDeleteRetailer = (retailerId: number) => {
-    if (confirm('Are you sure you want to delete this retailer?')) {
-      setRetailers(prev => prev.filter(r => r.Retailer_Id !== retailerId));
+    } catch (err) {
+      setError('Failed to save retailer. Please try again.');
+    } finally {
+      setLoading(false);
+      setFormData({});
+      setSelectedRetailer(null);
+      setRetailerImagePreview('');
     }
   };
 
-  const handleRetailerImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDeleteRetailer = async (retailerId: number) => {
+    if (window.confirm('Are you sure you want to delete this retailer?')) {
+      try {
+        setLoading(true);
+        await retailersAPI.deleteRetailer(retailerId);
+        setRetailers(prev => prev.filter((r: Retailer) => r.Retailer_Id !== retailerId));
+      } catch (err) {
+        setError('Failed to delete retailer. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const handleRetailerImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
         setRetailerImagePreview(result);
-        setFormData(prev => ({ ...prev, RetailerImage: result }));
+        setFormData((prev: Partial<Retailer>) => ({ ...prev, RetailerImage: result }));
       };
       reader.readAsDataURL(file);
     }
