@@ -36,6 +36,7 @@ const PORT = process.env.PORT || 3001;
 // Connect to database
 connectDB();
 
+app.set('trust proxy', true);
 // Security middleware
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }

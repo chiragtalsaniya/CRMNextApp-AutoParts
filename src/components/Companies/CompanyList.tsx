@@ -1,40 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { Plus, Search, Edit, Trash2, Building2, Phone, Mail, Upload, Eye, X, Image as ImageIcon, Shield } from 'lucide-react';
 import { Company } from '../../types';
 import { useAuth } from '../../context/AuthContext';
-
-const mockCompanies: Company[] = [
-  {
-    id: '1',
-    name: 'AutoParts Plus',
-    address: '123 Main St, New York, NY 10001',
-    contact_email: 'info@autopartsplus.com',
-    contact_phone: '+1 (555) 123-4567',
-    logo_url: 'https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=400',
-    created_by: '1',
-    created_at: '2024-01-15T00:00:00Z'
-  },
-  {
-    id: '2',
-    name: 'Premier Auto Supply',
-    address: '456 Oak Ave, Los Angeles, CA 90210',
-    contact_email: 'contact@premierautosupply.com',
-    contact_phone: '+1 (555) 987-6543',
-    logo_url: 'https://images.pexels.com/photos/190574/pexels-photo-190574.jpeg?auto=compress&cs=tinysrgb&w=400',
-    created_by: '1',
-    created_at: '2024-01-20T00:00:00Z'
-  },
-  {
-    id: '3',
-    name: 'Metro Parts Distribution',
-    address: '789 Elm St, Chicago, IL 60601',
-    contact_email: 'sales@metroparts.com',
-    contact_phone: '+1 (555) 456-7890',
-    logo_url: '',
-    created_by: '1',
-    created_at: '2024-02-01T00:00:00Z'
-  }
-];
+import { companiesAPI } from '../../services/api';
 
 export const CompanyList: React.FC = () => {
   const { user, canAccessCompany, getAccessibleCompanies } = useAuth();
@@ -46,14 +14,33 @@ export const CompanyList: React.FC = () => {
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [formData, setFormData] = useState<Partial<Company>>({});
   const [logoPreview, setLogoPreview] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Filter companies based on user access rights
   useEffect(() => {
     const accessibleCompanyIds = getAccessibleCompanies();
-    const filteredCompanies = mockCompanies.filter(company => 
+    const filteredCompanies = companies.filter(company => 
       accessibleCompanyIds.includes(company.id)
     );
     setCompanies(filteredCompanies);
+  }, [user]);
+
+  // Load companies from API
+  useEffect(() => {
+    const loadCompanies = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await companiesAPI.getCompanies();
+        setCompanies(response.data.companies || []);
+      } catch (err) {
+        setError('Failed to load companies. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadCompanies();
   }, [user]);
 
   // Only super_admin can access companies
@@ -100,42 +87,52 @@ export const CompanyList: React.FC = () => {
     setShowViewModal(true);
   };
 
-  const handleSaveCompany = () => {
-    if (showEditModal && selectedCompany) {
-      setCompanies(prev => prev.map(c => 
-        c.id === selectedCompany.id ? { ...formData as Company } : c
-      ));
+  const handleSaveCompany = async () => {
+    try {
+      setLoading(true);
+      if (showEditModal && selectedCompany) {
+        await companiesAPI.updateCompany(selectedCompany.id, formData);
+      } else if (showAddModal) {
+        await companiesAPI.createCompany(formData);
+      }
+      // Refresh list
+      const response = await companiesAPI.getCompanies();
+      setCompanies(response.data.companies || []);
       setShowEditModal(false);
-    } else if (showAddModal) {
-      const newCompany: Company = {
-        ...formData as Company,
-        id: Date.now().toString(),
-        created_by: user?.id || '1',
-        created_at: new Date().toISOString()
-      };
-      setCompanies(prev => [...prev, newCompany]);
       setShowAddModal(false);
+    } catch (err) {
+      setError('Failed to save company. Please try again.');
+    } finally {
+      setLoading(false);
+      setFormData({});
+      setSelectedCompany(null);
+      setLogoPreview('');
     }
-    setFormData({});
-    setSelectedCompany(null);
-    setLogoPreview('');
   };
 
-  const handleDeleteCompany = (companyId: string) => {
+  const handleDeleteCompany = async (companyId: string) => {
     if (!canAccessCompany(companyId)) return;
-    if (confirm('Are you sure you want to delete this company?')) {
-      setCompanies(prev => prev.filter(c => c.id !== companyId));
+    if (window.confirm('Are you sure you want to delete this company?')) {
+      try {
+        setLoading(true);
+        await companiesAPI.deleteCompany(companyId);
+        setCompanies(prev => prev.filter((c: Company) => c.id !== companyId));
+      } catch (err) {
+        setError('Failed to delete company. Please try again.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
-  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
         setLogoPreview(result);
-        setFormData(prev => ({ ...prev, logo_url: result }));
+        setFormData((prev: Partial<Company>) => ({ ...prev, logo_url: result }));
       };
       reader.readAsDataURL(file);
     }

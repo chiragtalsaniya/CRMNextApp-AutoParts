@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { 
   Plus, 
   Search, 
@@ -21,119 +21,15 @@ import {
   Image as ImageIcon
 } from 'lucide-react';
 import { User, UserRole, Company, Store as StoreType, Retailer } from '../../types';
-
-const mockUsers: User[] = [
-  {
-    id: '1',
-    name: 'John Super',
-    email: 'super@nextapp.com',
-    role: 'super_admin',
-    profile_image: 'https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=400',
-    created_at: '2024-01-01T00:00:00Z'
-  },
-  {
-    id: '2',
-    name: 'Jane Admin',
-    email: 'admin@company1.com',
-    role: 'admin',
-    company_id: '1',
-    profile_image: 'https://images.pexels.com/photos/190574/pexels-photo-190574.jpeg?auto=compress&cs=tinysrgb&w=400',
-    created_at: '2024-01-01T00:00:00Z'
-  },
-  {
-    id: '3',
-    name: 'Bob Manager',
-    email: 'manager@store1.com',
-    role: 'manager',
-    company_id: '1',
-    store_id: '1',
-    profile_image: '',
-    created_at: '2024-01-01T00:00:00Z'
-  },
-  {
-    id: '4',
-    name: 'Alice Storeman',
-    email: 'alice@store1.com',
-    role: 'storeman',
-    company_id: '1',
-    store_id: '1',
-    profile_image: 'https://images.pexels.com/photos/3807277/pexels-photo-3807277.jpeg?auto=compress&cs=tinysrgb&w=400',
-    created_at: '2024-01-02T00:00:00Z'
-  },
-  {
-    id: '5',
-    name: 'Charlie Sales',
-    email: 'charlie@company1.com',
-    role: 'salesman',
-    company_id: '1',
-    store_id: '1',
-    profile_image: '',
-    created_at: '2024-01-03T00:00:00Z'
-  },
-  {
-    id: '6',
-    name: 'Michael Johnson',
-    email: 'michael@downtownauto.com',
-    role: 'retailer',
-    retailer_id: 1,
-    profile_image: 'https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=400',
-    created_at: '2024-01-04T00:00:00Z'
-  },
-  {
-    id: '7',
-    name: 'Sarah Williams',
-    email: 'sarah@quickfixauto.com',
-    role: 'retailer',
-    retailer_id: 2,
-    profile_image: '',
-    created_at: '2024-01-05T00:00:00Z'
-  }
-];
-
-const mockCompanies = [
-  { id: '1', name: 'AutoParts Plus' },
-  { id: '2', name: 'Premier Auto Supply' },
-  { id: '3', name: 'Metro Parts Distribution' }
-];
-
-const mockStores = [
-  { Branch_Code: 'NYC001', Branch_Name: 'Manhattan Central Store', company_id: '1' },
-  { Branch_Code: 'NYC002', Branch_Name: 'Brooklyn East Store', company_id: '1' },
-  { Branch_Code: 'LA001', Branch_Name: 'Hollywood Store', company_id: '2' }
-];
-
-const mockRetailers: Retailer[] = [
-  {
-    Retailer_Id: 1,
-    Retailer_Name: 'Downtown Auto Parts',
-    Contact_Person: 'Michael Johnson',
-    Retailer_Email: 'michael@downtownauto.com'
-  },
-  {
-    Retailer_Id: 2,
-    Retailer_Name: 'Quick Fix Auto',
-    Contact_Person: 'Sarah Williams',
-    Retailer_Email: 'sarah@quickfixauto.com'
-  },
-  {
-    Retailer_Id: 3,
-    Retailer_Name: 'Sunset Auto Supply',
-    Contact_Person: 'David Chen',
-    Retailer_Email: 'david@sunsetauto.com'
-  },
-  {
-    Retailer_Id: 4,
-    Retailer_Name: 'Brooklyn Parts Hub',
-    Contact_Person: 'Lisa Rodriguez',
-    Retailer_Email: 'lisa@brooklynparts.com'
-  }
-];
+import { usersAPI, companiesAPI, storesAPI, retailersAPI } from '../../services/api';
 
 export const UserManagement: React.FC = () => {
-  const [users, setUsers] = useState<User[]>(mockUsers);
-  const [companies] = useState(mockCompanies);
-  const [stores] = useState(mockStores);
-  const [retailers] = useState(mockRetailers);
+  const [users, setUsers] = useState<User[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [stores, setStores] = useState<StoreType[]>([]);
+  const [retailers, setRetailers] = useState<Retailer[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRole, setSelectedRole] = useState<UserRole | 'all'>('all');
   const [selectedCompany, setSelectedCompany] = useState('all');
@@ -143,6 +39,31 @@ export const UserManagement: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [formData, setFormData] = useState<Partial<User>>({});
   const [profileImagePreview, setProfileImagePreview] = useState<string>('');
+
+  // Load users, companies, stores, retailers from API
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const [usersRes, companiesRes, storesRes, retailersRes] = await Promise.all([
+          usersAPI.getUsers(),
+          companiesAPI.getCompanies(),
+          storesAPI.getStores(),
+          retailersAPI.getRetailers()
+        ]);
+        setUsers(usersRes.data.users || []);
+        setCompanies(companiesRes.data.companies || []);
+        setStores(storesRes.data.stores || []);
+        setRetailers(retailersRes.data.retailers || []);
+      } catch (err) {
+        setError('Failed to load users or related data. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = 
@@ -181,40 +102,51 @@ export const UserManagement: React.FC = () => {
     setShowViewModal(true);
   };
 
-  const handleSaveUser = () => {
-    if (showEditModal && selectedUser) {
-      setUsers(prev => prev.map(u => 
-        u.id === selectedUser.id ? { ...formData as User } : u
-      ));
+  const handleSaveUser = async () => {
+    try {
+      setLoading(true);
+      if (showEditModal && selectedUser) {
+        await usersAPI.updateUser(selectedUser.id, formData);
+      } else if (showAddModal) {
+        await usersAPI.createUser(formData);
+      }
+      // Refresh list
+      const usersRes = await usersAPI.getUsers();
+      setUsers(usersRes.data.users || []);
       setShowEditModal(false);
-    } else if (showAddModal) {
-      const newUser: User = {
-        ...formData as User,
-        id: Date.now().toString(),
-        created_at: new Date().toISOString()
-      };
-      setUsers(prev => [...prev, newUser]);
       setShowAddModal(false);
-    }
-    setFormData({});
-    setSelectedUser(null);
-    setProfileImagePreview('');
-  };
-
-  const handleDeleteUser = (userId: string) => {
-    if (confirm('Are you sure you want to delete this user?')) {
-      setUsers(prev => prev.filter(u => u.id !== userId));
+    } catch (err) {
+      setError('Failed to save user. Please try again.');
+    } finally {
+      setLoading(false);
+      setFormData({});
+      setSelectedUser(null);
+      setProfileImagePreview('');
     }
   };
 
-  const handleProfileImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDeleteUser = async (userId: string) => {
+    if (window.confirm('Are you sure you want to delete this user?')) {
+      try {
+        setLoading(true);
+        await usersAPI.deleteUser(userId);
+        setUsers(prev => prev.filter((u: User) => u.id !== userId));
+      } catch (err) {
+        setError('Failed to delete user. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const handleProfileImageUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         const result = e.target?.result as string;
         setProfileImagePreview(result);
-        setFormData(prev => ({ ...prev, profile_image: result }));
+        setFormData((prev: Partial<User>) => ({ ...prev, profile_image: result }));
       };
       reader.readAsDataURL(file);
     }
