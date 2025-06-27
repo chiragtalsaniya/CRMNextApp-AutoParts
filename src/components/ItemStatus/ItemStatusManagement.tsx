@@ -25,6 +25,7 @@ import { ItemStatus, getStockLevelColor, calculateStockLevel, formatStockDisplay
 import { useAuth } from '../../context/AuthContext';
 import { format } from 'date-fns';
 import { itemStatusAPI } from '../../services/api';
+import { safeFormat } from '../../utils/safeFormat';
 
 export const ItemStatusManagement: React.FC = () => {
   const { user, getAccessibleStores } = useAuth();
@@ -62,12 +63,12 @@ export const ItemStatusManagement: React.FC = () => {
         const response = await itemStatusAPI.getItemStatus(params);
         
         if (response.data && response.data.data) {
-          // Ensure all date fields are numbers
+          // Ensure all date fields are formatted as strings for display
           const mapped = response.data.data.map((item: any) => ({
             ...item,
-            LastSale: item.LastSale ? Number(item.LastSale) : undefined,
-            LastPurchase: item.LastPurchase ? Number(item.LastPurchase) : undefined,
-            Last_Sync: item.Last_Sync ? Number(item.Last_Sync) : undefined,
+            LastSale: safeFormat(item.LastSale, 'T'),
+            LastPurchase: safeFormat(item.LastPurchase, 'T'),
+            Last_Sync: safeFormat(item.Last_Sync, 'T'),
             created_at: item.created_at,
             updated_at: item.updated_at,
           }));
@@ -440,7 +441,7 @@ export const ItemStatusManagement: React.FC = () => {
                       <ShoppingCart className="w-4 h-4 text-gray-400" />
                       <div>
                         <p className="text-sm font-medium text-gray-600">Last Sale</p>
-                        <p className="text-gray-900">{format(timestampToDate(selectedItem.LastSale)!, 'MMM dd, yyyy HH:mm')}</p>
+                        <p className="text-gray-900">{safeFormat(selectedItem.LastSale, 'MMM dd, yyyy HH:mm')}</p>
                       </div>
                     </div>
                   )}
@@ -450,7 +451,7 @@ export const ItemStatusManagement: React.FC = () => {
                       <TrendingUp className="w-4 h-4 text-gray-400" />
                       <div>
                         <p className="text-sm font-medium text-gray-600">Last Purchase</p>
-                        <p className="text-gray-900">{format(timestampToDate(selectedItem.LastPurchase)!, 'MMM dd, yyyy HH:mm')}</p>
+                        <p className="text-gray-900">{safeFormat(selectedItem.LastPurchase, 'MMM dd, yyyy HH:mm')}</p>
                       </div>
                     </div>
                   )}
@@ -460,7 +461,7 @@ export const ItemStatusManagement: React.FC = () => {
                       <Clock className="w-4 h-4 text-gray-400" />
                       <div>
                         <p className="text-sm font-medium text-gray-600">Last Sync</p>
-                        <p className="text-gray-900">{format(timestampToDate(selectedItem.Last_Sync)!, 'MMM dd, yyyy HH:mm')}</p>
+                        <p className="text-gray-900">{safeFormat(selectedItem.Last_Sync, 'MMM dd, yyyy HH:mm')}</p>
                       </div>
                     </div>
                   )}
