@@ -20,28 +20,28 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   }, [getAccessibleCompanies, getAccessibleStores]);
 
   return (
-    <header className="sticky top-0 z-30 w-full bg-gradient-to-r from-[#003366] to-blue-800 dark:from-gray-900 dark:to-gray-800 shadow-lg border-b border-blue-900 dark:border-gray-800">
-      <div className="flex items-center justify-between px-4 md:px-8 py-3">
-        <div className="flex items-center gap-3">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full bg-gradient-to-r from-[#003366] to-blue-800 dark:from-gray-900 dark:to-gray-800 shadow-xl border-b border-blue-900 dark:border-gray-800 backdrop-blur-sm">
+      <div className="flex items-center justify-between px-4 md:px-8 py-4">
+        <div className="flex items-center gap-4">
           {/* Mobile Menu Button */}
           <button
             onClick={onMenuClick}
-            className="p-2 rounded-lg hover:bg-blue-900/20 transition-colors lg:hidden"
+            className="p-2 rounded-xl hover:bg-blue-900/20 transition-all duration-200 lg:hidden"
             aria-label="Open sidebar menu"
           >
             <Menu className="w-6 h-6 text-white" />
           </button>
           {/* Logo & Title */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/90 rounded-xl flex items-center justify-center shadow-md">
-              <span className="text-[#003366] font-extrabold text-2xl tracking-tight">N</span>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-white/95 rounded-2xl flex items-center justify-center shadow-lg">
+              <span className="text-[#003366] font-black text-2xl tracking-tight">N</span>
             </div>
-            <div>
-              <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight leading-tight drop-shadow">NextApp Inc.</h1>
+            <div className="hidden sm:block">
+              <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight leading-tight drop-shadow-lg">NextApp Inc.</h1>
               <div className="relative">
                 <button
                   onClick={() => setShowScopeDropdown(!showScopeDropdown)}
-                  className="flex items-center space-x-1 text-xs text-blue-100 hover:text-white transition-colors"
+                  className="flex items-center space-x-1 text-xs text-blue-100 hover:text-white transition-colors bg-blue-900/20 px-2 py-1 rounded-lg"
                 >
                   <span>{getCurrentUserScope()}</span>
                   {(user?.role === 'super_admin' || user?.role === 'admin') && (
@@ -84,34 +84,34 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
           </div>
         </div>
         {/* Right Side Controls */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           {/* Theme Toggle */}
-          <div className="flex items-center gap-1 mr-2">
+          <div className="hidden md:flex items-center gap-1 bg-blue-900/20 rounded-xl p-1">
             <button
               onClick={() => setTheme('light')}
-              className={`p-2 rounded-lg transition-colors ${theme === 'light' ? 'bg-blue-200 text-blue-900' : 'text-blue-100 hover:text-yellow-300'}`}
+              className={`p-2 rounded-lg transition-all duration-200 ${theme === 'light' ? 'bg-white text-blue-900 shadow-md' : 'text-blue-100 hover:text-yellow-300'}`}
               aria-label="Light mode"
             >
-              <Sun className="w-5 h-5" />
+              <Sun className="w-4 h-4" />
             </button>
             <button
               onClick={() => setTheme('dark')}
-              className={`p-2 rounded-lg transition-colors ${theme === 'dark' ? 'bg-blue-200 text-blue-900' : 'text-blue-100 hover:text-blue-300'}`}
+              className={`p-2 rounded-lg transition-all duration-200 ${theme === 'dark' ? 'bg-white text-blue-900 shadow-md' : 'text-blue-100 hover:text-blue-300'}`}
               aria-label="Dark mode"
             >
-              <Moon className="w-5 h-5" />
+              <Moon className="w-4 h-4" />
             </button>
             <button
               onClick={() => setTheme('auto')}
-              className={`p-2 rounded-lg transition-colors ${theme === 'auto' ? 'bg-blue-200 text-blue-900' : 'text-blue-100 hover:text-white'}`}
+              className={`p-2 rounded-lg transition-all duration-200 ${theme === 'auto' ? 'bg-white text-blue-900 shadow-md' : 'text-blue-100 hover:text-white'}`}
               aria-label="System mode"
             >
-              <Monitor className="w-5 h-5" />
+              <Monitor className="w-4 h-4" />
             </button>
           </div>
           {/* User Info */}
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-blue-900 rounded-full flex items-center justify-center overflow-hidden border-2 border-white">
+          <div className="flex items-center gap-3 bg-blue-900/20 rounded-xl p-2">
+            <div className="w-10 h-10 bg-blue-900 rounded-xl flex items-center justify-center overflow-hidden border-2 border-white/20 shadow-lg">
               {user?.profile_image ? (
                 <img 
                   src={user.profile_image} 
@@ -122,19 +122,19 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
                 <User className="w-5 h-5 text-white" />
               )}
             </div>
-            <div className="hidden sm:block text-right">
-              <p className="text-sm font-semibold text-white leading-tight">{user?.name}</p>
-              <p className="text-xs text-blue-100 capitalize">{user?.role.replace('_', ' ')}</p>
+            <div className="hidden lg:block text-right">
+              <p className="text-sm font-bold text-white leading-tight">{user?.name}</p>
+              <p className="text-xs text-blue-100 capitalize font-medium">{user?.role.replace('_', ' ')}</p>
             </div>
           </div>
           {/* Settings & Logout */}
-          <div className="flex items-center gap-2">
-            <button className="p-2 text-blue-100 hover:text-white transition-colors rounded-lg hover:bg-blue-900/30" title="Settings">
+          <div className="flex items-center gap-1">
+            <button className="p-2 text-blue-100 hover:text-white transition-all duration-200 rounded-xl hover:bg-blue-900/30" title="Settings">
               <Settings className="w-5 h-5" />
             </button>
             <button 
               onClick={logout}
-              className="p-2 text-blue-100 hover:text-red-400 transition-colors rounded-lg hover:bg-blue-900/30"
+              className="p-2 text-blue-100 hover:text-red-400 transition-all duration-200 rounded-xl hover:bg-blue-900/30"
               title="Logout"
             >
               <LogOut className="w-5 h-5" />

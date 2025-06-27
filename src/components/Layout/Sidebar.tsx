@@ -110,18 +110,38 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
       )}
       {/* Redesigned Sidebar */}
       <div className={`
-        fixed lg:relative inset-y-0 left-0 z-50
+        fixed left-0 z-40
         ${isCollapsed ? 'w-16' : 'w-64'}
-        ${theme === 'dark' ? 'bg-gradient-to-b from-gray-900 to-gray-800 text-white border-r border-gray-800' : 'bg-gradient-to-b from-[#003366] to-blue-900 text-white'} min-h-screen
+        ${theme === 'dark' ? 'bg-gradient-to-b from-gray-900 to-gray-800 text-white border-r border-gray-800' : 'bg-gradient-to-b from-[#003366] to-blue-900 text-white'}
         transform transition-all duration-300 ease-in-out
         ${isCollapsed ? '-translate-x-full lg:translate-x-0' : 'translate-x-0'}
         flex flex-col shadow-xl
+        top-16 bottom-0 overflow-hidden
       `}>
         {/* Sidebar Header (fixed top) */}
-        <div className="p-5 border-b border-blue-900 flex-shrink-0 sticky top-0 bg-inherit z-10 flex items-center gap-3">
-          {!isCollapsed && (
-            <>
-              <div className="w-12 h-12 bg-white/90 rounded-xl flex items-center justify-center overflow-hidden shadow-md">
+        <div className="p-6 border-b border-blue-900 flex-shrink-0 bg-gradient-to-r from-blue-900/30 to-blue-800/30">
+          <div className="flex items-center gap-4">
+            {!isCollapsed && (
+              <>
+                <div className="w-12 h-12 bg-white/95 rounded-2xl flex items-center justify-center overflow-hidden shadow-lg">
+                  {currentCompany?.logo_url ? (
+                    <img
+                      src={currentCompany.logo_url}
+                      alt={currentCompany.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-[#003366] font-black text-xl">N</span>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h2 className="text-lg font-bold text-white truncate drop-shadow">{currentCompany?.name || 'NextApp Inc.'}</h2>
+                  <p className="text-xs text-blue-200 mt-1 font-medium">{getDashboardTitle()}</p>
+                </div>
+              </>
+            )}
+            {isCollapsed && (
+              <div className="w-10 h-10 bg-white/95 rounded-xl flex items-center justify-center overflow-hidden mx-auto shadow-lg">
                 {currentCompany?.logo_url ? (
                   <img
                     src={currentCompany.logo_url}
@@ -129,38 +149,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-[#003366] font-extrabold text-xl">N</span>
+                  <span className="text-[#003366] font-bold text-sm">N</span>
                 )}
               </div>
-              <div className="flex-1 min-w-0">
-                <h2 className="text-lg font-bold text-white truncate">{currentCompany?.name || 'NextApp Inc.'}</h2>
-                <p className="text-xs text-blue-200 mt-1">{getDashboardTitle()}</p>
-              </div>
-            </>
-          )}
-          {isCollapsed && (
-            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center overflow-hidden mx-auto">
-              {currentCompany?.logo_url ? (
-                <img
-                  src={currentCompany.logo_url}
-                  alt={currentCompany.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="text-[#003366] font-bold text-sm">N</span>
-              )}
-            </div>
-          )}
-          <button
-            onClick={onToggle}
-            className="p-2 rounded-lg hover:bg-blue-900/30 transition-colors lg:hidden ml-auto"
-            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            <X className="w-5 h-5 text-white" />
-          </button>
+            )}
+            <button
+              onClick={onToggle}
+              className="p-2 rounded-xl hover:bg-blue-900/30 transition-colors lg:hidden ml-auto"
+              aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              <X className="w-5 h-5 text-white" />
+            </button>
+          </div>
         </div>
         {/* Navigation (scrollable middle) */}
-        <nav className="flex-1 p-3 space-y-2 overflow-y-auto min-h-0">
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {filteredNavItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -168,10 +171,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) =>
-                  `flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 group relative font-medium tracking-tight text-base shadow-sm ${
+                  `flex items-center space-x-4 px-4 py-3 rounded-xl transition-all duration-200 group relative font-medium ${
                     isActive
-                      ? 'bg-blue-600 text-white shadow-lg'
-                      : 'text-blue-100 hover:bg-blue-800 hover:text-white'
+                      ? 'bg-white/10 text-white shadow-lg backdrop-blur-sm border border-white/20'
+                      : 'text-blue-100 hover:bg-white/5 hover:text-white hover:shadow-md'
                   }`
                 }
                 title={isCollapsed ? item.label : undefined}
@@ -182,7 +185,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                 </span>
                 {/* Tooltip for collapsed state */}
                 {isCollapsed && (
-                  <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                  <div className="absolute left-full ml-3 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 shadow-lg">
                     {item.label}
                   </div>
                 )}
@@ -190,26 +193,20 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
             );
           })}
         </nav>
-        {/* Role Badge (fixed bottom) */}
-        {!isCollapsed && (
-          <div className="p-4 border-t border-blue-900 flex-shrink-0 sticky bottom-0 bg-inherit z-10">
-            <div className="bg-blue-800 rounded-lg p-3 text-center shadow">
-              <p className="text-xs text-blue-200">Logged in as</p>
-              <p className="text-sm font-semibold text-white capitalize">{user?.role.replace('_', ' ')}</p>
-            </div>
-          </div>
-        )}
         {/* Toggle Button (Desktop, fixed bottom) */}
-        <div className="hidden lg:block p-4 border-t border-blue-900 flex-shrink-0 sticky bottom-0 bg-inherit z-10">
+        <div className="p-4 border-t border-blue-900 flex-shrink-0 bg-gradient-to-r from-blue-900/30 to-blue-800/30">
           <button
             onClick={onToggle}
-            className="w-full flex items-center justify-center p-2 rounded-lg hover:bg-blue-900/30 transition-colors"
+            className="w-full flex items-center justify-center p-3 rounded-xl hover:bg-white/10 transition-all duration-200 text-white font-medium"
             title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             {isCollapsed ? (
-              <ChevronRight className="w-5 h-5 text-white" />
+              <ChevronRight className="w-5 h-5" />
             ) : (
-              <ChevronLeft className="w-5 h-5 text-white" />
+              <div className="flex items-center space-x-2">
+                <ChevronLeft className="w-5 h-5" />
+                <span className="text-sm">Collapse</span>
+              </div>
             )}
           </button>
         </div>

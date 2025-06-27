@@ -31,25 +31,27 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
   );
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-600">Manage your account and system preferences</p>
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-[#003366] to-blue-600 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-8 text-white">
+        <h1 className="text-3xl font-bold mb-2">Settings</h1>
+        <p className="text-blue-100 dark:text-gray-300">Manage your account and system preferences</p>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-        <div className="border-b border-gray-200">
-          <nav className="flex space-x-8 px-6">
+      {/* Settings Panel */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <div className="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+          <nav className="flex space-x-0 px-6 overflow-x-auto">
             {availableTabs.map((tab) => {
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  className={`flex items-center space-x-3 py-4 px-6 border-b-2 font-medium text-sm transition-all duration-200 whitespace-nowrap ${
                     activeTab === tab.id
-                      ? 'border-[#003366] text-[#003366]'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'border-[#003366] dark:border-blue-500 text-[#003366] dark:text-blue-400 bg-white dark:bg-gray-800'
+                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -60,7 +62,7 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
           </nav>
         </div>
 
-        <div className="p-6">
+        <div className="p-8">
           {React.cloneElement(children as React.ReactElement, { activeTab })}
         </div>
       </div>

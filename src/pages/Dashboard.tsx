@@ -161,44 +161,52 @@ export const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">{welcome.title}</h1>
-        <p className="text-gray-600">
-          Welcome back, {user?.name}! {welcome.description}
+    <div className="space-y-8">
+      {/* Welcome Header */}
+      <div className="bg-gradient-to-r from-[#003366] to-blue-600 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-8 text-white">
+        <h1 className="text-3xl font-bold mb-2">{welcome.title}</h1>
+        <p className="text-blue-100 dark:text-gray-300 text-lg">
+          Welcome back, <span className="font-semibold">{user?.name}</span>! {welcome.description}
         </p>
       </div>
 
+      {/* Stats Grid */}
       <DashboardStats />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+      {/* Content Grid */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        {/* Recent Activity - Takes 2 columns */}
+        <div className="xl:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Recent Activity</h3>
+            <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">View All</button>
+          </div>
           <div className="space-y-4">
             {activities.map((activity, index) => (
-              <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                <div className={`w-2 h-2 ${getActivityColor(activity.type)} rounded-full`}></div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">{activity.message}</p>
-                  <p className="text-xs text-gray-500">{activity.time}</p>
+              <div key={index} className="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                <div className={`w-3 h-3 ${getActivityColor(activity.type)} rounded-full flex-shrink-0`}></div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{activity.message}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{activity.time}</p>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-800">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h3>
-          <div className="grid grid-cols-2 gap-3">
+        {/* Quick Actions - Takes 1 column */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Quick Actions</h3>
+          <div className="space-y-3">
             {quickActions.map((action, index) => (
               <button
                 key={index}
-                className={`p-4 text-left rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400 ${getActionColor(action.color)} dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-100`}
+                className={`w-full p-4 text-left rounded-xl transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400 ${getActionColor(action.color)} dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-100 shadow-sm hover:shadow-md`}
                 tabIndex={0}
                 aria-label={action.title}
               >
-                <p className="font-medium dark:text-gray-100">{action.title}</p>
-                <p className="text-sm opacity-75 dark:text-gray-400">{action.description}</p>
+                <p className="font-semibold dark:text-gray-100 mb-1">{action.title}</p>
+                <p className="text-sm opacity-75 dark:text-gray-300">{action.description}</p>
               </button>
             ))}
           </div>
