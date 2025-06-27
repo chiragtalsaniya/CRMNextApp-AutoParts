@@ -892,13 +892,8 @@ export const RetailerManagement: React.FC = () => {
                 <p className="text-gray-500 dark:text-gray-400 text-xs truncate">{retailer.Contact_Person}</p>
                 <p className="text-gray-400 dark:text-gray-500 text-xs">ID: {retailer.Retailer_Id}</p>
               </div>
+              {/* Only show most important info on card */}
               <div className="space-y-1 mb-3">
-                {retailer.Retailer_Email && (
-                  <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
-                    <Mail className="w-3 h-3" />
-                    <span className="truncate">{retailer.Retailer_Email}</span>
-                  </div>
-                )}
                 {retailer.Retailer_Mobile && (
                   <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
                     <Phone className="w-3 h-3" />
@@ -909,18 +904,6 @@ export const RetailerManagement: React.FC = () => {
                   <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
                     <MapPin className="w-3 h-3" />
                     <span>{retailer.Area_Name}</span>
-                  </div>
-                )}
-              </div>
-              <div className="flex items-center justify-between mb-3 text-xs">
-                <div>
-                  <p className="text-gray-400 dark:text-gray-500">Type</p>
-                  <p className="font-medium text-gray-900 dark:text-gray-100">{getRetailerTypeName(retailer.Type_Id)}</p>
-                </div>
-                {retailer.GST_No && (
-                  <div className="text-right">
-                    <p className="text-gray-400 dark:text-gray-500">GST</p>
-                    <p className="font-medium text-gray-900 dark:text-gray-100 font-mono">{retailer.GST_No.slice(-6)}</p>
                   </div>
                 )}
               </div>
