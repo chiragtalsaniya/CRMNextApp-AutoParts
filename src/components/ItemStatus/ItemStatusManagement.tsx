@@ -62,16 +62,24 @@ export const ItemStatusManagement: React.FC = () => {
         const response = await itemStatusAPI.getItemStatus(params);
         
         if (response.data && response.data.data) {
-          setItemStatus(response.data.data);
+          // Ensure all date fields are numbers
+          const mapped = response.data.data.map((item: any) => ({
+            ...item,
+            LastSale: item.LastSale ? Number(item.LastSale) : undefined,
+            LastPurchase: item.LastPurchase ? Number(item.LastPurchase) : undefined,
+            Last_Sync: item.Last_Sync ? Number(item.Last_Sync) : undefined,
+            created_at: item.created_at,
+            updated_at: item.updated_at,
+          }));
+          setItemStatus(mapped);
           
           // Calculate stats
-          const total = response.data.data.length;
-          const critical = response.data.data.filter((item: ItemStatus) => item.stock_level === 'critical').length;
-          const low = response.data.data.filter((item: ItemStatus) => item.stock_level === 'low').length;
-          const good = response.data.data.filter((item: ItemStatus) => 
+          const total = mapped.length;
+          const critical = mapped.filter((item: ItemStatus) => item.stock_level === 'critical').length;
+          const low = mapped.filter((item: ItemStatus) => item.stock_level === 'low').length;
+          const good = mapped.filter((item: ItemStatus) => 
             item.stock_level === 'good' || item.stock_level === 'medium'
           ).length;
-          
           setStats({ total, critical, low, good });
         } else {
           setItemStatus([]);
