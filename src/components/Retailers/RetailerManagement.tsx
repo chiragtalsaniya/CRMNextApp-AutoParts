@@ -53,6 +53,10 @@ export const RetailerManagement: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+
   // Load retailers from API
   useEffect(() => {
     const loadRetailers = async () => {
@@ -82,6 +86,9 @@ export const RetailerManagement: React.FC = () => {
     
     return matchesSearch && matchesArea && matchesStatus;
   });
+
+  const totalPages = Math.ceil(filteredRetailers.length / pageSize);
+  const paginatedRetailers = filteredRetailers.slice((page - 1) * pageSize, page * pageSize);
 
   const handleAddRetailer = () => {
     setFormData({
@@ -777,236 +784,268 @@ export const RetailerManagement: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Retailer Management</h1>
-          <p className="text-gray-600">Comprehensive retailer database with image management</p>
+    <div className="flex flex-col h-[calc(100vh-100px)] md:h-[calc(100vh-80px)] relative">
+      <div className="space-y-6 p-4">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Retailer Management</h1>
+            <p className="text-gray-600">Comprehensive retailer database with image management</p>
+          </div>
+          <div className="flex space-x-3">
+            <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2">
+              <Upload className="w-5 h-5" />
+              <span>Import</span>
+            </button>
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+              <Download className="w-5 h-5" />
+              <span>Export</span>
+            </button>
+            <button 
+              onClick={handleAddRetailer}
+              className="bg-[#003366] text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
+            >
+              <Plus className="w-5 h-5" />
+              <span>Add Retailer</span>
+            </button>
+          </div>
         </div>
-        <div className="flex space-x-3">
-          <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2">
-            <Upload className="w-5 h-5" />
-            <span>Import</span>
-          </button>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
-            <Download className="w-5 h-5" />
-            <span>Export</span>
-          </button>
-          <button 
-            onClick={handleAddRetailer}
-            className="bg-[#003366] text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
-          >
-            <Plus className="w-5 h-5" />
-            <span>Add Retailer</span>
-          </button>
-        </div>
-      </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div className="flex items-center space-x-3 mb-4">
-          <Filter className="w-5 h-5 text-[#003366]" />
-          <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search retailers..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
-            />
+        {/* Filters */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="flex items-center space-x-3 mb-4">
+            <Filter className="w-5 h-5 text-[#003366]" />
+            <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
           </div>
           
-          <select
-            value={selectedArea}
-            onChange={(e) => setSelectedArea(e.target.value)}
-            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
-          >
-            <option value="all">All Areas</option>
-            {areas.map(area => (
-              <option key={area.id} value={area.id.toString()}>{area.name}</option>
-            ))}
-          </select>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search retailers..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+              />
+            </div>
+            
+            <select
+              value={selectedArea}
+              onChange={(e) => setSelectedArea(e.target.value)}
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+            >
+              <option value="all">All Areas</option>
+              {areas.map(area => (
+                <option key={area.id} value={area.id.toString()}>{area.name}</option>
+              ))}
+            </select>
 
-          <select
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
-          >
-            <option value="all">All Status</option>
-            <option value="1">Active</option>
-            <option value="0">Inactive</option>
-          </select>
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+            >
+              <option value="all">All Status</option>
+              <option value="1">Active</option>
+              <option value="0">Inactive</option>
+            </select>
 
-          <div className="text-sm text-gray-600 flex items-center">
-            <span className="font-medium">{filteredRetailers.length}</span> retailers found
-          </div>
+            <div className="text-sm text-gray-600 flex items-center">
+              <span className="font-medium">{filteredRetailers.length}</span> retailers found
+            </div>
 
-          <div className="text-sm text-gray-600 flex items-center justify-end">
-            <span className="font-medium">
-              {filteredRetailers.filter(r => r.Retailer_Status === 1).length} active
-            </span>
+            <div className="text-sm text-gray-600 flex items-center justify-end">
+              <span className="font-medium">
+                {filteredRetailers.filter(r => r.Retailer_Status === 1).length} active
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Retailers Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredRetailers.map((retailer) => (
-          <div key={retailer.Retailer_Id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
-            {/* Retailer Image */}
-            <div className="relative h-48 bg-gray-100">
-              {retailer.RetailerImage ? (
-                <img 
-                  src={retailer.RetailerImage} 
-                  alt={retailer.Retailer_Name}
-                  className="w-full h-full object-cover"
+        {/* Retailers Grid */}
+        <div className="flex-1 overflow-hidden">
+          <div className="h-full overflow-y-auto pr-1" style={{ maxHeight: '100%' }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {paginatedRetailers.map((retailer) => (
+                <div key={retailer.Retailer_Id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+                  {/* Retailer Image */}
+                  <div className="relative h-48 bg-gray-100">
+                    {retailer.RetailerImage ? (
+                      <img 
+                        src={retailer.RetailerImage} 
+                        alt={retailer.Retailer_Name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <UserCheck className="w-16 h-16 text-gray-400" />
+                      </div>
+                    )}
+                    
+                    {/* Status Badges */}
+                    <div className="absolute top-3 left-3 flex flex-col space-y-2">
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(retailer.Retailer_Status)}`}>
+                        {getStatusText(retailer.Retailer_Status)}
+                      </span>
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getConfirmColor(retailer.Confirm)}`}>
+                        {getConfirmText(retailer.Confirm)}
+                      </span>
+                    </div>
+
+                    {/* Credit Limit */}
+                    <div className="absolute top-3 right-3">
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        <DollarSign className="w-3 h-3 mr-1" />
+                        {(retailer.Credit_Limit || 0).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Retailer Details */}
+                  <div className="p-4">
+                    <div className="mb-3">
+                      <h3 className="font-semibold text-gray-900 text-sm mb-1">{retailer.Retailer_Name}</h3>
+                      <p className="text-gray-600 text-sm">{retailer.Contact_Person}</p>
+                      <p className="text-gray-500 text-xs">ID: {retailer.Retailer_Id}</p>
+                    </div>
+
+                    <div className="space-y-2 mb-4">
+                      {retailer.Retailer_Email && (
+                        <div className="flex items-center space-x-2 text-xs text-gray-600">
+                          <Mail className="w-3 h-3" />
+                          <span className="truncate">{retailer.Retailer_Email}</span>
+                        </div>
+                      )}
+                      
+                      {retailer.Retailer_Mobile && (
+                        <div className="flex items-center space-x-2 text-xs text-gray-600">
+                          <Phone className="w-3 h-3" />
+                          <span>{retailer.Retailer_Mobile}</span>
+                        </div>
+                      )}
+                      
+                      {retailer.Area_Name && (
+                        <div className="flex items-center space-x-2 text-xs text-gray-600">
+                          <MapPin className="w-3 h-3" />
+                          <span>{retailer.Area_Name}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Additional Info */}
+                    <div className="flex items-center justify-between mb-4 text-xs">
+                      <div>
+                        <p className="text-gray-500">Type</p>
+                        <p className="font-medium text-gray-900">{getRetailerTypeName(retailer.Type_Id)}</p>
+                      </div>
+                      {retailer.GST_No && (
+                        <div className="text-right">
+                          <p className="text-gray-500">GST</p>
+                          <p className="font-medium text-gray-900 font-mono">{retailer.GST_No.slice(-6)}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => handleViewRetailer(retailer)}
+                        className="flex-1 bg-gray-100 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm flex items-center justify-center space-x-1"
+                      >
+                        <Eye className="w-4 h-4" />
+                        <span>View</span>
+                      </button>
+                      <button
+                        onClick={() => handleEditRetailer(retailer)}
+                        className="flex-1 bg-[#003366] text-white px-3 py-2 rounded-lg hover:bg-blue-800 transition-colors text-sm flex items-center justify-center space-x-1"
+                      >
+                        <Edit className="w-4 h-4" />
+                        <span>Edit</span>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteRetailer(retailer.Retailer_Id)}
+                        className="bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {loading && (
+              <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-12 text-center">
+                <div className="w-12 h-12 border-4 border-t-[#003366] border-gray-200 dark:border-gray-700 rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-gray-600 dark:text-gray-300">Loading retailers...</p>
+              </div>
+            )}
+            {paginatedRetailers.length === 0 && !loading && (
+              <div className="text-center py-12 flex flex-col items-center justify-center">
+                <img
+                  src="/empty-state.svg"
+                  alt="No retailers illustration"
+                  className="w-40 h-40 mx-auto mb-4 opacity-80"
+                  loading="lazy"
+                  style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.08))' }}
                 />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <UserCheck className="w-16 h-16 text-gray-400" />
+                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No retailers found</h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">Try adjusting your search criteria or add a new retailer.</p>
+                <button
+                  onClick={handleAddRetailer}
+                  className="inline-flex items-center px-5 py-2.5 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors mt-2"
+                >
+                  <Plus className="w-4 h-4 mr-2" /> Add Retailer
+                </button>
+              </div>
+            )}
+            {error && (
+              <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center flex flex-col items-center justify-center">
+                  <img
+                    src="/error-state.svg"
+                    alt="Error illustration"
+                    className="w-32 h-32 mx-auto mb-4 opacity-90"
+                    loading="lazy"
+                    style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.10))' }}
+                  />
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Something went wrong</h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
+                  <button onClick={() => window.location.reload()} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Retry</button>
                 </div>
-              )}
-              
-              {/* Status Badges */}
-              <div className="absolute top-3 left-3 flex flex-col space-y-2">
-                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(retailer.Retailer_Status)}`}>
-                  {getStatusText(retailer.Retailer_Status)}
-                </span>
-                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getConfirmColor(retailer.Confirm)}`}>
-                  {getConfirmText(retailer.Confirm)}
-                </span>
               </div>
-
-              {/* Credit Limit */}
-              <div className="absolute top-3 right-3">
-                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                  <DollarSign className="w-3 h-3 mr-1" />
-                  {(retailer.Credit_Limit || 0).toLocaleString()}
-                </span>
-              </div>
-            </div>
-
-            {/* Retailer Details */}
-            <div className="p-4">
-              <div className="mb-3">
-                <h3 className="font-semibold text-gray-900 text-sm mb-1">{retailer.Retailer_Name}</h3>
-                <p className="text-gray-600 text-sm">{retailer.Contact_Person}</p>
-                <p className="text-gray-500 text-xs">ID: {retailer.Retailer_Id}</p>
-              </div>
-
-              <div className="space-y-2 mb-4">
-                {retailer.Retailer_Email && (
-                  <div className="flex items-center space-x-2 text-xs text-gray-600">
-                    <Mail className="w-3 h-3" />
-                    <span className="truncate">{retailer.Retailer_Email}</span>
-                  </div>
-                )}
-                
-                {retailer.Retailer_Mobile && (
-                  <div className="flex items-center space-x-2 text-xs text-gray-600">
-                    <Phone className="w-3 h-3" />
-                    <span>{retailer.Retailer_Mobile}</span>
-                  </div>
-                )}
-                
-                {retailer.Area_Name && (
-                  <div className="flex items-center space-x-2 text-xs text-gray-600">
-                    <MapPin className="w-3 h-3" />
-                    <span>{retailer.Area_Name}</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Additional Info */}
-              <div className="flex items-center justify-between mb-4 text-xs">
-                <div>
-                  <p className="text-gray-500">Type</p>
-                  <p className="font-medium text-gray-900">{getRetailerTypeName(retailer.Type_Id)}</p>
-                </div>
-                {retailer.GST_No && (
-                  <div className="text-right">
-                    <p className="text-gray-500">GST</p>
-                    <p className="font-medium text-gray-900 font-mono">{retailer.GST_No.slice(-6)}</p>
-                  </div>
-                )}
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => handleViewRetailer(retailer)}
-                  className="flex-1 bg-gray-100 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm flex items-center justify-center space-x-1"
-                >
-                  <Eye className="w-4 h-4" />
-                  <span>View</span>
-                </button>
-                <button
-                  onClick={() => handleEditRetailer(retailer)}
-                  className="flex-1 bg-[#003366] text-white px-3 py-2 rounded-lg hover:bg-blue-800 transition-colors text-sm flex items-center justify-center space-x-1"
-                >
-                  <Edit className="w-4 h-4" />
-                  <span>Edit</span>
-                </button>
-                <button
-                  onClick={() => handleDeleteRetailer(retailer.Retailer_Id)}
-                  className="bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
+            )}
           </div>
-        ))}
+        </div>
+
+        {/* Pagination Bar */}
+        <div className="sticky bottom-0 left-0 w-full bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 py-3 px-4 flex items-center justify-between z-20 shadow-lg">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600 dark:text-gray-300">Rows per page:</span>
+            <select
+              value={pageSize}
+              onChange={e => { setPageSize(Number(e.target.value)); setPage(1); }}
+              className="border border-gray-300 dark:border-gray-700 rounded px-2 py-1 text-sm bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-600"
+            >
+              {[10, 20, 50, 100].map(size => (
+                <option key={size} value={size}>{size}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="px-3 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50"
+            >Prev</button>
+            <span className="text-sm text-gray-700 dark:text-gray-200">Page {page} of {totalPages || 1}</span>
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages || totalPages === 0}
+              className="px-3 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50"
+            >Next</button>
+          </div>
+        </div>
       </div>
-
-      {loading && (
-        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-12 text-center">
-          <div className="w-12 h-12 border-4 border-t-[#003366] border-gray-200 dark:border-gray-700 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-300">Loading retailers...</p>
-        </div>
-      )}
-
-      {filteredRetailers.length === 0 && !loading && (
-        <div className="text-center py-12 flex flex-col items-center justify-center">
-          <img
-            src="/empty-state.svg"
-            alt="No retailers illustration"
-            className="w-40 h-40 mx-auto mb-4 opacity-80"
-            loading="lazy"
-            style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.08))' }}
-          />
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No retailers found</h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">Try adjusting your search criteria or add a new retailer.</p>
-          <button
-            onClick={handleAddRetailer}
-            className="inline-flex items-center px-5 py-2.5 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors mt-2"
-          >
-            <Plus className="w-4 h-4 mr-2" /> Add Retailer
-          </button>
-        </div>
-      )}
-
-      {error && (
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center flex flex-col items-center justify-center">
-            <img
-              src="/error-state.svg"
-              alt="Error illustration"
-              className="w-32 h-32 mx-auto mb-4 opacity-90"
-              loading="lazy"
-              style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.10))' }}
-            />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Something went wrong</h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
-            <button onClick={() => window.location.reload()} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Retry</button>
-          </div>
-        </div>
-      )}
 
       {/* Modals */}
       <RetailerFormModal 

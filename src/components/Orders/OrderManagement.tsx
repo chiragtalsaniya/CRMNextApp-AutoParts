@@ -41,6 +41,10 @@ export const OrderManagement: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+
   // Load orders from API
   useEffect(() => {
     const loadOrders = async () => {
@@ -89,6 +93,9 @@ export const OrderManagement: React.FC = () => {
     
     return matchesSearch && matchesStatus && matchesUrgency;
   });
+
+  const totalPages = Math.ceil(filteredOrders.length / pageSize);
+  const paginatedOrders = filteredOrders.slice((page - 1) * pageSize, page * pageSize);
 
   const getStatusIcon = (status?: OrderStatus) => {
     switch (status) {
@@ -425,202 +432,231 @@ export const OrderManagement: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">{getPageTitle()}</h1>
-          <p className="text-gray-600">{getPageDescription()}</p>
-          <p className="text-sm text-gray-500 mt-1">
-            Showing {filteredOrders.length} orders accessible to your role
-          </p>
-        </div>
-        <div className="flex space-x-3">
-          <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2">
-            <Upload className="w-5 h-5" />
-            <span>Import</span>
-          </button>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
-            <Download className="w-5 h-5" />
-            <span>Export</span>
-          </button>
-          {user?.role !== 'retailer' && (
-            <button 
-              onClick={() => setShowNewOrderForm(true)}
-              className="bg-[#003366] text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
-            >
-              <Plus className="w-5 h-5" />
-              <span>New Order</span>
+    <div className="flex flex-col h-[calc(100vh-100px)] md:h-[calc(100vh-80px)] relative">
+      <div className="space-y-6 flex-1 overflow-hidden">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">{getPageTitle()}</h1>
+            <p className="text-gray-600">{getPageDescription()}</p>
+            <p className="text-sm text-gray-500 mt-1">
+              Showing {filteredOrders.length} orders accessible to your role
+            </p>
+          </div>
+          <div className="flex space-x-3">
+            <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2">
+              <Upload className="w-5 h-5" />
+              <span>Import</span>
             </button>
-          )}
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+              <Download className="w-5 h-5" />
+              <span>Export</span>
+            </button>
+            {user?.role !== 'retailer' && (
+              <button 
+                onClick={() => setShowNewOrderForm(true)}
+                className="bg-[#003366] text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
+              >
+                <Plus className="w-5 h-5" />
+                <span>New Order</span>
+              </button>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-        <div className="flex items-center space-x-3 mb-4">
-          <Filter className="w-5 h-5 text-[#003366]" />
-          <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search orders..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
-            />
+        {/* Filters */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="flex items-center space-x-3 mb-4">
+            <Filter className="w-5 h-5 text-[#003366]" />
+            <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
           </div>
           
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as OrderStatus | 'all')}
-            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
-          >
-            <option value="all">All Status</option>
-            <option value="New">New</option>
-            <option value="Processing">Processing</option>
-            <option value="Completed">Completed</option>
-            <option value="Hold">Hold</option>
-            <option value="Picked">Picked</option>
-            <option value="Dispatched">Dispatched</option>
-            <option value="Pending">Pending</option>
-            <option value="Cancelled">Cancelled</option>
-          </select>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search orders..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+              />
+            </div>
+            
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value as OrderStatus | 'all')}
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+            >
+              <option value="all">All Status</option>
+              <option value="New">New</option>
+              <option value="Processing">Processing</option>
+              <option value="Completed">Completed</option>
+              <option value="Hold">Hold</option>
+              <option value="Picked">Picked</option>
+              <option value="Dispatched">Dispatched</option>
+              <option value="Pending">Pending</option>
+              <option value="Cancelled">Cancelled</option>
+            </select>
 
-          <select
-            value={urgencyFilter}
-            onChange={(e) => setUrgencyFilter(e.target.value)}
-            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
-          >
-            <option value="all">All Urgency</option>
-            <option value="urgent">Urgent Only</option>
-            <option value="normal">Normal Only</option>
-          </select>
+            <select
+              value={urgencyFilter}
+              onChange={(e) => setUrgencyFilter(e.target.value)}
+              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+            >
+              <option value="all">All Urgency</option>
+              <option value="urgent">Urgent Only</option>
+              <option value="normal">Normal Only</option>
+            </select>
 
-          <div className="text-sm text-gray-600 flex items-center">
-            <span className="font-medium">{filteredOrders.length}</span> orders found
+            <div className="text-sm text-gray-600 flex items-center">
+              <span className="font-medium">{filteredOrders.length}</span> orders found
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-hidden">
+          <div className="h-full overflow-y-auto pr-1" style={{ maxHeight: '100%' }}>
+            {/* Orders Table */}
+            {!loading && !error && (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Urgency</th>
+                        {user?.role !== 'retailer' && (
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Branch</th>
+                        )}
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Retailer</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {paginatedOrders.map((order) => (
+                        <tr key={order.Order_Id} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">#{order.Order_Id}</div>
+                              <div className="text-sm text-gray-500">{order.CRMOrderId}</div>
+                              {order.PO_Number && (
+                                <div className="text-xs text-gray-400">PO: {order.PO_Number}</div>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getOrderStatusColor(order.Order_Status)}`}>
+                              {getStatusIcon(order.Order_Status)}
+                              <span className="ml-1">{order.Order_Status}</span>
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {order.Urgent_Status ? (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                <Zap className="w-3 h-3 mr-1" />
+                                Urgent
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Normal
+                              </span>
+                            )}
+                          </td>
+                          {user?.role !== 'retailer' && (
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-900">{order.Branch_Name || order.Branch || 'Not assigned'}</div>
+                            </td>
+                          )}
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">{order.Retailer_Name || `ID: ${order.Retailer_Id}` || 'Unknown'}</div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {order.Place_Date ? format(timestampToDate(order.Place_Date)!, 'MMM dd, yyyy') : 'Not set'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button 
+                              onClick={() => handleViewOrder(order)}
+                              className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {paginatedOrders.length === 0 && !loading && (
+                  <div className="text-center py-12 flex flex-col items-center justify-center">
+                    <img
+                      src="/empty-state.svg"
+                      alt="No orders illustration"
+                      className="w-40 h-40 mx-auto mb-4 opacity-80"
+                      loading="lazy"
+                      style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.08))' }}
+                    />
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No orders found</h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">Try adjusting your search criteria or filters.</p>
+                  </div>
+                )}
+              </div>
+            )}
+            {loading && (
+              <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-12 text-center">
+                <div className="w-12 h-12 border-4 border-t-[#003366] border-gray-200 dark:border-gray-700 rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-gray-600 dark:text-gray-300">Loading orders...</p>
+              </div>
+            )}
+            {error && (
+              <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center flex flex-col items-center justify-center">
+                  <img
+                    src="/error-state.svg"
+                    alt="Error illustration"
+                    className="w-32 h-32 mx-auto mb-4 opacity-90"
+                    loading="lazy"
+                    style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.10))' }}
+                  />
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Something went wrong</h3>
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
+                  <button onClick={() => window.location.reload()} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Retry</button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Loader for each API call */}
-      {loading && (
-        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-12 text-center">
-          <div className="w-12 h-12 border-4 border-t-[#003366] border-gray-200 dark:border-gray-700 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-300">Loading orders...</p>
+      {/* Pagination Bar */}
+      <div className="sticky bottom-0 left-0 w-full bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 py-3 px-4 flex items-center justify-between z-20 shadow-lg">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-600 dark:text-gray-300">Rows per page:</span>
+          <select
+            value={pageSize}
+            onChange={e => { setPageSize(Number(e.target.value)); setPage(1); }}
+            className="border border-gray-300 dark:border-gray-700 rounded px-2 py-1 text-sm bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-600"
+          >
+            {[10, 20, 50, 100].map(size => (
+              <option key={size} value={size}>{size}</option>
+            ))}
+          </select>
         </div>
-      )}
-
-      {/* Error State */}
-      {error && (
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center flex flex-col items-center justify-center">
-            <img
-              src="/error-state.svg"
-              alt="Error illustration"
-              className="w-32 h-32 mx-auto mb-4 opacity-90"
-              loading="lazy"
-              style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.10))' }}
-            />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Something went wrong</h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
-            <button onClick={() => window.location.reload()} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Retry</button>
-          </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="px-3 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50"
+          >Prev</button>
+          <span className="text-sm text-gray-700 dark:text-gray-200">Page {page} of {totalPages || 1}</span>
+          <button
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages || totalPages === 0}
+            className="px-3 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50"
+          >Next</button>
         </div>
-      )}
-
-      {/* Orders Table */}
-      {!loading && !error && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Urgency</th>
-                  {user?.role !== 'retailer' && (
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Branch</th>
-                  )}
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Retailer</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredOrders.map((order) => (
-                  <tr key={order.Order_Id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">#{order.Order_Id}</div>
-                        <div className="text-sm text-gray-500">{order.CRMOrderId}</div>
-                        {order.PO_Number && (
-                          <div className="text-xs text-gray-400">PO: {order.PO_Number}</div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getOrderStatusColor(order.Order_Status)}`}>
-                        {getStatusIcon(order.Order_Status)}
-                        <span className="ml-1">{order.Order_Status}</span>
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {order.Urgent_Status ? (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                          <Zap className="w-3 h-3 mr-1" />
-                          Urgent
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          Normal
-                        </span>
-                      )}
-                    </td>
-                    {user?.role !== 'retailer' && (
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{order.Branch_Name || order.Branch || 'Not assigned'}</div>
-                      </td>
-                    )}
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{order.Retailer_Name || `ID: ${order.Retailer_Id}` || 'Unknown'}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {order.Place_Date ? format(timestampToDate(order.Place_Date)!, 'MMM dd, yyyy') : 'Not set'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button 
-                        onClick={() => handleViewOrder(order)}
-                        className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {filteredOrders.length === 0 && !loading && (
-            <div className="text-center py-12 flex flex-col items-center justify-center">
-              <img
-                src="/empty-state.svg"
-                alt="No orders illustration"
-                className="w-40 h-40 mx-auto mb-4 opacity-80"
-                loading="lazy"
-                style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.08))' }}
-              />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No orders found</h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">Try adjusting your search criteria or filters.</p>
-            </div>
-          )}
-        </div>
-      )}
-
+      </div>
       {/* Order Details Modal */}
       <OrderDetailsModal />
 
