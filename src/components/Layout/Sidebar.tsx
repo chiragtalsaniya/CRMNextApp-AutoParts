@@ -75,7 +75,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
         top-16 bottom-0 overflow-hidden
       `}>
         {/* Navigation (scrollable middle) */}
-        <nav className="flex-1 p-2 space-y-2 overflow-y-auto">
+        <nav className="flex-1 p-2 space-y-2 overflow-y-auto pt-16">
           {filteredNavItems.map((item) => {
             const Icon = item.icon;
             return (
