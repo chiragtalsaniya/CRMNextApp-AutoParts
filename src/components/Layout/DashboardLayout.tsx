@@ -20,7 +20,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
       {/* Fixed Top Bar */}
       <Header onMenuClick={handleSidebarToggle} />
       {/* Main Content Layout */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden pt-16"> {/* Add padding-top for fixed header */}
         {/* Fixed Sidebar */}
         <Sidebar isCollapsed={sidebarCollapsed} onToggle={handleSidebarToggle} />
         {/* Scrollable Main Section */}

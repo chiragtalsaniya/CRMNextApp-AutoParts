@@ -12,8 +12,6 @@ import {
   Settings,
   UserCheck,
   MapPin,
-  Menu,
-  X,
   ChevronLeft,
   ChevronRight,
   Warehouse,
@@ -49,25 +47,6 @@ interface SidebarProps {
   onToggle: () => void;
 }
 
-// Mock company data - in production this would come from your API
-const mockCompanies = [
-  {
-    id: '1',
-    name: 'AutoParts Plus',
-    logo_url: 'https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=400'
-  },
-  {
-    id: '2',
-    name: 'Premier Auto Supply',
-    logo_url: 'https://images.pexels.com/photos/190574/pexels-photo-190574.jpeg?auto=compress&cs=tinysrgb&w=400'
-  },
-  {
-    id: '3',
-    name: 'Metro Parts Distribution',
-    logo_url: ''
-  }
-];
-
 export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const { user } = useAuth();
   const { theme } = useTheme();
@@ -75,29 +54,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const filteredNavItems = navItems.filter(item =>
     item.roles.includes(user?.role || '')
   );
-
-  // Get role-specific dashboard title
-  const getDashboardTitle = () => {
-    switch (user?.role) {
-      case 'super_admin': return 'System Admin';
-      case 'admin': return 'Company Admin';
-      case 'manager': return 'Store Manager';
-      case 'storeman': return 'Store Operations';
-      case 'salesman': return 'Sales Portal';
-      case 'retailer': return 'Retailer Portal';
-      default: return 'Portal';
-    }
-  };
-
-  // Get company information for current user
-  const getCurrentCompany = () => {
-    if (user?.company_id) {
-      return mockCompanies.find(company => company.id === user.company_id);
-    }
-    return null;
-  };
-
-  const currentCompany = getCurrentCompany();
 
   return (
     <>
@@ -118,50 +74,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
         flex flex-col shadow-xl
         top-16 bottom-0 overflow-hidden
       `}>
-        {/* Sidebar Header (fixed top) */}
-        <div className="p-6 border-b border-blue-900 flex-shrink-0 bg-gradient-to-r from-blue-900/30 to-blue-800/30">
-          <div className="flex items-center gap-4">
-            {!isCollapsed && (
-              <>
-                <div className="w-12 h-12 bg-white/95 rounded-2xl flex items-center justify-center overflow-hidden shadow-lg">
-                  {currentCompany?.logo_url ? (
-                    <img
-                      src={currentCompany.logo_url}
-                      alt={currentCompany.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-[#003366] font-black text-xl">N</span>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h2 className="text-lg font-bold text-white truncate drop-shadow">{currentCompany?.name || 'NextApp Inc.'}</h2>
-                  <p className="text-xs text-blue-200 mt-1 font-medium">{getDashboardTitle()}</p>
-                </div>
-              </>
-            )}
-            {isCollapsed && (
-              <div className="w-10 h-10 bg-white/95 rounded-xl flex items-center justify-center overflow-hidden mx-auto shadow-lg">
-                {currentCompany?.logo_url ? (
-                  <img
-                    src={currentCompany.logo_url}
-                    alt={currentCompany.name}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <span className="text-[#003366] font-bold text-sm">N</span>
-                )}
-              </div>
-            )}
-            <button
-              onClick={onToggle}
-              className="p-2 rounded-xl hover:bg-blue-900/30 transition-colors lg:hidden ml-auto"
-              aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-              <X className="w-5 h-5 text-white" />
-            </button>
-          </div>
-        </div>
         {/* Navigation (scrollable middle) */}
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {filteredNavItems.map((item) => {
