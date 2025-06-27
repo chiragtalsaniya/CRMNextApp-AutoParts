@@ -117,8 +117,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
         ${isCollapsed ? '-translate-x-full lg:translate-x-0' : 'translate-x-0'}
         flex flex-col
       `}>
-        {/* Header */}
-        <div className="p-4 border-b border-blue-700">
+        {/* Header (fixed top) */}
+        <div className="p-4 border-b border-blue-700 flex-shrink-0 sticky top-0 bg-inherit z-10">
           <div className="flex items-center justify-between">
             {!isCollapsed && (
               <div className="flex items-center space-x-3">
@@ -208,8 +208,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
           </div>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+        {/* Navigation (scrollable middle) */}
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto min-h-0">
           {filteredNavItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -248,9 +248,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
           })}
         </nav>
 
-        {/* Role Badge */}
+        {/* Role Badge (fixed bottom) */}
         {!isCollapsed && (
-          <div className="p-4 border-t border-blue-700">
+          <div className="p-4 border-t border-blue-700 flex-shrink-0 sticky bottom-0 bg-inherit z-10">
             <div className="bg-blue-800 rounded-lg p-3 text-center">
               <p className="text-xs text-blue-200">Logged in as</p>
               <p className="text-sm font-semibold text-white capitalize">
@@ -260,8 +260,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
           </div>
         )}
 
-        {/* Toggle Button (Desktop) */}
-        <div className="hidden lg:block p-4 border-t border-blue-700">
+        {/* Toggle Button (Desktop, fixed bottom) */}
+        <div className="hidden lg:block p-4 border-t border-blue-700 flex-shrink-0 sticky bottom-0 bg-inherit z-10">
           <button
             onClick={onToggle}
             className="w-full flex items-center justify-center p-2 rounded-lg hover:bg-blue-700 transition-colors"
