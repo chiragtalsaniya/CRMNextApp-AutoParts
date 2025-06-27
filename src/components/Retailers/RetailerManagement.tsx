@@ -566,8 +566,13 @@ export const RetailerManagement: React.FC = () => {
                 </div>
               </div>
             </div>
-            <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-              <X className="w-6 h-6" />
+            {/* Modern Close Button */}
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 z-10 rounded-full p-2 bg-white/80 dark:bg-gray-800/80 shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5 text-gray-700 dark:text-gray-200" />
             </button>
           </div>
 
@@ -674,6 +679,26 @@ export const RetailerManagement: React.FC = () => {
               )}
             </div>
           </div>
+
+          {/* Location at the bottom */}
+          {(retailer.latitude && retailer.logitude) && (
+            <div className="w-full flex flex-col items-center mb-6">
+              <div className="flex items-center space-x-2">
+                <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-300" />
+                <span className="text-sm text-gray-700 dark:text-gray-200 font-medium">Location</span>
+              </div>
+              <div className="mt-2">
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${retailer.latitude},${retailer.logitude}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 dark:text-blue-300 underline text-xs"
+                >
+                  View on Google Maps ({retailer.latitude}, {retailer.logitude})
+                </a>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
