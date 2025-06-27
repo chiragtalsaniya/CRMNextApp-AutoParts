@@ -32,6 +32,14 @@ router.get('/', authenticateToken, async (req, res) => {
       low_stock_only
     } = req.query;
 
+    // Parse page and limit as integers with proper defaults
+    const pageNum = parseInt(page, 10) || 1;
+    const limitNum = parseInt(limit, 10) || 50;
+    
+    // Ensure positive values
+    const safePage = Math.max(1, pageNum);
+    const safeLimit = Math.max(1, Math.min(1000, limitNum)); // Cap at 1000 for safety
+
     let whereConditions = [];
     let queryParams = [];
 
@@ -87,7 +95,7 @@ router.get('/', authenticateToken, async (req, res) => {
     const total = countResult[0].total;
 
     // Get item status with pagination
-    const offset = (page - 1) * limit;
+    const offset = (safePage - 1) * safeLimit;
     const itemStatusQuery = `
       SELECT 
         ist.*,
@@ -108,7 +116,7 @@ router.get('/', authenticateToken, async (req, res) => {
       LIMIT ? OFFSET ?
     `;
 
-    const itemStatus = await executeQuery(itemStatusQuery, [...queryParams, parseInt(limit), offset]);
+    const itemStatus = await executeQuery(itemStatusQuery, [...queryParams, safeLimit, offset]);
 
     // Add stock level indicators
     const enrichedData = itemStatus.map(item => {
@@ -131,10 +139,10 @@ router.get('/', authenticateToken, async (req, res) => {
     res.json({
       data: enrichedData,
       pagination: {
-        page: parseInt(page),
-        limit: parseInt(limit),
+        page: safePage,
+        limit: safeLimit,
         total,
-        pages: Math.ceil(total / limit)
+        pages: Math.ceil(total / safeLimit)
       }
     });
   } catch (error) {
