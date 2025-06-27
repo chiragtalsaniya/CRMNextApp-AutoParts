@@ -579,12 +579,12 @@ export const RetailerManagement: React.FC = () => {
 
           <div className="p-6 space-y-8">
             {/* Important Info Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
               <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-blue-600 dark:text-blue-200">Retailer ID</p>
-                    <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">{retailer.Retailer_Id}</p>
+                    <p className="text-sm text-blue-600 dark:text-blue-200">CRM ID</p>
+                    <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">{retailer.RetailerCRMId || '0'}</p>
                   </div>
                   <Hash className="w-8 h-8 text-blue-600 dark:text-blue-200" />
                 </div>
@@ -592,28 +592,28 @@ export const RetailerManagement: React.FC = () => {
               <div className="bg-green-50 dark:bg-green-900 p-4 rounded-lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-green-600 dark:text-green-200">Credit Limit</p>
-                    <p className="text-2xl font-bold text-green-900 dark:text-green-100">{(retailer.Credit_Limit || 0).toLocaleString()}</p>
+                    <p className="text-sm text-green-600 dark:text-green-200">TFAT ID</p>
+                    <p className="text-2xl font-bold text-green-900 dark:text-green-100">{retailer.Retailer_TFAT_Id || '0'}</p>
                   </div>
-                  <DollarSign className="w-8 h-8 text-green-600 dark:text-green-200" />
+                  <User className="w-8 h-8 text-green-600 dark:text-green-200" />
                 </div>
               </div>
               <div className="bg-purple-50 dark:bg-purple-900 p-4 rounded-lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-purple-600 dark:text-purple-200">Type</p>
-                    <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">{getRetailerTypeName(retailer.Type_Id)}</p>
+                    <p className="text-sm text-purple-600 dark:text-purple-200">GST Number</p>
+                    <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">{retailer.GST_No || '0'}</p>
                   </div>
-                  <User className="w-8 h-8 text-purple-600 dark:text-purple-200" />
+                  <CreditCard className="w-8 h-8 text-purple-600 dark:text-purple-200" />
                 </div>
               </div>
               <div className="bg-orange-50 dark:bg-orange-900 p-4 rounded-lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-orange-600 dark:text-orange-200">Area</p>
-                    <p className="text-lg font-bold text-orange-900 dark:text-orange-100">{retailer.Area_Name || 'N/A'}</p>
+                    <p className="text-sm text-orange-600 dark:text-orange-200">Credit Limit</p>
+                    <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">${((retailer.Credit_Limit || 0).toFixed(2))}</p>
                   </div>
-                  <MapPin className="w-8 h-8 text-orange-600 dark:text-orange-200" />
+                  <DollarSign className="w-8 h-8 text-orange-600 dark:text-orange-200" />
                 </div>
               </div>
             </div>
