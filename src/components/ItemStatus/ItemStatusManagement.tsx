@@ -591,9 +591,14 @@ export const ItemStatusManagement: React.FC = () => {
             className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
           >
             <option value="all">All Stores</option>
-            {accessibleStores.map(storeId => (
-              <option key={storeId} value={storeId}>{storeId}</option>
-            ))}
+            {accessibleStores.map(storeId => {
+              // Find the branch name for this storeId
+              const store = itemStatus.find(item => item.Branch_Code === storeId);
+              const branchName = store?.Branch_Name || storeId;
+              return (
+                <option key={storeId} value={storeId}>{branchName}</option>
+              );
+            })}
           </select>
 
           <select
