@@ -40,10 +40,6 @@ export const UserManagement: React.FC = () => {
   const [formData, setFormData] = useState<Partial<User>>({});
   const [profileImagePreview, setProfileImagePreview] = useState<string>('');
 
-  // Pagination state
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
-
   // Load users, companies, stores, retailers from API
   useEffect(() => {
     const loadData = async () => {
@@ -79,9 +75,6 @@ export const UserManagement: React.FC = () => {
     
     return matchesSearch && matchesRole && matchesCompany;
   });
-
-  const totalPages = Math.ceil(filteredUsers.length / pageSize);
-  const paginatedUsers = filteredUsers.slice((page - 1) * pageSize, page * pageSize);
 
   const handleAddUser = () => {
     setFormData({
@@ -554,270 +547,239 @@ export const UserManagement: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-100px)] md:h-[calc(100vh-80px)] relative">
-      <div className="space-y-6 p-4">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
-            <p className="text-gray-600">Manage system users with profile pictures and permissions</p>
-          </div>
-          <div className="flex space-x-3">
-            <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2">
-              <Upload className="w-5 h-5" />
-              <span>Import</span>
-            </button>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
-              <Download className="w-5 h-5" />
-              <span>Export</span>
-            </button>
-            <button 
-              onClick={handleAddUser}
-              className="bg-[#003366] text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
-            >
-              <Plus className="w-5 h-5" />
-              <span>Add User</span>
-            </button>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
+          <p className="text-gray-600">Manage system users with profile pictures and permissions</p>
+        </div>
+        <div className="flex space-x-3">
+          <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2">
+            <Upload className="w-5 h-5" />
+            <span>Import</span>
+          </button>
+          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+            <Download className="w-5 h-5" />
+            <span>Export</span>
+          </button>
+          <button 
+            onClick={handleAddUser}
+            className="bg-[#003366] text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
+          >
+            <Plus className="w-5 h-5" />
+            <span>Add User</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white rounded-lg p-4 border border-gray-100">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Total Users</p>
+              <p className="text-2xl font-bold text-gray-900">{users.length}</p>
+            </div>
+            <UserIcon className="w-8 h-8 text-blue-500" />
           </div>
         </div>
+        <div className="bg-white rounded-lg p-4 border border-gray-100">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Staff Users</p>
+              <p className="text-2xl font-bold text-gray-900">{users.filter(u => u.role !== 'retailer').length}</p>
+            </div>
+            <Building2 className="w-8 h-8 text-green-500" />
+          </div>
+        </div>
+        <div className="bg-white rounded-lg p-4 border border-gray-100">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Retailer Users</p>
+              <p className="text-2xl font-bold text-gray-900">{users.filter(u => u.role === 'retailer').length}</p>
+            </div>
+            <UserCheck className="w-8 h-8 text-pink-500" />
+          </div>
+        </div>
+        <div className="bg-white rounded-lg p-4 border border-gray-100">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">With Photos</p>
+              <p className="text-2xl font-bold text-gray-900">{users.filter(u => u.profile_image).length}</p>
+            </div>
+            <ImageIcon className="w-8 h-8 text-purple-500" />
+          </div>
+        </div>
+      </div>
 
-        {/* Statistics Cards */}
+      {/* Filters */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="flex items-center space-x-3 mb-4">
+          <Filter className="w-5 h-5 text-[#003366]" />
+          <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+        </div>
+        
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg p-4 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Users</p>
-                <p className="text-2xl font-bold text-gray-900">{users.length}</p>
-              </div>
-              <UserIcon className="w-8 h-8 text-blue-500" />
-            </div>
-          </div>
-          <div className="bg-white rounded-lg p-4 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Staff Users</p>
-                <p className="text-2xl font-bold text-gray-900">{users.filter(u => u.role !== 'retailer').length}</p>
-              </div>
-              <Building2 className="w-8 h-8 text-green-500" />
-            </div>
-          </div>
-          <div className="bg-white rounded-lg p-4 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Retailer Users</p>
-                <p className="text-2xl font-bold text-gray-900">{users.filter(u => u.role === 'retailer').length}</p>
-              </div>
-              <UserCheck className="w-8 h-8 text-pink-500" />
-            </div>
-          </div>
-          <div className="bg-white rounded-lg p-4 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">With Photos</p>
-                <p className="text-2xl font-bold text-gray-900">{users.filter(u => u.profile_image).length}</p>
-              </div>
-              <ImageIcon className="w-8 h-8 text-purple-500" />
-            </div>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <div className="flex items-center space-x-3 mb-4">
-            <Filter className="w-5 h-5 text-[#003366]" />
-            <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Search users..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+            />
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <input
-                type="text"
-                placeholder="Search users..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
-              />
-            </div>
-            
-            <select
-              value={selectedRole}
-              onChange={(e) => setSelectedRole(e.target.value as UserRole | 'all')}
-              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
-            >
-              <option value="all">All Roles</option>
-              <option value="super_admin">Super Admin</option>
-              <option value="admin">Admin</option>
-              <option value="manager">Manager</option>
-              <option value="storeman">Storeman</option>
-              <option value="salesman">Salesman</option>
-              <option value="retailer">Retailer</option>
-            </select>
+          <select
+            value={selectedRole}
+            onChange={(e) => setSelectedRole(e.target.value as UserRole | 'all')}
+            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+          >
+            <option value="all">All Roles</option>
+            <option value="super_admin">Super Admin</option>
+            <option value="admin">Admin</option>
+            <option value="manager">Manager</option>
+            <option value="storeman">Storeman</option>
+            <option value="salesman">Salesman</option>
+            <option value="retailer">Retailer</option>
+          </select>
 
-            <select
-              value={selectedCompany}
-              onChange={(e) => setSelectedCompany(e.target.value)}
-              className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
-            >
-              <option value="all">All Companies</option>
-              {companies.map(company => (
-                <option key={company.id} value={company.id}>{company.name}</option>
-              ))}
-            </select>
+          <select
+            value={selectedCompany}
+            onChange={(e) => setSelectedCompany(e.target.value)}
+            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+          >
+            <option value="all">All Companies</option>
+            {companies.map(company => (
+              <option key={company.id} value={company.id}>{company.name}</option>
+            ))}
+          </select>
 
-            <div className="text-sm text-gray-600 flex items-center">
-              <span className="font-medium">{filteredUsers.length}</span> users found
-            </div>
+          <div className="text-sm text-gray-600 flex items-center">
+            <span className="font-medium">{filteredUsers.length}</span> users found
           </div>
         </div>
+      </div>
 
-        {/* Users Table */}
-        <div className="flex-1 overflow-hidden">
-          <div className="h-full overflow-y-auto pr-1" style={{ maxHeight: '100%' }}>
-            <div className="overflow-x-auto rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assignment</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-100 dark:divide-gray-800">
-                  {paginatedUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="w-10 h-10 bg-[#003366] rounded-full flex items-center justify-center mr-3 overflow-hidden">
-                            {user.profile_image ? (
-                              <img 
-                                src={user.profile_image} 
-                                alt={user.name}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : user.role === 'retailer' ? (
-                              <UserCheck className="w-5 h-5 text-white" />
-                            ) : (
-                              <UserIcon className="w-5 h-5 text-white" />
-                            )}
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                            <div className="text-sm text-gray-500">{user.email}</div>
-                          </div>
+      {/* Users Table */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assignment</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredUsers.map((user) => (
+                <tr key={user.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 bg-[#003366] rounded-full flex items-center justify-center mr-3 overflow-hidden">
+                        {user.profile_image ? (
+                          <img 
+                            src={user.profile_image} 
+                            alt={user.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : user.role === 'retailer' ? (
+                          <UserCheck className="w-5 h-5 text-white" />
+                        ) : (
+                          <UserIcon className="w-5 h-5 text-white" />
+                        )}
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                        <div className="text-sm text-gray-500">{user.email}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
+                      {user.role.replace('_', ' ').toUpperCase()}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      {user.role === 'retailer' && user.retailer_id ? (
+                        <div>
+                          <div>{getRetailerName(user.retailer_id)}</div>
+                          <div className="text-xs text-gray-500">Retailer ID: {user.retailer_id}</div>
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
-                          {user.role.replace('_', ' ').toUpperCase()}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          {user.role === 'retailer' && user.retailer_id ? (
-                            <div>
-                              <div>{getRetailerName(user.retailer_id)}</div>
-                              <div className="text-xs text-gray-500">Retailer ID: {user.retailer_id}</div>
-                            </div>
-                          ) : user.company_id ? (
-                            <div>
-                              <div>{getCompanyName(user.company_id)}</div>
-                              {user.store_id && (
-                                <div className="text-xs text-gray-500">{getStoreName(user.store_id)}</div>
-                              )}
-                            </div>
-                          ) : (
-                            'System Level'
+                      ) : user.company_id ? (
+                        <div>
+                          <div>{getCompanyName(user.company_id)}</div>
+                          {user.store_id && (
+                            <div className="text-xs text-gray-500">{getStoreName(user.store_id)}</div>
                           )}
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(user.created_at).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex items-center justify-end space-x-2">
-                          <button 
-                            onClick={() => handleViewUser(user)}
-                            className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={() => handleEditUser(user)}
-                            className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={() => handleDeleteUser(user.id)}
-                            className="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 rounded-lg transition-colors"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            {loading && (
-              <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-12 text-center">
-                <div className="w-12 h-12 border-4 border-t-[#003366] border-gray-200 dark:border-gray-700 rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-gray-600 dark:text-gray-300">Loading users...</p>
-              </div>
-            )}
-            {paginatedUsers.length === 0 && !loading && (
-              <div className="text-center py-12 flex flex-col items-center justify-center">
-                <img
-                  src="/empty-state.svg"
-                  alt="No users illustration"
-                  className="w-40 h-40 mx-auto mb-4 opacity-80"
-                  loading="lazy"
-                  style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.08))' }}
-                />
-                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No users found</h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">Try adjusting your search criteria or add a new user.</p>
-                <button
-                  onClick={handleAddUser}
-                  className="inline-flex items-center px-5 py-2.5 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors mt-2"
-                >
-                  <Plus className="w-4 h-4 mr-2" /> Add User
-                </button>
-              </div>
-            )}
-          </div>
+                      ) : (
+                        'System Level'
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {new Date(user.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div className="flex items-center justify-end space-x-2">
+                      <button 
+                        onClick={() => handleViewUser(user)}
+                        className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => handleEditUser(user)}
+                        className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteUser(user.id)}
+                        className="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 rounded-lg transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
 
-        {/* Pagination Bar */}
-        <div className="sticky bottom-0 left-0 w-full bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 py-3 px-4 flex items-center justify-between z-20 shadow-lg">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600 dark:text-gray-300">Rows per page:</span>
-            <select
-              value={pageSize}
-              onChange={e => { setPageSize(Number(e.target.value)); setPage(1); }}
-              className="border border-gray-300 dark:border-gray-700 rounded px-2 py-1 text-sm bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-600"
+        {loading && (
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-12 text-center">
+            <div className="w-12 h-12 border-4 border-t-[#003366] border-gray-200 dark:border-gray-700 rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600 dark:text-gray-300">Loading users...</p>
+          </div>
+        )}
+
+        {filteredUsers.length === 0 && !loading && (
+          <div className="text-center py-12 flex flex-col items-center justify-center">
+            <img
+              src="/empty-state.svg"
+              alt="No users illustration"
+              className="w-40 h-40 mx-auto mb-4 opacity-80"
+              loading="lazy"
+              style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.08))' }}
+            />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No users found</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">Try adjusting your search criteria or add a new user.</p>
+            <button
+              onClick={handleAddUser}
+              className="inline-flex items-center px-5 py-2.5 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors mt-2"
             >
-              {[10, 20, 50, 100].map(size => (
-                <option key={size} value={size}>{size}</option>
-              ))}
-            </select>
+              <Plus className="w-4 h-4 mr-2" /> Add User
+            </button>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="px-3 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50"
-            >Prev</button>
-            <span className="text-sm text-gray-700 dark:text-gray-200">Page {page} of {totalPages || 1}</span>
-            <button
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages || totalPages === 0}
-              className="px-3 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50"
-            >Next</button>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Modals */}

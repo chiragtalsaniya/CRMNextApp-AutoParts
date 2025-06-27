@@ -17,10 +17,6 @@ export const CompanyList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Pagination state
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
-
   // Load companies from API
   useEffect(() => {
     console.log('CompanyList user:', user);
@@ -66,9 +62,6 @@ export const CompanyList: React.FC = () => {
     (company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       company.contact_email.toLowerCase().includes(searchTerm.toLowerCase()))
   );
-
-  const totalPages = Math.ceil(filteredCompanies.length / pageSize);
-  const paginatedCompanies = filteredCompanies.slice((page - 1) * pageSize, page * pageSize);
 
   const handleAddCompany = () => {
     setFormData({
@@ -385,23 +378,23 @@ export const CompanyList: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-100px)] md:h-[calc(100vh-80px)] relative">
-      <div className="p-6 bg-white rounded-lg shadow-md mb-4">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Companies</h1>
-            <p className="text-gray-600">Manage auto parts distributor companies and their branding</p>
-          </div>
-          <button 
-            onClick={handleAddCompany}
-            className="bg-[#003366] text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
-          >
-            <Plus className="w-5 h-5" />
-            <span>Add Company</span>
-          </button>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Companies</h1>
+          <p className="text-gray-600">Manage auto parts distributor companies and their branding</p>
         </div>
+        <button 
+          onClick={handleAddCompany}
+          className="bg-[#003366] text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
+        >
+          <Plus className="w-5 h-5" />
+          <span>Add Company</span>
+        </button>
+      </div>
 
-        <div className="mt-4">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+        <div className="p-6 border-b border-gray-200">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
@@ -413,15 +406,22 @@ export const CompanyList: React.FC = () => {
             />
           </div>
         </div>
-      </div>
 
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full overflow-y-auto pr-1" style={{ maxHeight: '100%' }}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {paginatedCompanies.map((company) => (
-              <div key={company.id} className="bg-white rounded-xl shadow-sm border border-gray-100">
-                <div className="p-6 border-b border-gray-200">
-                  <div className="flex items-center justify-between">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredCompanies.map((company) => (
+                <tr key={company.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="w-12 h-12 bg-[#003366] rounded-lg flex items-center justify-center mr-3">
                         {company.logo_url ? (
@@ -439,7 +439,27 @@ export const CompanyList: React.FC = () => {
                         <div className="text-sm text-gray-500">ID: {company.id}</div>
                       </div>
                     </div>
-                    <div className="flex-shrink-0">
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="space-y-1">
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Mail className="w-4 h-4 mr-2" />
+                        {company.contact_email}
+                      </div>
+                      <div className="flex items-center text-sm text-gray-600">
+                        <Phone className="w-4 h-4 mr-2" />
+                        {company.contact_phone}
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm text-gray-900 max-w-xs truncate">{company.address}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {new Date(company.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div className="flex items-center justify-end space-x-2">
                       <button 
                         onClick={() => handleViewCompany(company)}
                         className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors"
@@ -459,82 +479,39 @@ export const CompanyList: React.FC = () => {
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
-                  </div>
-                </div>
-                <div className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Contact Email</p>
-                      <p className="text-gray-900">{company.contact_email}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Contact Phone</p>
-                      <p className="text-gray-900">{company.contact_phone}</p>
-                    </div>
-                    <div className="md:col-span-2">
-                      <p className="text-sm font-medium text-gray-600">Address</p>
-                      <p className="text-gray-900">{company.address}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          {loading && (
-            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-12 text-center">
-              <div className="w-12 h-12 border-4 border-t-[#003366] border-gray-200 dark:border-gray-700 rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-gray-600 dark:text-gray-300">Loading companies...</p>
-            </div>
-          )}
-          {paginatedCompanies.length === 0 && !loading && (
-            <div className="text-center py-12 flex flex-col items-center justify-center">
-              <img
-                src="/empty-state.svg"
-                alt="No companies illustration"
-                className="w-40 h-40 mx-auto mb-4 opacity-80"
-                loading="lazy"
-                style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.08))' }}
-              />
-              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No companies found</h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">Try adjusting your search criteria or add a new company.</p>
-              <button
-                onClick={handleAddCompany}
-                className="inline-flex items-center px-5 py-2.5 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors mt-2"
-              >
-                <Plus className="w-4 h-4 mr-2" /> Add Company
-              </button>
-            </div>
-          )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      </div>
 
-      {/* Pagination Bar */}
-      <div className="sticky bottom-0 left-0 w-full bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 py-3 px-4 flex items-center justify-between z-20 shadow-lg">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600 dark:text-gray-300">Rows per page:</span>
-          <select
-            value={pageSize}
-            onChange={e => { setPageSize(Number(e.target.value)); setPage(1); }}
-            className="border border-gray-300 dark:border-gray-700 rounded px-2 py-1 text-sm bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-600"
-          >
-            {[10, 20, 50, 100].map(size => (
-              <option key={size} value={size}>{size}</option>
-            ))}
-          </select>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setPage(p => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="px-3 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50"
-          >Prev</button>
-          <span className="text-sm text-gray-700 dark:text-gray-200">Page {page} of {totalPages || 1}</span>
-          <button
-            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages || totalPages === 0}
-            className="px-3 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50"
-          >Next</button>
-        </div>
+        {loading && (
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-12 text-center">
+            <div className="w-12 h-12 border-4 border-t-[#003366] border-gray-200 dark:border-gray-700 rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600 dark:text-gray-300">Loading companies...</p>
+          </div>
+        )}
+
+        {filteredCompanies.length === 0 && !loading && (
+          <div className="text-center py-12 flex flex-col items-center justify-center">
+            <img
+              src="/empty-state.svg"
+              alt="No companies illustration"
+              className="w-40 h-40 mx-auto mb-4 opacity-80"
+              loading="lazy"
+              style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.08))' }}
+            />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No companies found</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">Try adjusting your search criteria or add a new company.</p>
+            <button
+              onClick={handleAddCompany}
+              className="inline-flex items-center px-5 py-2.5 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors mt-2"
+            >
+              <Plus className="w-4 h-4 mr-2" /> Add Company
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Modals */}
