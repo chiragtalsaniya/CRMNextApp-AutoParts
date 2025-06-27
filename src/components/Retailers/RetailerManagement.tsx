@@ -704,6 +704,20 @@ export const RetailerManagement: React.FC = () => {
             )}
           </div>
         </div>
+
+        {/* Edit Retailer Button */}
+        <div className="p-6 border-t border-gray-200 dark:border-gray-800 flex justify-end space-x-4">
+          <button
+            onClick={() => {
+              onClose();
+              handleEditRetailer(retailer);
+            }}
+            className="px-6 py-3 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
+          >
+            <Edit className="w-4 h-4" />
+            <span>Edit Retailer</span>
+          </button>
+        </div>
       </div>
     );
   };
