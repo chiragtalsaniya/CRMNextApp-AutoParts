@@ -99,11 +99,9 @@ router.get('/', authenticateToken, async (req, res) => {
 
     // Get item status with pagination
     const offset = (safePage - 1) * safeLimit;
-    
-    // Ensure all parameters are proper types
     const finalLimit = Number(safeLimit);
     const finalOffset = Number(offset);
-    
+
     // Debug logging
     console.log('Pagination params:', { 
       safePage, 
@@ -114,6 +112,8 @@ router.get('/', authenticateToken, async (req, res) => {
       cleanQueryParams: cleanQueryParams.length,
       allParams: [...cleanQueryParams, finalLimit, finalOffset]
     });
+
+    // Build the query with LIMIT/OFFSET interpolated
     const itemStatusQuery = `
       SELECT 
         ist.*,
@@ -131,10 +131,10 @@ router.get('/', authenticateToken, async (req, res) => {
       LEFT JOIN parts p ON ist.Part_No = p.Part_Number
       ${whereClause}
       ORDER BY ist.Branch_Code, ist.Part_No
-      LIMIT ? OFFSET ?
+      LIMIT ${finalLimit} OFFSET ${finalOffset}
     `;
 
-    const itemStatus = await executeQuery(itemStatusQuery, [...cleanQueryParams, finalLimit, finalOffset]);
+    const itemStatus = await executeQuery(itemStatusQuery, cleanQueryParams);
 
     // Add stock level indicators
     const enrichedData = itemStatus.map(item => {
