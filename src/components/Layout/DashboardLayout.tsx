@@ -17,11 +17,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
 
   return (
     <div className={`min-h-screen flex flex-col ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
-      {/* Sticky Top Bar */}
+      {/* Redesigned Sticky Top Bar */}
       <Header onMenuClick={handleSidebarToggle} />
       {/* Main Content Layout */}
       <div className="flex flex-1 min-h-0">
-        {/* Sidebar (fixed width, scrollable menu) */}
+        {/* Redesigned Sidebar */}
         <Sidebar isCollapsed={sidebarCollapsed} onToggle={handleSidebarToggle} />
         {/* Main Section */}
         <main className="flex-1 flex flex-col min-w-0 p-4 md:p-6">

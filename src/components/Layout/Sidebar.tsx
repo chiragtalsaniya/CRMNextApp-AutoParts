@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { 
-  Home, 
-  Building2, 
-  Store, 
-  Users, 
-  Package, 
-  ShoppingCart, 
-  Truck, 
+import {
+  Home,
+  Building2,
+  Store,
+  Users,
+  Package,
+  ShoppingCart,
+  Truck,
   BarChart3,
   Settings,
   UserCheck,
@@ -72,7 +72,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const { user } = useAuth();
   const { theme } = useTheme();
 
-  const filteredNavItems = navItems.filter(item => 
+  const filteredNavItems = navItems.filter(item =>
     item.roles.includes(user?.role || '')
   );
 
@@ -103,111 +103,62 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
     <>
       {/* Mobile Overlay */}
       {!isCollapsed && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
           onClick={onToggle}
         />
       )}
-      {/* Sidebar */}
+      {/* Redesigned Sidebar */}
       <div className={`
-        fixed lg:relative inset-y-0 left-0 z-50 
-        ${isCollapsed ? 'w-16' : 'w-64'} 
-        ${theme === 'dark' ? 'bg-gray-900 text-white border-r border-gray-800' : 'bg-[#003366] text-white'} min-h-screen
+        fixed lg:relative inset-y-0 left-0 z-50
+        ${isCollapsed ? 'w-16' : 'w-64'}
+        ${theme === 'dark' ? 'bg-gradient-to-b from-gray-900 to-gray-800 text-white border-r border-gray-800' : 'bg-gradient-to-b from-[#003366] to-blue-900 text-white'} min-h-screen
         transform transition-all duration-300 ease-in-out
         ${isCollapsed ? '-translate-x-full lg:translate-x-0' : 'translate-x-0'}
-        flex flex-col
+        flex flex-col shadow-xl
       `}>
-        {/* Header (fixed top) */}
-        <div className="p-4 border-b border-blue-700 flex-shrink-0 sticky top-0 bg-inherit z-10">
-          <div className="flex items-center justify-between">
-            {!isCollapsed && (
-              <div className="flex items-center space-x-3">
-                {/* Company Logo */}
-                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
-                  {currentCompany?.logo_url ? (
-                    <img 
-                      src={currentCompany.logo_url} 
-                      alt={currentCompany.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-[#003366] font-bold text-lg">N</span>
-                  )}
-                </div>
-                
-                {/* Company/System Name */}
-                <div className="flex-1 min-w-0">
-                  {user?.role === 'super_admin' ? (
-                    <div>
-                      <h2 className="text-lg font-semibold text-white transition-opacity duration-300">
-                        NextApp Inc.
-                      </h2>
-                      <p className="text-xs text-blue-200 mt-1">
-                        {getDashboardTitle()}
-                      </p>
-                    </div>
-                  ) : currentCompany ? (
-                    <div>
-                      <h2 className="text-sm font-semibold text-white transition-opacity duration-300 truncate">
-                        {currentCompany.name}
-                      </h2>
-                      <p className="text-xs text-blue-200 mt-1">
-                        {getDashboardTitle()}
-                      </p>
-                    </div>
-                  ) : (
-                    <div>
-                      <h2 className="text-lg font-semibold text-white transition-opacity duration-300">
-                        NextApp Inc.
-                      </h2>
-                      <p className="text-xs text-blue-200 mt-1">
-                        {getDashboardTitle()}
-                      </p>
-                    </div>
-                  )}
-                  
-                  {/* Additional Role Context */}
-                  {user?.role !== 'super_admin' && !isCollapsed && (
-                    <div className="mt-1">
-                      {user?.role === 'admin' && user?.company_id && (
-                        <p className="text-xs text-blue-300">Company: {user.company_id}</p>
-                      )}
-                      {['manager', 'storeman', 'salesman'].includes(user?.role || '') && user?.store_id && (
-                        <p className="text-xs text-blue-300">Store: {user.store_id}</p>
-                      )}
-                      {user?.role === 'retailer' && user?.retailer_id && (
-                        <p className="text-xs text-blue-300">Retailer ID: {user.retailer_id}</p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-            
-            {/* Collapsed State - Show only logo */}
-            {isCollapsed && (
-              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center overflow-hidden mx-auto">
+        {/* Sidebar Header (fixed top) */}
+        <div className="p-5 border-b border-blue-900 flex-shrink-0 sticky top-0 bg-inherit z-10 flex items-center gap-3">
+          {!isCollapsed && (
+            <>
+              <div className="w-12 h-12 bg-white/90 rounded-xl flex items-center justify-center overflow-hidden shadow-md">
                 {currentCompany?.logo_url ? (
-                  <img 
-                    src={currentCompany.logo_url} 
+                  <img
+                    src={currentCompany.logo_url}
                     alt={currentCompany.name}
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-[#003366] font-bold text-sm">N</span>
+                  <span className="text-[#003366] font-extrabold text-xl">N</span>
                 )}
               </div>
-            )}
-            
-            <button
-              onClick={onToggle}
-              className="p-2 rounded-lg hover:bg-blue-700 transition-colors lg:hidden"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+              <div className="flex-1 min-w-0">
+                <h2 className="text-lg font-bold text-white truncate">{currentCompany?.name || 'NextApp Inc.'}</h2>
+                <p className="text-xs text-blue-200 mt-1">{getDashboardTitle()}</p>
+              </div>
+            </>
+          )}
+          {isCollapsed && (
+            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center overflow-hidden mx-auto">
+              {currentCompany?.logo_url ? (
+                <img
+                  src={currentCompany.logo_url}
+                  alt={currentCompany.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-[#003366] font-bold text-sm">N</span>
+              )}
+            </div>
+          )}
+          <button
+            onClick={onToggle}
+            className="p-2 rounded-lg hover:bg-blue-900/30 transition-colors lg:hidden ml-auto"
+            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            <X className="w-5 h-5 text-white" />
+          </button>
         </div>
-
         {/* Navigation (scrollable middle) */}
         <nav className="flex-1 p-3 space-y-2 overflow-y-auto min-h-0">
           {filteredNavItems.map((item) => {
@@ -217,29 +168,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) =>
-                  `flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 group relative ${
+                  `flex items-center space-x-3 px-3 py-3 rounded-lg transition-all duration-200 group relative font-medium tracking-tight text-base shadow-sm ${
                     isActive
-                      ? 'bg-blue-600 text-white'
-                      : 'text-blue-100 hover:bg-blue-700 hover:text-white'
+                      ? 'bg-blue-600 text-white shadow-lg'
+                      : 'text-blue-100 hover:bg-blue-800 hover:text-white'
                   }`
                 }
                 title={isCollapsed ? item.label : undefined}
               >
                 <Icon className="w-5 h-5 flex-shrink-0" />
-                <span className={`
-                  transition-all duration-300 whitespace-nowrap
-                  ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'}
-                `}>
+                <span className={`transition-all duration-300 whitespace-nowrap ${isCollapsed ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'}`}>
                   {item.label}
                 </span>
-                
                 {/* Tooltip for collapsed state */}
                 {isCollapsed && (
-                  <div className="
-                    absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded
-                    opacity-0 group-hover:opacity-100 transition-opacity duration-200
-                    pointer-events-none whitespace-nowrap z-50
-                  ">
+                  <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
                     {item.label}
                   </div>
                 )}
@@ -247,30 +190,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
             );
           })}
         </nav>
-
         {/* Role Badge (fixed bottom) */}
         {!isCollapsed && (
-          <div className="p-4 border-t border-blue-700 flex-shrink-0 sticky bottom-0 bg-inherit z-10">
-            <div className="bg-blue-800 rounded-lg p-3 text-center">
+          <div className="p-4 border-t border-blue-900 flex-shrink-0 sticky bottom-0 bg-inherit z-10">
+            <div className="bg-blue-800 rounded-lg p-3 text-center shadow">
               <p className="text-xs text-blue-200">Logged in as</p>
-              <p className="text-sm font-semibold text-white capitalize">
-                {user?.role.replace('_', ' ')}
-              </p>
+              <p className="text-sm font-semibold text-white capitalize">{user?.role.replace('_', ' ')}</p>
             </div>
           </div>
         )}
-
         {/* Toggle Button (Desktop, fixed bottom) */}
-        <div className="hidden lg:block p-4 border-t border-blue-700 flex-shrink-0 sticky bottom-0 bg-inherit z-10">
+        <div className="hidden lg:block p-4 border-t border-blue-900 flex-shrink-0 sticky bottom-0 bg-inherit z-10">
           <button
             onClick={onToggle}
-            className="w-full flex items-center justify-center p-2 rounded-lg hover:bg-blue-700 transition-colors"
+            className="w-full flex items-center justify-center p-2 rounded-lg hover:bg-blue-900/30 transition-colors"
             title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             {isCollapsed ? (
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-5 h-5 text-white" />
             ) : (
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-5 h-5 text-white" />
             )}
           </button>
         </div>

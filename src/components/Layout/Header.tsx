@@ -17,45 +17,41 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   useEffect(() => {
     setAccessibleCompanies(getAccessibleCompanies());
     setAccessibleStores(getAccessibleStores());
-    console.log('Header accessibleCompanies:', getAccessibleCompanies());
-    console.log('Header accessibleStores:', getAccessibleStores());
   }, [getAccessibleCompanies, getAccessibleStores]);
 
   return (
-    <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-800 sticky top-0 z-30">
-      <div className="flex items-center justify-between px-6 py-4">
-        <div className="flex items-center">
+    <header className="sticky top-0 z-30 w-full bg-gradient-to-r from-[#003366] to-blue-800 dark:from-gray-900 dark:to-gray-800 shadow-lg border-b border-blue-900 dark:border-gray-800">
+      <div className="flex items-center justify-between px-4 md:px-8 py-3">
+        <div className="flex items-center gap-3">
           {/* Mobile Menu Button */}
           <button
             onClick={onMenuClick}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors lg:hidden mr-3"
+            className="p-2 rounded-lg hover:bg-blue-900/20 transition-colors lg:hidden"
+            aria-label="Open sidebar menu"
           >
-            <Menu className="w-5 h-5 text-gray-600" />
+            <Menu className="w-6 h-6 text-white" />
           </button>
-
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-[#003366] rounded-lg flex items-center justify-center mr-3">
-              <span className="text-white font-bold text-sm">N</span>
+          {/* Logo & Title */}
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-white/90 rounded-xl flex items-center justify-center shadow-md">
+              <span className="text-[#003366] font-extrabold text-2xl tracking-tight">N</span>
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-[#003366]">NextApp Inc.</h1>
+              <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight leading-tight drop-shadow">NextApp Inc.</h1>
               <div className="relative">
                 <button
                   onClick={() => setShowScopeDropdown(!showScopeDropdown)}
-                  className="flex items-center space-x-1 text-xs text-gray-500 hover:text-gray-700 transition-colors"
+                  className="flex items-center space-x-1 text-xs text-blue-100 hover:text-white transition-colors"
                 >
                   <span>{getCurrentUserScope()}</span>
                   {(user?.role === 'super_admin' || user?.role === 'admin') && (
                     <ChevronDown className="w-3 h-3" />
                   )}
                 </button>
-
-                {/* Scope Dropdown */}
                 {showScopeDropdown && (user?.role === 'super_admin' || user?.role === 'admin') && (
                   <div className="absolute top-full left-0 mt-1 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                     <div className="p-3">
                       <p className="text-xs font-medium text-gray-700 mb-2">Access Scope</p>
-                      
                       {user?.role === 'super_admin' && (
                         <div className="space-y-2">
                           <div className="flex items-center space-x-2 text-xs text-gray-600">
@@ -68,7 +64,6 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
                           </div>
                         </div>
                       )}
-
                       {user?.role === 'admin' && (
                         <div className="space-y-2">
                           <div className="flex items-center space-x-2 text-xs text-gray-600">
@@ -88,35 +83,35 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             </div>
           </div>
         </div>
-
-        <div className="flex items-center space-x-4">
+        {/* Right Side Controls */}
+        <div className="flex items-center gap-4">
           {/* Theme Toggle */}
-          <div className="flex items-center space-x-1 mr-2">
+          <div className="flex items-center gap-1 mr-2">
             <button
               onClick={() => setTheme('light')}
-              className={`p-2 rounded-lg transition-colors ${theme === 'light' ? 'bg-blue-100 text-blue-700' : 'text-gray-400 hover:text-yellow-500'}`}
+              className={`p-2 rounded-lg transition-colors ${theme === 'light' ? 'bg-blue-200 text-blue-900' : 'text-blue-100 hover:text-yellow-300'}`}
               aria-label="Light mode"
             >
               <Sun className="w-5 h-5" />
             </button>
             <button
               onClick={() => setTheme('dark')}
-              className={`p-2 rounded-lg transition-colors ${theme === 'dark' ? 'bg-blue-100 text-blue-700' : 'text-gray-400 hover:text-blue-500'}`}
+              className={`p-2 rounded-lg transition-colors ${theme === 'dark' ? 'bg-blue-200 text-blue-900' : 'text-blue-100 hover:text-blue-300'}`}
               aria-label="Dark mode"
             >
               <Moon className="w-5 h-5" />
             </button>
             <button
               onClick={() => setTheme('auto')}
-              className={`p-2 rounded-lg transition-colors ${theme === 'auto' ? 'bg-blue-100 text-blue-700' : 'text-gray-400 hover:text-gray-500'}`}
+              className={`p-2 rounded-lg transition-colors ${theme === 'auto' ? 'bg-blue-200 text-blue-900' : 'text-blue-100 hover:text-white'}`}
               aria-label="System mode"
             >
               <Monitor className="w-5 h-5" />
             </button>
           </div>
-
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-[#003366] rounded-full flex items-center justify-center overflow-hidden">
+          {/* User Info */}
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-blue-900 rounded-full flex items-center justify-center overflow-hidden border-2 border-white">
               {user?.profile_image ? (
                 <img 
                   src={user.profile_image} 
@@ -124,22 +119,23 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <User className="w-4 h-4 text-white" />
+                <User className="w-5 h-5 text-white" />
               )}
             </div>
-            <div className="hidden sm:block">
-              <p className="text-sm font-medium text-gray-900">{user?.name}</p>
-              <p className="text-xs text-gray-500 capitalize">{user?.role.replace('_', ' ')}</p>
+            <div className="hidden sm:block text-right">
+              <p className="text-sm font-semibold text-white leading-tight">{user?.name}</p>
+              <p className="text-xs text-blue-100 capitalize">{user?.role.replace('_', ' ')}</p>
             </div>
           </div>
-          
-          <div className="flex items-center space-x-2">
-            <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors rounded-lg hover:bg-gray-100">
+          {/* Settings & Logout */}
+          <div className="flex items-center gap-2">
+            <button className="p-2 text-blue-100 hover:text-white transition-colors rounded-lg hover:bg-blue-900/30" title="Settings">
               <Settings className="w-5 h-5" />
             </button>
             <button 
               onClick={logout}
-              className="p-2 text-gray-400 hover:text-red-600 transition-colors rounded-lg hover:bg-gray-100"
+              className="p-2 text-blue-100 hover:text-red-400 transition-colors rounded-lg hover:bg-blue-900/30"
+              title="Logout"
             >
               <LogOut className="w-5 h-5" />
             </button>
