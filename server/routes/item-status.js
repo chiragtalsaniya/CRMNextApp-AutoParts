@@ -83,6 +83,9 @@ router.get('/', authenticateToken, async (req, res) => {
     const whereClause = whereConditions.length > 0 ? 
       `WHERE ${whereConditions.join(' AND ')}` : '';
 
+    // Clean query parameters - remove any undefined/null values
+    const cleanQueryParams = queryParams.filter(param => param !== undefined && param !== null);
+
     // Get total count
     const countQuery = `
       SELECT COUNT(*) as total 
@@ -91,18 +94,15 @@ router.get('/', authenticateToken, async (req, res) => {
       LEFT JOIN parts p ON ist.Part_No = p.Part_Number
       ${whereClause}
     `;
-    const countResult = await executeQuery(countQuery, queryParams);
+    const countResult = await executeQuery(countQuery, cleanQueryParams);
     const total = countResult[0].total;
 
     // Get item status with pagination
     const offset = (safePage - 1) * safeLimit;
     
-    // Ensure all parameters are proper types and filter out undefined/null
+    // Ensure all parameters are proper types
     const finalLimit = Number(safeLimit);
     const finalOffset = Number(offset);
-    
-    // Clean query parameters - remove any undefined/null values
-    const cleanQueryParams = queryParams.filter(param => param !== undefined && param !== null);
     
     // Debug logging
     console.log('Pagination params:', { 
