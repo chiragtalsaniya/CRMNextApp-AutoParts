@@ -611,7 +611,9 @@ export const RetailerManagement: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-orange-600 dark:text-orange-200">Credit Limit</p>
-                    <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">${((retailer.Credit_Limit || 0).toFixed(2))}</p>
+                    <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">
+                      ${Number(retailer.Credit_Limit || 0).toFixed(2)}
+                    </p>
                   </div>
                   <DollarSign className="w-8 h-8 text-orange-600 dark:text-orange-200" />
                 </div>
