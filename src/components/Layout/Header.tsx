@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { User, LogOut, Settings, Menu, ChevronDown, Building2, Store } from 'lucide-react';
+import { User, LogOut, Settings, Menu, ChevronDown, Building2, Store, Sun, Moon, Monitor } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -8,6 +9,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const { user, logout, getCurrentUserScope, getAccessibleCompanies, getAccessibleStores } = useAuth();
+  const { theme, setTheme } = useTheme();
   const [showScopeDropdown, setShowScopeDropdown] = useState(false);
   const [accessibleCompanies, setAccessibleCompanies] = useState<string[]>([]);
   const [accessibleStores, setAccessibleStores] = useState<string[]>([]);
@@ -20,7 +22,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   }, [getAccessibleCompanies, getAccessibleStores]);
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-30">
+    <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-800 sticky top-0 z-30">
       <div className="flex items-center justify-between px-6 py-4">
         <div className="flex items-center">
           {/* Mobile Menu Button */}
@@ -88,6 +90,31 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
         </div>
 
         <div className="flex items-center space-x-4">
+          {/* Theme Toggle */}
+          <div className="flex items-center space-x-1 mr-2">
+            <button
+              onClick={() => setTheme('light')}
+              className={`p-2 rounded-lg transition-colors ${theme === 'light' ? 'bg-blue-100 text-blue-700' : 'text-gray-400 hover:text-yellow-500'}`}
+              aria-label="Light mode"
+            >
+              <Sun className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setTheme('dark')}
+              className={`p-2 rounded-lg transition-colors ${theme === 'dark' ? 'bg-blue-100 text-blue-700' : 'text-gray-400 hover:text-blue-500'}`}
+              aria-label="Dark mode"
+            >
+              <Moon className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => setTheme('auto')}
+              className={`p-2 rounded-lg transition-colors ${theme === 'auto' ? 'bg-blue-100 text-blue-700' : 'text-gray-400 hover:text-gray-500'}`}
+              aria-label="System mode"
+            >
+              <Monitor className="w-5 h-5" />
+            </button>
+          </div>
+
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-[#003366] rounded-full flex items-center justify-center overflow-hidden">
               {user?.profile_image ? (

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Save, Palette, Monitor, Sun, Moon } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
 
 export const AppearanceSettings: React.FC = () => {
   const [settings, setSettings] = useState({
@@ -12,6 +13,7 @@ export const AppearanceSettings: React.FC = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const { theme, setTheme } = useTheme();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,63 +50,63 @@ export const AppearanceSettings: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Theme Selection */}
-      <div className="bg-gray-50 rounded-lg p-6">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
         <div className="flex items-center space-x-3 mb-6">
-          <Palette className="w-6 h-6 text-[#003366]" />
-          <h3 className="text-lg font-semibold text-gray-900">Theme</h3>
+          <Palette className="w-6 h-6 text-[#003366] dark:text-blue-200" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Theme</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <label className={`relative cursor-pointer rounded-lg border-2 p-4 ${settings.theme === 'light' ? 'border-[#003366] bg-blue-50' : 'border-gray-200'}`}>
+          <label className={`relative cursor-pointer rounded-lg border-2 p-4 ${theme === 'light' ? 'border-[#003366] bg-blue-50' : 'border-gray-200 dark:border-gray-700'}`}>
             <input
               type="radio"
               name="theme"
               value="light"
-              checked={settings.theme === 'light'}
-              onChange={handleInputChange}
+              checked={theme === 'light'}
+              onChange={() => setTheme('light')}
               className="sr-only"
             />
             <div className="flex items-center space-x-3">
               <Sun className="w-6 h-6 text-yellow-500" />
               <div>
-                <p className="font-medium text-gray-900">Light</p>
-                <p className="text-sm text-gray-500">Clean and bright interface</p>
+                <p className="font-medium text-gray-900 dark:text-white">Light</p>
+                <p className="text-sm text-gray-500 dark:text-gray-300">Clean and bright interface</p>
               </div>
             </div>
           </label>
 
-          <label className={`relative cursor-pointer rounded-lg border-2 p-4 ${settings.theme === 'dark' ? 'border-[#003366] bg-blue-50' : 'border-gray-200'}`}>
+          <label className={`relative cursor-pointer rounded-lg border-2 p-4 ${theme === 'dark' ? 'border-[#003366] bg-blue-50' : 'border-gray-200 dark:border-gray-700'}`}>
             <input
               type="radio"
               name="theme"
               value="dark"
-              checked={settings.theme === 'dark'}
-              onChange={handleInputChange}
+              checked={theme === 'dark'}
+              onChange={() => setTheme('dark')}
               className="sr-only"
             />
             <div className="flex items-center space-x-3">
               <Moon className="w-6 h-6 text-blue-500" />
               <div>
-                <p className="font-medium text-gray-900">Dark</p>
-                <p className="text-sm text-gray-500">Easy on the eyes</p>
+                <p className="font-medium text-gray-900 dark:text-white">Dark</p>
+                <p className="text-sm text-gray-500 dark:text-gray-300">Easy on the eyes</p>
               </div>
             </div>
           </label>
 
-          <label className={`relative cursor-pointer rounded-lg border-2 p-4 ${settings.theme === 'auto' ? 'border-[#003366] bg-blue-50' : 'border-gray-200'}`}>
+          <label className={`relative cursor-pointer rounded-lg border-2 p-4 ${theme === 'auto' ? 'border-[#003366] bg-blue-50' : 'border-gray-200 dark:border-gray-700'}`}>
             <input
               type="radio"
               name="theme"
               value="auto"
-              checked={settings.theme === 'auto'}
-              onChange={handleInputChange}
+              checked={theme === 'auto'}
+              onChange={() => setTheme('auto')}
               className="sr-only"
             />
             <div className="flex items-center space-x-3">
               <Monitor className="w-6 h-6 text-gray-500" />
               <div>
-                <p className="font-medium text-gray-900">Auto</p>
-                <p className="text-sm text-gray-500">Match system preference</p>
+                <p className="font-medium text-gray-900 dark:text-white">Auto</p>
+                <p className="text-sm text-gray-500 dark:text-gray-300">Match system preference</p>
               </div>
             </div>
           </label>

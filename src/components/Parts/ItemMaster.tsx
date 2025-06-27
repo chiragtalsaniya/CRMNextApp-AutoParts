@@ -138,6 +138,17 @@ export const ItemMaster: React.FC<ItemMasterProps> = ({ onPartSelect, selectionM
   const [showViewModal, setShowViewModal] = useState(false);
   const [selectedPart, setSelectedPart] = useState<Part | null>(null);
   const [formData, setFormData] = useState<Partial<Part>>({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Simulate data fetching
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setParts(mockParts);
+    }, 1000);
+  }, []);
 
   const filteredParts = parts.filter(part => {
     const matchesSearch = 
@@ -940,11 +951,40 @@ export const ItemMaster: React.FC<ItemMasterProps> = ({ onPartSelect, selectionM
         })}
       </div>
 
-      {filteredParts.length === 0 && (
-        <div className="text-center py-12">
-          <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+      {filteredParts.length === 0 && !loading && (
+        <div className="text-center py-12 flex flex-col items-center justify-center">
+          <img
+            src="https://undraw.co/api/illustrations/undraw_empty_xct9.svg"
+            alt="No parts illustration"
+            className="w-40 h-40 mx-auto mb-4 opacity-80"
+            loading="lazy"
+            style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.08))' }}
+          />
           <h3 className="text-lg font-medium text-gray-900 mb-2">No parts found</h3>
-          <p className="text-gray-600">Try adjusting your search criteria or add a new part.</p>
+          <p className="text-gray-600 mb-4">Try adjusting your search criteria or add a new part.</p>
+          <button
+            onClick={handleAddPart}
+            className="inline-flex items-center px-5 py-2.5 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors mt-2"
+          >
+            <Plus className="w-4 h-4 mr-2" /> Add Part
+          </button>
+        </div>
+      )}
+
+      {error && (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="text-center flex flex-col items-center justify-center">
+            <img
+              src="https://undraw.co/api/illustrations/undraw_cancel_re_pkdm.svg"
+              alt="Error illustration"
+              className="w-32 h-32 mx-auto mb-4 opacity-90"
+              loading="lazy"
+              style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.10))' }}
+            />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Something went wrong</h3>
+            <p className="text-gray-600 mb-4">{error}</p>
+            <button onClick={() => window.location.reload()} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Retry</button>
+          </div>
         </div>
       )}
 

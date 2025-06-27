@@ -20,6 +20,7 @@ import {
   Database
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 interface NavItem {
   to: string;
@@ -69,6 +70,7 @@ const mockCompanies = [
 
 export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const { user } = useAuth();
+  const { theme } = useTheme();
 
   const filteredNavItems = navItems.filter(item => 
     item.roles.includes(user?.role || '')
@@ -106,12 +108,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
           onClick={onToggle}
         />
       )}
-
       {/* Sidebar */}
       <div className={`
         fixed lg:relative inset-y-0 left-0 z-50 
         ${isCollapsed ? 'w-16' : 'w-64'} 
-        bg-[#003366] text-white min-h-screen
+        ${theme === 'dark' ? 'bg-gray-900 text-white border-r border-gray-800' : 'bg-[#003366] text-white'} min-h-screen
         transform transition-all duration-300 ease-in-out
         ${isCollapsed ? '-translate-x-full lg:translate-x-0' : 'translate-x-0'}
         flex flex-col
