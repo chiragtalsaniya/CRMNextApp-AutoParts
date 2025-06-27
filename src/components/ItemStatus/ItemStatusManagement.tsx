@@ -63,12 +63,12 @@ export const ItemStatusManagement: React.FC = () => {
         const response = await itemStatusAPI.getItemStatus(params);
         
         if (response.data && response.data.data) {
-          // Ensure all date fields are formatted as strings for display
+          // Ensure all date fields are numbers
           const mapped = response.data.data.map((item: any) => ({
             ...item,
-            LastSale: safeFormat(item.LastSale, 'T'),
-            LastPurchase: safeFormat(item.LastPurchase, 'T'),
-            Last_Sync: safeFormat(item.Last_Sync, 'T'),
+            LastSale: item.LastSale ? Number(item.LastSale) : undefined,
+            LastPurchase: item.LastPurchase ? Number(item.LastPurchase) : undefined,
+            Last_Sync: item.Last_Sync ? Number(item.Last_Sync) : undefined,
             created_at: item.created_at,
             updated_at: item.updated_at,
           }));
