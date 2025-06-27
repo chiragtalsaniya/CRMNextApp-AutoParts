@@ -543,275 +543,136 @@ export const RetailerManagement: React.FC = () => {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto">
-          <div className="p-6 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 bg-[#003366] rounded-lg flex items-center justify-center">
-                  {retailer.RetailerImage ? (
-                    <img 
-                      src={retailer.RetailerImage} 
-                      alt={retailer.Retailer_Name}
-                      className="w-full h-full object-cover rounded-lg"
-                    />
-                  ) : (
-                    <UserCheck className="w-8 h-8 text-white" />
-                  )}
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900">{retailer.Retailer_Name}</h2>
-                  <p className="text-gray-600">{retailer.Contact_Person}</p>
-                  <div className="flex items-center space-x-4 mt-1">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(retailer.Retailer_Status)}`}>
-                      {getStatusText(retailer.Retailer_Status)}
-                    </span>
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getConfirmColor(retailer.Confirm)}`}>
-                      {getConfirmText(retailer.Confirm)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-          </div>
-
-          <div className="p-6 space-y-8">
-            {/* Important Info Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
-              <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-blue-600 dark:text-blue-200">CRM ID</p>
-                    <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">{retailer.RetailerCRMId || '0'}</p>
-                  </div>
-                  <Hash className="w-8 h-8 text-blue-600 dark:text-blue-200" />
-                </div>
-              </div>
-              <div className="bg-green-50 dark:bg-green-900 p-4 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-green-600 dark:text-green-200">TFAT ID</p>
-                    <p className="text-2xl font-bold text-green-900 dark:text-green-100">{retailer.Retailer_TFAT_Id || '0'}</p>
-                  </div>
-                  <User className="w-8 h-8 text-green-600 dark:text-green-200" />
-                </div>
-              </div>
-              <div className="bg-purple-50 dark:bg-purple-900 p-4 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-purple-600 dark:text-purple-200">GST Number</p>
-                    <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">{retailer.GST_No || '0'}</p>
-                  </div>
-                  <CreditCard className="w-8 h-8 text-purple-600 dark:text-purple-200" />
-                </div>
-              </div>
-              <div className="bg-orange-50 dark:bg-orange-900 p-4 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-orange-600 dark:text-orange-200">Credit Limit</p>
-                    <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">
-                      ${Number(retailer.Credit_Limit || 0).toFixed(2)}
-                    </p>
-                  </div>
-                  <DollarSign className="w-8 h-8 text-orange-600 dark:text-orange-200" />
-                </div>
-              </div>
-            </div>
-
-            {/* Retailer Image */}
-            {retailer.RetailerImage && (
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Retailer Image</h3>
-                <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100">
+        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col items-center">
+          <div className="p-6 border-b border-gray-200 dark:border-gray-800 w-full flex flex-col items-center">
+            <div className="flex flex-col items-center space-y-4 w-full">
+              <div className="w-20 h-20 bg-[#003366] rounded-lg flex items-center justify-center">
+                {retailer.RetailerImage ? (
                   <img 
                     src={retailer.RetailerImage} 
                     alt={retailer.Retailer_Name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover rounded-lg"
                   />
-                </div>
+                ) : (
+                  <UserCheck className="w-10 h-10 text-white" />
+                )}
               </div>
-            )}
-
-            {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">Basic Information</h3>
-                
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Retailer ID</p>
-                    <p className="text-gray-900 font-mono">{retailer.Retailer_Id}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">CRM ID</p>
-                    <p className="text-gray-900">{retailer.RetailerCRMId || 'Not assigned'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">TFAT ID</p>
-                    <p className="text-gray-900">{retailer.Retailer_TFAT_Id || 'Not assigned'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Retailer Type</p>
-                    <p className="text-gray-900">{getRetailerTypeName(retailer.Type_Id)}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">Contact Details</h3>
-                
-                <div className="space-y-3">
-                  {retailer.Retailer_Email && (
-                    <div className="flex items-center space-x-3">
-                      <Mail className="w-4 h-4 text-gray-400" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-600">Email</p>
-                        <p className="text-gray-900">{retailer.Retailer_Email}</p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {retailer.Retailer_Mobile && (
-                    <div className="flex items-center space-x-3">
-                      <Phone className="w-4 h-4 text-gray-400" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-600">Primary Mobile</p>
-                        <p className="text-gray-900">{retailer.Retailer_Mobile}</p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {retailer.Mobile_Order && (
-                    <div className="flex items-center space-x-3">
-                      <Phone className="w-4 h-4 text-gray-400" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-600">Order Mobile</p>
-                        <p className="text-gray-900">{retailer.Mobile_Order}</p>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {retailer.Owner_Mobile && (
-                    <div className="flex items-center space-x-3">
-                      <Phone className="w-4 h-4 text-gray-400" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-600">Owner Mobile</p>
-                        <p className="text-gray-900">{retailer.Owner_Mobile}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">Business Details</h3>
-                
-                <div className="space-y-3">
-                  {retailer.GST_No && (
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">GST Number</p>
-                      <p className="text-gray-900 font-mono">{retailer.GST_No}</p>
-                    </div>
-                  )}
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Credit Limit</p>
-                    <p className="text-gray-900 font-semibold">${(retailer.Credit_Limit || 0).toLocaleString()}</p>
-                  </div>
-                  {retailer.Retailer_Tour_Id && (
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Tour ID</p>
-                      <p className="text-gray-900">{retailer.Retailer_Tour_Id}</p>
-                    </div>
-                  )}
+              <div className="text-center">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{retailer.Retailer_Name}</h2>
+                <p className="text-gray-500 dark:text-gray-400">{retailer.Contact_Person}</p>
+                <div className="flex items-center justify-center space-x-4 mt-2">
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(retailer.Retailer_Status)}`}>{getStatusText(retailer.Retailer_Status)}</span>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getConfirmColor(retailer.Confirm)}`}>{getConfirmText(retailer.Confirm)}</span>
                 </div>
               </div>
             </div>
+            <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+              <X className="w-6 h-6" />
+            </button>
+          </div>
 
-            {/* Location Information */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Location Information</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Important Info Overview */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 w-full max-w-3xl">
+            <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
+              <div className="flex items-center justify-between">
                 <div>
-                  {retailer.Retailer_Address && (
-                    <div className="flex items-start space-x-3 bg-gray-50 p-4 rounded-lg">
-                      <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-gray-600">Address</p>
-                        <p className="text-gray-700">{retailer.Retailer_Address}</p>
-                      </div>
-                    </div>
-                  )}
+                  <p className="text-sm text-blue-600 dark:text-blue-200">CRM ID</p>
+                  <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">{retailer.RetailerCRMId || '0'}</p>
                 </div>
-                
-                <div className="space-y-3">
-                  {retailer.Area_Name && (
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Area</p>
-                      <p className="text-gray-900">{retailer.Area_Name}</p>
-                    </div>
-                  )}
-                  {retailer.Pincode && (
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Pincode</p>
-                      <p className="text-gray-900">{retailer.Pincode}</p>
-                    </div>
-                  )}
-                  {(retailer.latitude && retailer.logitude) && (
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Coordinates</p>
-                      <p className="text-gray-900 font-mono">{retailer.latitude}, {retailer.logitude}</p>
-                    </div>
-                  )}
-                </div>
+                <Hash className="w-8 h-8 text-blue-600 dark:text-blue-200" />
               </div>
             </div>
-
-            {/* System Information */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h4 className="text-sm font-medium text-gray-900 mb-2">System Information</h4>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <div className="bg-green-50 dark:bg-green-900 p-4 rounded-lg">
+              <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600">Area ID</p>
-                  <p className="text-gray-900">{retailer.Area_Id || 'Not assigned'}</p>
+                  <p className="text-sm text-green-600 dark:text-green-200">TFAT ID</p>
+                  <p className="text-2xl font-bold text-green-900 dark:text-green-100">{retailer.Retailer_TFAT_Id || '0'}</p>
                 </div>
+                <User className="w-8 h-8 text-green-600 dark:text-green-200" />
+              </div>
+            </div>
+            <div className="bg-purple-50 dark:bg-purple-900 p-4 rounded-lg">
+              <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600">Type ID</p>
-                  <p className="text-gray-900">{retailer.Type_Id || 'Not assigned'}</p>
+                  <p className="text-sm text-purple-600 dark:text-purple-200">GST Number</p>
+                  <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">{retailer.GST_No || '0'}</p>
                 </div>
+                <CreditCard className="w-8 h-8 text-purple-600 dark:text-purple-200" />
+              </div>
+            </div>
+            <div className="bg-orange-50 dark:bg-orange-900 p-4 rounded-lg">
+              <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-600">Last Sync</p>
-                  <p className="text-gray-900">
-                    {retailer.Last_Sync ? new Date(retailer.Last_Sync).toLocaleDateString() : 'Never'}
+                  <p className="text-sm text-orange-600 dark:text-orange-200">Credit Limit</p>
+                  <p className="text-2xl font-bold text-orange-900 dark:text-orange-100">
+                    ${Number(retailer.Credit_Limit || 0).toFixed(2)}
                   </p>
                 </div>
-                <div>
-                  <p className="text-gray-600">Status</p>
-                  <div className="flex items-center space-x-2">
-                    {retailer.Retailer_Status === 1 ? (
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                    ) : (
-                      <XCircle className="w-4 h-4 text-red-500" />
-                    )}
-                    <span>{getStatusText(retailer.Retailer_Status)}</span>
-                  </div>
-                </div>
+                <DollarSign className="w-8 h-8 text-orange-600 dark:text-orange-200" />
               </div>
             </div>
           </div>
 
-          <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
-            <button
-              onClick={() => {
-                onClose();
-                handleEditRetailer(retailer);
-              }}
-              className="px-6 py-3 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
-            >
-              <Edit className="w-4 h-4" />
-              <span>Edit Retailer</span>
-            </button>
+          {/* Centered Details */}
+          <div className="flex-1 flex flex-col items-center justify-center w-full px-6 py-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-xl mx-auto">
+              {retailer.Retailer_Email && (
+                <div className="flex flex-col items-center">
+                  <Mail className="w-6 h-6 text-blue-500 mb-2" />
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Email</p>
+                  <p className="text-base font-medium text-gray-900 dark:text-gray-100">{retailer.Retailer_Email}</p>
+                </div>
+              )}
+              {retailer.Retailer_Mobile && (
+                <div className="flex flex-col items-center">
+                  <Phone className="w-6 h-6 text-green-500 mb-2" />
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Mobile</p>
+                  <p className="text-base font-medium text-gray-900 dark:text-gray-100">{retailer.Retailer_Mobile}</p>
+                </div>
+              )}
+              {retailer.Mobile_Order && (
+                <div className="flex flex-col items-center">
+                  <Phone className="w-6 h-6 text-yellow-500 mb-2" />
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Order Mobile</p>
+                  <p className="text-base font-medium text-gray-900 dark:text-gray-100">{retailer.Mobile_Order}</p>
+                </div>
+              )}
+              {retailer.Owner_Mobile && (
+                <div className="flex flex-col items-center">
+                  <Phone className="w-6 h-6 text-purple-500 mb-2" />
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Owner Mobile</p>
+                  <p className="text-base font-medium text-gray-900 dark:text-gray-100">{retailer.Owner_Mobile}</p>
+                </div>
+              )}
+              {retailer.Area_Name && (
+                <div className="flex flex-col items-center">
+                  <MapPin className="w-6 h-6 text-orange-500 mb-2" />
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Area</p>
+                  <p className="text-base font-medium text-gray-900 dark:text-gray-100">{retailer.Area_Name}</p>
+                </div>
+              )}
+              {retailer.GST_No && (
+                <div className="flex flex-col items-center">
+                  <CreditCard className="w-6 h-6 text-purple-500 mb-2" />
+                  <p className="text-xs text-gray-500 dark:text-gray-400">GST Number</p>
+                  <p className="text-base font-medium text-gray-900 dark:text-gray-100">{retailer.GST_No}</p>
+                </div>
+              )}
+              {retailer.Pincode && (
+                <div className="flex flex-col items-center">
+                  <Globe className="w-6 h-6 text-blue-400 mb-2" />
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Pincode</p>
+                  <p className="text-base font-medium text-gray-900 dark:text-gray-100">{retailer.Pincode}</p>
+                </div>
+              )}
+              {retailer.Contact_Person && (
+                <div className="flex flex-col items-center">
+                  <User className="w-6 h-6 text-gray-500 mb-2" />
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Contact Person</p>
+                  <p className="text-base font-medium text-gray-900 dark:text-gray-100">{retailer.Contact_Person}</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
