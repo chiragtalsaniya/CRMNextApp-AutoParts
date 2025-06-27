@@ -855,92 +855,79 @@ export const RetailerManagement: React.FC = () => {
       </div>
 
       {/* Retailers Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredRetailers.map((retailer) => (
-          <div key={retailer.Retailer_Id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+          <div
+            key={retailer.Retailer_Id}
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-lg transition-shadow group flex flex-col"
+          >
             {/* Retailer Image */}
-            <div className="relative h-48 bg-gray-100">
+            <div className="relative h-40 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
               {retailer.RetailerImage ? (
-                <img 
-                  src={retailer.RetailerImage} 
+                <img
+                  src={retailer.RetailerImage}
                   alt={retailer.Retailer_Name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-center transition-transform group-hover:scale-105 duration-300"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <UserCheck className="w-16 h-16 text-gray-400" />
-                </div>
+                <UserCheck className="w-16 h-16 text-gray-400 dark:text-gray-600" />
               )}
-              
               {/* Status Badges */}
               <div className="absolute top-3 left-3 flex flex-col space-y-2">
-                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(retailer.Retailer_Status)}`}>
-                  {getStatusText(retailer.Retailer_Status)}
-                </span>
-                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getConfirmColor(retailer.Confirm)}`}>
-                  {getConfirmText(retailer.Confirm)}
-                </span>
+                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(retailer.Retailer_Status)} dark:bg-opacity-80`}>{getStatusText(retailer.Retailer_Status)}</span>
+                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getConfirmColor(retailer.Confirm)} dark:bg-opacity-80`}>{getConfirmText(retailer.Confirm)}</span>
               </div>
-
               {/* Credit Limit */}
               <div className="absolute top-3 right-3">
-                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900 dark:text-blue-200 text-blue-800">
                   <DollarSign className="w-3 h-3 mr-1" />
                   {(retailer.Credit_Limit || 0).toLocaleString()}
                 </span>
               </div>
             </div>
-
             {/* Retailer Details */}
-            <div className="p-4">
-              <div className="mb-3">
-                <h3 className="font-semibold text-gray-900 text-sm mb-1">{retailer.Retailer_Name}</h3>
-                <p className="text-gray-600 text-sm">{retailer.Contact_Person}</p>
-                <p className="text-gray-500 text-xs">ID: {retailer.Retailer_Id}</p>
+            <div className="p-5 flex-1 flex flex-col justify-between">
+              <div className="mb-2">
+                <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-base mb-0.5 truncate">{retailer.Retailer_Name}</h3>
+                <p className="text-gray-500 dark:text-gray-400 text-xs truncate">{retailer.Contact_Person}</p>
+                <p className="text-gray-400 dark:text-gray-500 text-xs">ID: {retailer.Retailer_Id}</p>
               </div>
-
-              <div className="space-y-2 mb-4">
+              <div className="space-y-1 mb-3">
                 {retailer.Retailer_Email && (
-                  <div className="flex items-center space-x-2 text-xs text-gray-600">
+                  <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
                     <Mail className="w-3 h-3" />
                     <span className="truncate">{retailer.Retailer_Email}</span>
                   </div>
                 )}
-                
                 {retailer.Retailer_Mobile && (
-                  <div className="flex items-center space-x-2 text-xs text-gray-600">
+                  <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
                     <Phone className="w-3 h-3" />
                     <span>{retailer.Retailer_Mobile}</span>
                   </div>
                 )}
-                
                 {retailer.Area_Name && (
-                  <div className="flex items-center space-x-2 text-xs text-gray-600">
+                  <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
                     <MapPin className="w-3 h-3" />
                     <span>{retailer.Area_Name}</span>
                   </div>
                 )}
               </div>
-
-              {/* Additional Info */}
-              <div className="flex items-center justify-between mb-4 text-xs">
+              <div className="flex items-center justify-between mb-3 text-xs">
                 <div>
-                  <p className="text-gray-500">Type</p>
-                  <p className="font-medium text-gray-900">{getRetailerTypeName(retailer.Type_Id)}</p>
+                  <p className="text-gray-400 dark:text-gray-500">Type</p>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">{getRetailerTypeName(retailer.Type_Id)}</p>
                 </div>
                 {retailer.GST_No && (
                   <div className="text-right">
-                    <p className="text-gray-500">GST</p>
-                    <p className="font-medium text-gray-900 font-mono">{retailer.GST_No.slice(-6)}</p>
+                    <p className="text-gray-400 dark:text-gray-500">GST</p>
+                    <p className="font-medium text-gray-900 dark:text-gray-100 font-mono">{retailer.GST_No.slice(-6)}</p>
                   </div>
                 )}
               </div>
-
-              {/* Actions */}
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 mt-auto">
                 <button
                   onClick={() => handleViewRetailer(retailer)}
-                  className="flex-1 bg-gray-100 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm flex items-center justify-center space-x-1"
+                  className="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-sm flex items-center justify-center space-x-1"
                 >
                   <Eye className="w-4 h-4" />
                   <span>View</span>
