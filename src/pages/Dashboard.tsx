@@ -187,13 +187,18 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-800">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h3>
           <div className="grid grid-cols-2 gap-3">
             {quickActions.map((action, index) => (
-              <button key={index} className={`p-4 text-left rounded-lg transition-colors ${getActionColor(action.color)}`}>
-                <p className="font-medium">{action.title}</p>
-                <p className="text-sm opacity-75">{action.description}</p>
+              <button
+                key={index}
+                className={`p-4 text-left rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400 ${getActionColor(action.color)} dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-100`}
+                tabIndex={0}
+                aria-label={action.title}
+              >
+                <p className="font-medium dark:text-gray-100">{action.title}</p>
+                <p className="text-sm opacity-75 dark:text-gray-400">{action.description}</p>
               </button>
             ))}
           </div>
