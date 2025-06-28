@@ -2,6 +2,8 @@
 
 A comprehensive auto parts dealer management system with CRM functionality and mobile app support.
 
+For an overview of the project structure, see [docs/architecture.md](docs/architecture.md).
+
 ## 🚀 Features
 
 ### Frontend (React + TypeScript)
