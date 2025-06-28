@@ -260,6 +260,7 @@ This project is proprietary software for NextApp Inc.
 For support and questions:
 - Email: support@nextapp.com
 - Documentation: [API Docs](http://localhost:3001/api/health)
+- API Reference: [docs/api-endpoints.md](docs/api-endpoints.md)
 - Issues: Create GitHub issue
 
 ---
