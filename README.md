@@ -87,7 +87,12 @@ PORT=3001
 NODE_ENV=development
 ```
 
-4. Start the backend server:
+4. Run database migrations (this will also insert sample data):
+```bash
+cd server && npm run migrate
+```
+
+5. Start the backend server:
 ```bash
 npm run server
 ```
