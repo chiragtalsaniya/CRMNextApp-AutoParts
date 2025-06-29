@@ -51,17 +51,13 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // CORS configuration
-const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? process.env.CORS_ORIGIN?.split(',') || ['https://yogrind.shop']
-    : ['https://localhost:5173', 'http://localhost:3000'],
-  credentials: true
-};
-app.use(cors(corsOptions));
-
-// Allow all origins for development (update for production)
 app.use(cors({
-  origin: true, // Allow all origins
+  origin: [
+    'https://zp1v56uxy8rdx5ypatb0ockcb9tr6a-oci3--8081--cb7c0bca.local-credentialless.webcontainer-api.io',
+    'http://localhost:8081',
+    'https://localhost:8081',
+    // Add other development URLs as needed
+  ],
   credentials: false, // Don't send cookies
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: [
@@ -76,7 +72,7 @@ app.use(cors({
     'X-Device-Platform',
     'X-App-Environment',
     'X-Request-ID',
-    'Origin'
+    'Accept'
   ]
 }));
 
