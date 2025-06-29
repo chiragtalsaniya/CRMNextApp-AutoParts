@@ -53,11 +53,35 @@ app.use('/api/', limiter);
 // CORS configuration
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
-    ? process.env.CORS_ORIGIN?.split(',') || ['https://your-production-domain.com']
+    ? process.env.CORS_ORIGIN?.split(',') || ['https://yogrind.shop']
     : ['https://localhost:5173', 'http://localhost:3000'],
   credentials: true
 };
 app.use(cors(corsOptions));
+
+// Allow all origins for development (update for production)
+app.use(cors({
+  origin: true, // Allow all origins
+  credentials: false, // Don't send cookies
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-API-Version',
+    'X-Mobile-App',
+    'X-App-Version',
+    'X-Platform',
+    'X-Requested-With',
+    'X-Mobile-Secret',
+    'X-Device-Platform',
+    'X-App-Environment',
+    'X-Request-ID',
+    'Origin'
+  ]
+}));
+
+// Handle preflight requests
+app.options('*', cors());
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
