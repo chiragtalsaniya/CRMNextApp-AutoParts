@@ -48,9 +48,9 @@ router.get('/', authenticateToken, async (req, res) => {
     const countResult = await executeQuery(countQuery, queryParams);
     const total = countResult[0].total;
 
-    // Ensure limit and page are numbers
-    const safeLimit = Number.isFinite(Number(limit)) && Number(limit) > 0 ? Number(limit) : 50;
-    const safePage = Number.isFinite(Number(page)) && Number(page) > 0 ? Number(page) : 1;
+    // Ensure limit and offset are always integers for MySQL
+    const safeLimit = Number.isInteger(Number(limit)) && Number(limit) > 0 ? parseInt(limit, 10) : 50;
+    const safePage = Number.isInteger(Number(page)) && Number(page) > 0 ? parseInt(page, 10) : 1;
     const offset = (safePage - 1) * safeLimit;
 
     // Get parts with pagination
@@ -61,6 +61,7 @@ router.get('/', authenticateToken, async (req, res) => {
       LIMIT ? OFFSET ?
     `;
 
+    // Pass LIMIT and OFFSET as integers to MySQL
     const parts = await executeQuery(partsQuery, [...queryParams, safeLimit, offset]);
 
     res.json({
