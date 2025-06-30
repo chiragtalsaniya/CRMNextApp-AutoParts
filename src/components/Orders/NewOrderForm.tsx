@@ -3,6 +3,7 @@ import { X, Plus, Minus, Trash2, Search, Package, AlertTriangle, Save, Calculato
 import { NewOrderForm, NewOrderItemForm, Part, Retailer, dateToTimestamp, formatCurrency } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { ItemMaster } from '../Parts/ItemMaster';
+import { storesAPI } from '../../services/api';
 
 interface NewOrderFormProps {
   isOpen: boolean;
@@ -68,6 +69,25 @@ export const NewOrderFormModal: React.FC<NewOrderFormProps> = ({ isOpen, onClose
     newPart: {} as Part
   });
   const [branch, setBranch] = useState<string>(user?.store_id || '');
+  const [stores, setStores] = useState<any[]>([]);
+  const [storeLoading, setStoreLoading] = useState(false);
+  const [storeError, setStoreError] = useState<string | null>(null);
+
+  // Fetch stores for admin/manager if no store_id
+  useEffect(() => {
+    if ((user?.role === 'admin' || user?.role === 'manager') && !user?.store_id && user?.company_id) {
+      setStoreLoading(true);
+      storesAPI.getStores({ company_id: user.company_id })
+        .then(res => {
+          setStores(res.data || []);
+          setStoreLoading(false);
+        })
+        .catch(() => {
+          setStoreError('Failed to load stores');
+          setStoreLoading(false);
+        });
+    }
+  }, [user]);
 
   useEffect(() => {
     if (formData.retailer_id) {
@@ -287,6 +307,10 @@ export const NewOrderFormModal: React.FC<NewOrderFormProps> = ({ isOpen, onClose
 
   if (!isOpen) return null;
 
+  // Branch logic for form rendering
+  const showStoreDropdown = (user?.role === 'admin' || user?.role === 'manager') && !user?.store_id;
+  const showStoreReadonly = ['salesman', 'retailer', 'storeman', 'admin', 'manager'].includes(user?.role || '') && user?.store_id;
+
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -312,14 +336,48 @@ export const NewOrderFormModal: React.FC<NewOrderFormProps> = ({ isOpen, onClose
             {/* Branch selection for order placement */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Branch</label>
-              <input
-                type="text"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                value={branch}
-                onChange={e => setBranch(e.target.value)}
-                placeholder="Enter branch code or name"
-                required
-              />
+              {showStoreDropdown && (
+                <>
+                  {storeLoading ? (
+                    <div className="text-gray-500 text-sm">Loading stores...</div>
+                  ) : storeError ? (
+                    <div className="text-red-500 text-sm">{storeError}</div>
+                  ) : (
+                    <select
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                      value={branch}
+                      onChange={e => setBranch(e.target.value)}
+                      required
+                    >
+                      <option value="">Select store</option>
+                      {stores.map(store => (
+                        <option key={store.Branch_Code} value={store.Branch_Code}>
+                          {store.Branch_Name || store.Branch_Code}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </>
+              )}
+              {showStoreReadonly && (
+                <input
+                  type="text"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100 text-gray-700 sm:text-sm"
+                  value={user?.store_id}
+                  readOnly
+                  disabled
+                />
+              )}
+              {!showStoreDropdown && !showStoreReadonly && (
+                <input
+                  type="text"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                  value={branch}
+                  onChange={e => setBranch(e.target.value)}
+                  placeholder="Enter branch code or name"
+                  required
+                />
+              )}
             </div>
 
             {validationErrors.general && (

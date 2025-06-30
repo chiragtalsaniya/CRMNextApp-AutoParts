@@ -203,12 +203,29 @@ router.post('/',
         ) VALUES (?, ?, ?, ?, 'New', ?, ?, ?, ?, ?, ?, ?)
       `;
 
+      // Determine branch/store for order placement
+      let branchToUse = branch;
+      if (!branchToUse) {
+        if (['salesman', 'retailer', 'storeman'].includes(req.user.role) && req.user.store_id) {
+          branchToUse = req.user.store_id;
+        } else if (['admin', 'manager'].includes(req.user.role)) {
+          if (req.user.store_id) {
+            branchToUse = req.user.store_id;
+          } else {
+            // If admin/manager and no store_id, require branch in request
+            return res.status(400).json({ error: 'Store information is missing from your profile. Please select a store.' });
+          }
+        } else {
+          branchToUse = 'UNKNOWN';
+        }
+      }
+
       const orderMasterParams = [
         crmOrderId,
         retailer_id,
         req.user.name,
         placeDate,
-        branch || req.user.store_id || 'UNKNOWN',
+        branchToUse,
         remark || null,
         po_number || null,
         po_number ? placeDate : null,
