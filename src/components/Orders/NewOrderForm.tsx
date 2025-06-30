@@ -79,7 +79,7 @@ export const NewOrderFormModal: React.FC<NewOrderFormProps> = ({ isOpen, onClose
       setStoreLoading(true);
       storesAPI.getStores({ company_id: user.company_id })
         .then(res => {
-          setStores(res.data || []);
+          setStores(res.data?.stores || []); // Use res.data.stores for correct API response
           setStoreLoading(false);
         })
         .catch(() => {
@@ -337,27 +337,30 @@ export const NewOrderFormModal: React.FC<NewOrderFormProps> = ({ isOpen, onClose
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Branch</label>
               {showStoreDropdown && (
-                <>
-                  {storeLoading ? (
-                    <div className="text-gray-500 text-sm">Loading stores...</div>
-                  ) : storeError ? (
-                    <div className="text-red-500 text-sm">{storeError}</div>
-                  ) : (
-                    <select
-                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                      value={branch}
-                      onChange={e => setBranch(e.target.value)}
-                      required
-                    >
-                      <option value="">Select store</option>
-                      {(Array.isArray(stores) ? stores : []).map((store: any) => (
-                        <option key={store.Branch_Code} value={store.Branch_Code}>
-                          {store.Branch_Name || store.Branch_Code}
-                        </option>
-                      ))}
-                    </select>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <User className="w-4 h-4 inline mr-1" />
+                    Store *
+                  </label>
+                  <select
+                    value={branch}
+                    onChange={e => setBranch(e.target.value)}
+                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none ${
+                      storeError ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                    }`}
+                    required
+                  >
+                    <option value="">Select Store</option>
+                    {(Array.isArray(stores) ? stores : []).map((store: any) => (
+                      <option key={store.Branch_Code} value={store.Branch_Code}>
+                        {store.Branch_Name}
+                      </option>
+                    ))}
+                  </select>
+                  {storeError && (
+                    <p className="mt-1 text-sm text-red-600">{storeError}</p>
                   )}
-                </>
+                </div>
               )}
               {showStoreReadonly && (
                 <input

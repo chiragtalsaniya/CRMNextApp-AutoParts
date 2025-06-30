@@ -190,6 +190,11 @@ router.post('/',
     try {
       const { retailer_id, po_number, urgent, remark, items, branch } = req.body;
 
+      // Defensive: Ensure items is an array
+      if (!Array.isArray(items)) {
+        return res.status(400).json({ error: 'Order items must be an array.' });
+      }
+
       // Generate CRM Order ID
       const year = new Date().getFullYear();
       const crmOrderId = `CRM-${year}-${Date.now().toString().slice(-6)}`;
