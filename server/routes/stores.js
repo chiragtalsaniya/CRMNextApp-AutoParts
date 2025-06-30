@@ -20,7 +20,7 @@ router.get('/', authenticateToken, async (req, res) => {
     // Role-based filtering
     if (req.user.role !== 'super_admin') {
       if (req.user.company_id) {
-        whereConditions.push('s.company_id = ?');
+        whereConditions.push('company_id = ?');
         queryParams.push(req.user.company_id);
       } else {
         return res.status(403).json({ error: 'Access denied' });
@@ -35,7 +35,7 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 
     if (company_id) {
-      whereConditions.push('s.company_id = ?');
+      whereConditions.push('company_id = ?');
       queryParams.push(company_id);
     }
 
@@ -89,7 +89,7 @@ router.get('/:branchCode', authenticateToken, async (req, res) => {
     const stores = await executeQuery(
       `SELECT s.*, c.name as company_name 
        FROM stores s
-       LEFT JOIN companies c ON s.company_id = c.id
+       LEFT JOIN companies c ON scompany_id = c.id
        WHERE s.Branch_Code = ?`,
       [branchCode]
     );
