@@ -188,7 +188,7 @@ router.post('/',
   validateRequest(orderCreateSchema),
   async (req, res) => {
     try {
-      const { retailer_id, po_number, urgent, remark, items } = req.body;
+      const { retailer_id, po_number, urgent, remark, items, branch } = req.body;
 
       // Generate CRM Order ID
       const year = new Date().getFullYear();
@@ -208,7 +208,7 @@ router.post('/',
         retailer_id,
         req.user.name,
         placeDate,
-        req.user.store_id || 'UNKNOWN',
+        branch || req.user.store_id || 'UNKNOWN',
         remark || null,
         po_number || null,
         po_number ? placeDate : null,

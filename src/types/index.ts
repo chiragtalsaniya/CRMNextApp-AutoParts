@@ -192,6 +192,7 @@ export interface NewOrderForm {
   urgent: boolean;
   remark?: string;
   items: NewOrderItemForm[];
+  branch?: string; // Added branch for order placement
 }
 
 export interface NewOrderItemForm {
