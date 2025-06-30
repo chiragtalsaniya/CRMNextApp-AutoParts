@@ -53,16 +53,26 @@ router.get('/', authenticateToken, async (req, res) => {
     const safePage = Number.isInteger(Number(page)) && Number(page) > 0 ? parseInt(page, 10) : 1;
     const offset = (safePage - 1) * safeLimit;
 
-    // Get parts with pagination
+    // Defensive: log and validate limit/page before using
+    if (isNaN(safeLimit) || safeLimit <= 0) {
+      console.error('Invalid limit value:', limit);
+      return res.status(400).json({ error: 'Invalid limit value' });
+    }
+    if (isNaN(safePage) || safePage <= 0) {
+      console.error('Invalid page value:', page);
+      return res.status(400).json({ error: 'Invalid page value' });
+    }
+
+    // Get parts with pagination (inline LIMIT/OFFSET, not as placeholders)
     const partsQuery = `
       SELECT * FROM parts 
       ${whereClause}
       ORDER BY Part_Name ASC
-      LIMIT ? OFFSET ?
+      LIMIT ${safeLimit} OFFSET ${offset}
     `;
 
-    // Pass LIMIT and OFFSET as integers to MySQL
-    const parts = await executeQuery(partsQuery, [...queryParams, safeLimit, offset]);
+    // Only pass queryParams for WHERE conditions
+    const parts = await executeQuery(partsQuery, queryParams);
 
     res.json({
       parts,
