@@ -350,7 +350,7 @@ export const NewOrderFormModal: React.FC<NewOrderFormProps> = ({ isOpen, onClose
                       required
                     >
                       <option value="">Select store</option>
-                      {stores.map(store => (
+                      {(Array.isArray(stores) ? stores : []).map((store: any) => (
                         <option key={store.Branch_Code} value={store.Branch_Code}>
                           {store.Branch_Name || store.Branch_Code}
                         </option>
@@ -402,7 +402,7 @@ export const NewOrderFormModal: React.FC<NewOrderFormProps> = ({ isOpen, onClose
                   required
                 >
                   <option value={0}>Select Retailer</option>
-                  {retailers.map(retailer => (
+                  {(Array.isArray(retailers) ? retailers : []).map((retailer: Retailer) => (
                     <option key={retailer.Retailer_Id} value={retailer.Retailer_Id}>
                       {retailer.Retailer_Name} - {retailer.Contact_Person}
                     </option>
@@ -526,7 +526,7 @@ export const NewOrderFormModal: React.FC<NewOrderFormProps> = ({ isOpen, onClose
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {formData.items.map((item, index) => (
+                  {(Array.isArray(formData.items) ? formData.items : []).map((item: NewOrderItemForm, index: number) => (
                     <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 items-end">
                         <div className="lg:col-span-2">
