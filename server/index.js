@@ -53,7 +53,7 @@ app.use('/api/', limiter);
 // CORS configuration
 app.use(cors({
   origin: [
-    'https://zp1v56uxy8rdx5ypatb0ockcb9tr6a-oci3--8081--cb7c0bca.local-credentialless.webcontainer-api.io',
+    'https://zp1v56uxy8rdx5ypatb0ockcb9tr6a-oci3--8081--6e337437.local-credentialless.webcontainer-api.io',
     'http://localhost:8081',
     'https://localhost:8081',
     // Add other development URLs as needed
