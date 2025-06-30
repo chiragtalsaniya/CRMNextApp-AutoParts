@@ -20,7 +20,7 @@ router.get('/', authenticateToken, async (req, res) => {
     // Role-based filtering
     if (req.user.role !== 'super_admin') {
       if (req.user.company_id) {
-        whereConditions.push('company_id = ?');
+        whereConditions.push('s.company_id = ?');
         queryParams.push(req.user.company_id);
       } else {
         return res.status(403).json({ error: 'Access denied' });
@@ -29,13 +29,13 @@ router.get('/', authenticateToken, async (req, res) => {
 
     // Additional filters
     if (search) {
-      whereConditions.push('(Branch_Code LIKE ? OR Branch_Name LIKE ? OR Branch_Manager LIKE ?)');
+      whereConditions.push('(s.Branch_Code LIKE ? OR s.Branch_Name LIKE ? OR s.Branch_Manager LIKE ?)');
       const searchTerm = `%${search}%`;
       queryParams.push(searchTerm, searchTerm, searchTerm);
     }
 
     if (company_id) {
-      whereConditions.push('company_id = ?');
+      whereConditions.push('s.company_id = ?');
       queryParams.push(company_id);
     }
 

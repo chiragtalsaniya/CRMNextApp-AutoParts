@@ -333,7 +333,7 @@ export const OrderManagement: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {(items || [] as OrderItem[]).map((item: OrderItem) => (
+                    {Array.isArray(items) ? items.map((item: OrderItem) => (
                       <tr key={item.Order_Item_Id} className="hover:bg-gray-50">
                         <td className="px-4 py-3">
                           <div>
@@ -383,7 +383,7 @@ export const OrderManagement: React.FC = () => {
                           )}
                         </td>
                       </tr>
-                    ))}
+                    )) : null}
                   </tbody>
                 </table>
               </div>
@@ -551,7 +551,7 @@ export const OrderManagement: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {(filteredOrders || []).map((order) => (
+                {Array.isArray(filteredOrders) ? filteredOrders.map((order) => (
                   <tr key={order.Order_Id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
@@ -600,7 +600,7 @@ export const OrderManagement: React.FC = () => {
                       </button>
                     </td>
                   </tr>
-                ))}
+                )) : null}
               </tbody>
             </table>
           </div>
