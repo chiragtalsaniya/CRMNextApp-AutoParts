@@ -48,8 +48,12 @@ router.get('/', authenticateToken, async (req, res) => {
     const countResult = await executeQuery(countQuery, queryParams);
     const total = countResult[0].total;
 
+    // Ensure limit and page are numbers
+    const safeLimit = Number.isFinite(Number(limit)) && Number(limit) > 0 ? Number(limit) : 50;
+    const safePage = Number.isFinite(Number(page)) && Number(page) > 0 ? Number(page) : 1;
+    const offset = (safePage - 1) * safeLimit;
+
     // Get parts with pagination
-    const offset = (page - 1) * limit;
     const partsQuery = `
       SELECT * FROM parts 
       ${whereClause}
@@ -57,7 +61,7 @@ router.get('/', authenticateToken, async (req, res) => {
       LIMIT ? OFFSET ?
     `;
 
-    const parts = await executeQuery(partsQuery, [...queryParams, parseInt(limit), offset]);
+    const parts = await executeQuery(partsQuery, [...queryParams, safeLimit, offset]);
 
     res.json({
       parts,
