@@ -5,7 +5,6 @@ import {
   Truck, 
   CheckCircle, 
   Clock, 
-  AlertTriangle, 
   Shield, 
   Plus,
   Edit,
@@ -16,17 +15,29 @@ import {
   Filter,
   Download,
   Upload,
-  Calendar,
-  User,
-  MapPin,
-  FileText,
-  Zap
+  Zap,
+  MapPin
 } from 'lucide-react';
-import { OrderMaster, OrderItem, OrderStatus, NewOrderForm, getOrderStatusColor, timestampToDate, formatCurrency, dateToTimestamp } from '../../types';
+import { OrderMaster, OrderItem, OrderStatus, NewOrderForm, getOrderStatusColor, timestampToDate, formatCurrency } from '../../types';
 import { format } from 'date-fns';
 import { useAuth } from '../../context/AuthContext';
 import { NewOrderFormModal } from './NewOrderForm';
 import { ordersAPI } from '../../services/api';
+import { Dialog, DialogBackdrop, DialogTitle } from '@headlessui/react';
+
+// Fix selectedStatus useState type
+const [selectedStatus, setSelectedStatus] = useState<OrderStatus | ''>('');
+
+// Patch OrderMaster type for UI fields (temporary, until backend returns these fields always)
+type OrderMasterWithUI = OrderMaster & {
+  Branch_Name?: string;
+  Retailer_Name?: string;
+  items?: OrderItem[];
+};
+
+// Use OrderMasterWithUI for selectedOrder and orders
+const [selectedOrder, setSelectedOrder] = useState<OrderMasterWithUI | null>(null);
+const [orders, setOrders] = useState<OrderMasterWithUI[]>([]);
 
 export const OrderManagement: React.FC = () => {
   const { user, canAccessStore, getAccessibleStores, getAccessibleRetailers } = useAuth();
@@ -40,6 +51,24 @@ export const OrderManagement: React.FC = () => {
   const [showNewOrderForm, setShowNewOrderForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [statusLoading, setStatusLoading] = useState(false);
+  const [statusError, setStatusError] = useState<string | null>(null);
+  const [nextStatuses, setNextStatuses] = useState<OrderStatus[]>([]);
+  const [selectedStatus, setSelectedStatus] = useState<OrderStatus | ''>(''); // Fix selectedStatus useState type
+  const [statusNotes, setStatusNotes] = useState('');
+
+  // Valid transitions map (should match backend)
+  const validTransitions: Record<OrderStatus, OrderStatus[]> = {
+    New: ['Pending', 'Hold', 'Cancelled'],
+    Pending: ['Processing', 'Hold', 'Cancelled'],
+    Processing: ['Picked', 'Hold', 'Cancelled'],
+    Hold: ['New', 'Pending', 'Processing', 'Picked', 'Dispatched', 'Completed', 'Cancelled'],
+    Picked: ['Dispatched', 'Hold'],
+    Dispatched: ['Completed'],
+    Completed: [],
+    Cancelled: []
+  };
 
   // Load orders from API
   useEffect(() => {
@@ -176,7 +205,8 @@ export const OrderManagement: React.FC = () => {
   const OrderDetailsModal = () => {
     if (!showOrderDetails || !selectedOrder) return null;
 
-    const items = selectedOrder.items || [];
+    // Cast selectedOrder as OrderMasterWithUI
+    const items = (selectedOrder as OrderMasterWithUI)?.items || [];
     const orderTotal = items.reduce((total, item) => total + (item.ItemAmount || 0), 0);
 
     return (
@@ -418,10 +448,46 @@ export const OrderManagement: React.FC = () => {
                 <span>Edit Order</span>
               </button>
             )}
+            {user && ['admin', 'manager', 'storeman'].includes(user.role) && nextStatuses.length > 0 && (
+              <button
+                onClick={handleOpenStatusModal}
+                className="px-6 py-3 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
+              >
+                <Shield className="w-4 h-4" />
+                <span>Change Status</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
     );
+  };
+
+  const handleOpenStatusModal = () => {
+    if (!selectedOrder) return;
+    const valid = validTransitions[selectedOrder.Order_Status as OrderStatus] || [];
+    setNextStatuses(valid);
+    setSelectedStatus(valid[0] || '');
+    setStatusNotes('');
+    setStatusError(null);
+    setShowStatusModal(true);
+  };
+
+  const handleStatusUpdate = async () => {
+    if (!selectedOrder || !selectedStatus) return;
+    setStatusLoading(true);
+    setStatusError(null);
+    try {
+      await ordersAPI.updateOrderStatus(selectedOrder.Order_Id, { status: selectedStatus, notes: statusNotes });
+      // Optimistically update UI
+      setSelectedOrder({ ...selectedOrder, Order_Status: selectedStatus, Remark: statusNotes || selectedOrder.Remark });
+      setOrders(orders => orders.map(o => o.Order_Id === selectedOrder.Order_Id ? { ...o, Order_Status: selectedStatus } : o));
+      setShowStatusModal(false);
+    } catch (err: any) {
+      setStatusError(err?.response?.data?.error || 'Failed to update status.');
+    } finally {
+      setStatusLoading(false);
+    }
   };
 
   return (
@@ -582,11 +648,13 @@ export const OrderManagement: React.FC = () => {
                     </td>
                     {user?.role !== 'retailer' && (
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{order.Branch_Name || order.Branch || 'Not assigned'}</div>
+                        {/* Cast order as OrderMasterWithUI for Branch_Name/Retailer_Name */}
+                        <div className="text-sm text-gray-900">{(order as OrderMasterWithUI).Branch_Name || order.Branch || 'Not assigned'}</div>
                       </td>
                     )}
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{order.Retailer_Name || `ID: ${order.Retailer_Id}` || 'Unknown'}</div>
+                      {/* Cast order as OrderMasterWithUI for Branch_Name/Retailer_Name */}
+                      <div className="text-sm text-gray-900">{(order as OrderMasterWithUI).Retailer_Name || `ID: ${order.Retailer_Id}` || 'Unknown'}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {order.Place_Date ? format(timestampToDate(order.Place_Date)!, 'MMM dd, yyyy') : 'Not set'}
@@ -630,6 +698,50 @@ export const OrderManagement: React.FC = () => {
         onClose={() => setShowNewOrderForm(false)}
         onSubmit={handleNewOrder}
       />
+
+      {/* Status Update Modal */}
+      <Dialog open={showStatusModal} onClose={() => setShowStatusModal(false)} className="fixed z-50 inset-0 overflow-y-auto">
+        <div className="flex items-center justify-center min-h-screen px-4">
+          <DialogBackdrop className="fixed inset-0 bg-black opacity-30" />
+          <div className="bg-white rounded-xl shadow-xl p-8 max-w-md w-full z-10">
+            <DialogTitle className="text-lg font-bold mb-4">Update Order Status</DialogTitle>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Next Status</label>
+              <select
+                value={selectedStatus}
+                onChange={e => setSelectedStatus(e.target.value as OrderStatus)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              >
+                {nextStatuses.map(status => (
+                  <option key={status} value={status}>{status}</option>
+                ))}
+              </select>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-1">Notes (optional)</label>
+              <textarea
+                value={statusNotes}
+                onChange={e => setStatusNotes(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                rows={2}
+              />
+            </div>
+            {statusError && <div className="text-red-600 text-sm mb-2">{statusError}</div>}
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => setShowStatusModal(false)}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                disabled={statusLoading}
+              >Cancel</button>
+              <button
+                onClick={handleStatusUpdate}
+                className="px-4 py-2 bg-[#003366] text-white rounded-lg hover:bg-blue-800"
+                disabled={statusLoading || !selectedStatus}
+              >{statusLoading ? 'Updating...' : 'Update Status'}</button>
+            </div>
+          </div>
+        </div>
+      </Dialog>
     </div>
   );
 };

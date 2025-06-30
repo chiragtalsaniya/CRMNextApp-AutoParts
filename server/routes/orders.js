@@ -5,6 +5,22 @@ import { validateRequest, orderCreateSchema } from '../middleware/validation.js'
 
 const router = express.Router();
 
+// Helper to transform order fields for frontend
+function transformOrder(order) {
+  return {
+    ...order,
+    Urgent_Status: order.Urgent_Status === 1 || order.Urgent_Status === true,
+    IsSync: order.IsSync === 1 || order.IsSync === true,
+    PO_Date: order.PO_Date ? Number(order.PO_Date) : undefined,
+    Place_Date: order.Place_Date ? Number(order.Place_Date) : undefined,
+    Confirm_Date: order.Confirm_Date ? Number(order.Confirm_Date) : undefined,
+    Pick_Date: order.Pick_Date ? Number(order.Pick_Date) : undefined,
+    Pack_Date: order.Pack_Date ? Number(order.Pack_Date) : undefined,
+    Delivered_Date: order.Delivered_Date ? Number(order.Delivered_Date) : undefined,
+    Last_Sync: order.Last_Sync ? Number(order.Last_Sync) : undefined,
+  };
+}
+
 // Get orders with filtering and pagination
 router.get('/', authenticateToken, async (req, res) => {
   try {
@@ -103,10 +119,9 @@ const ordersQuery = `
   LIMIT ${limitNum} OFFSET ${offsetNum}
 `;
 
-const orders = await executeQuery(ordersQuery, queryParams); // Only for WHERE placeholders
-
+const orders = await executeQuery(ordersQuery, queryParams);
 res.json({
-  orders,
+  orders: Array.isArray(orders) ? orders.map(transformOrder) : [],
   pagination: {
     page: pageNum,
     limit: limitNum,
@@ -172,7 +187,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
     const items = await executeQuery(itemsQuery, [orderId]);
 
     res.json({
-      ...order,
+      ...transformOrder(order),
       items
     });
   } catch (error) {
@@ -378,6 +393,26 @@ router.patch('/:id/status',
       `;
 
       updateParams.splice(-1, 0, currentTime); // Add Last_Sync before Order_Id
+
+      // In PATCH /orders/:id/status, enforce status transition rules
+const validTransitions = {
+  New: ['Pending', 'Hold', 'Cancelled'],
+  Pending: ['Processing', 'Hold', 'Cancelled'],
+  Processing: ['Picked', 'Hold', 'Cancelled'],
+  Hold: ['New', 'Pending', 'Processing', 'Picked', 'Dispatched', 'Completed', 'Cancelled'],
+  Picked: ['Dispatched', 'Hold'],
+  Dispatched: ['Completed'],
+  Completed: [],
+  Cancelled: []
+};
+const currentOrder = await executeQuery('SELECT Order_Status FROM order_master WHERE Order_Id = ?', [orderId]);
+if (!currentOrder.length) {
+  return res.status(404).json({ error: 'Order not found' });
+}
+const currentStatus = currentOrder[0].Order_Status;
+if (!validTransitions[currentStatus] || !validTransitions[currentStatus].includes(status)) {
+  return res.status(400).json({ error: `Invalid status transition from ${currentStatus} to ${status}` });
+}
 
       await executeQuery(updateQuery, updateParams);
 
