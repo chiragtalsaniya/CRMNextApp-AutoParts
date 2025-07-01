@@ -26,8 +26,6 @@ import { ordersAPI } from '../../services/api';
 import { Dialog, DialogBackdrop, DialogTitle } from '@headlessui/react';
 import { Button } from '../Button';
 
-// Fix selectedStatus useState type
-const [selectedStatus, setSelectedStatus] = useState<OrderStatus | ''>('');
 
 // Patch OrderMaster type for UI fields (temporary, until backend returns these fields always)
 type OrderMasterWithUI = OrderMaster & {
@@ -35,10 +33,6 @@ type OrderMasterWithUI = OrderMaster & {
   Retailer_Name?: string;
   items?: OrderItem[];
 };
-
-// Use OrderMasterWithUI for selectedOrder and orders
-const [selectedOrder, setSelectedOrder] = useState<OrderMasterWithUI | null>(null);
-const [orders, setOrders] = useState<OrderMasterWithUI[]>([]);
 
 export const OrderManagement: React.FC = () => {
   const { user, canAccessStore, getAccessibleStores, getAccessibleRetailers } = useAuth();
