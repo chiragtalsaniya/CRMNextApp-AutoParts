@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext } from 'react';
 import { User, UserRole } from '../types';
 import { authAPI, companiesAPI, storesAPI, retailersAPI } from '../services/api';
 
@@ -24,13 +24,13 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [allCompanyIds, setAllCompanyIds] = useState<string[]>([]);
-  const [allStoreIds, setAllStoreIds] = useState<string[]>([]);
-  const [allRetailerIds, setAllRetailerIds] = useState<number[]>([]);
+  const [user, setUser] = React.useState<User | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [allCompanyIds, setAllCompanyIds] = React.useState<string[]>([]);
+  const [allStoreIds, setAllStoreIds] = React.useState<string[]>([]);
+  const [allRetailerIds, setAllRetailerIds] = React.useState<number[]>([]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const initializeAuth = async () => {
       try {
         // Check if user is already authenticated
@@ -56,7 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initializeAuth();
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (loading) return;
     // Fetch all companies if user is super_admin
     const fetchAllCompanies = async () => {
@@ -79,7 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     fetchAllCompanies();
   }, [user, loading]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Fetch all stores for super_admin or company stores for admin
     const fetchAllStores = async () => {
       if (user?.role === 'super_admin') {
