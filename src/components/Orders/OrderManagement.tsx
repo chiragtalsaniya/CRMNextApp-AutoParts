@@ -496,20 +496,24 @@ export const OrderManagement: React.FC = () => {
           </p>
         </div>
         <div className="flex space-x-3">
-          <Button icon={<Upload className="w-5 h-5" />} variant="secondary" size="medium" style={{ marginRight: 8 }}>
+          <Button icon={<Upload className="w-5 h-5" />} variant="secondary" size="medium" style={{ marginRight: 8 }} aria-label="Import Orders" title="Import Orders">
             Import
           </Button>
-          <Button icon={<Download className="w-5 h-5" />} variant="primary" size="medium" style={{ marginRight: 8 }}>
+          <Button icon={<Download className="w-5 h-5" />} variant="primary" size="medium" style={{ marginRight: 8 }} aria-label="Export Orders" title="Export Orders">
             Export
           </Button>
           {user?.role !== 'retailer' && (
-            <Button 
-              onClick={() => setShowNewOrderForm(true)}
-              icon={<Plus className="w-5 h-5" />} 
+            <Button
+              icon={<Plus className="w-5 h-5" aria-hidden="true" />}
               variant="primary"
               size="medium"
+              onClick={() => setShowNewOrderForm(true)}
+              aria-label="Create new order"
+              title="Create new order"
+              className="bg-[#003366] text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003366]"
+              style={{ minWidth: 0 }}
             >
-              New Order
+              <span>New Order</span>
             </Button>
           )}
         </div>
