@@ -180,7 +180,9 @@ export const Dashboard: React.FC = () => {
         <div className="xl:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-gray-900 dark:text-white">Recent Activity</h3>
-            <Button variant="ghost" size="small">View All</Button>
+            <Button variant="ghost" size="small" title="View all recent activity" aria-label="View all recent activity">
+              <span className="text-blue-700 dark:text-blue-300 font-semibold">View All</span>
+            </Button>
           </div>
           <div className="space-y-4">
             {activities.map((activity, index) => (
@@ -206,9 +208,23 @@ export const Dashboard: React.FC = () => {
                 style={{ textAlign: 'left' }}
                 variant={action.color === 'danger' ? 'danger' : 'primary'}
                 aria-label={action.title}
+                title={action.title}
               >
                 <div>
-                  <p className="font-semibold dark:text-gray-100 mb-1">{action.title}</p>
+                  <p className={
+                    `font-semibold mb-1 ` +
+                    (action.color === 'danger'
+                      ? 'text-red-700 dark:text-red-400'
+                      : action.color === 'blue'
+                        ? 'text-blue-700 dark:text-blue-300'
+                        : action.color === 'green'
+                          ? 'text-green-700 dark:text-green-300'
+                          : action.color === 'purple'
+                            ? 'text-purple-700 dark:text-purple-300'
+                            : action.color === 'orange'
+                              ? 'text-orange-700 dark:text-orange-300'
+                              : 'text-gray-700 dark:text-gray-300')
+                  }>{action.title}</p>
                   <p className="text-sm opacity-75 dark:text-gray-300">{action.description}</p>
                 </div>
               </Button>

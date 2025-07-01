@@ -211,7 +211,7 @@ export const OrderReports: React.FC = () => {
         </div>
         <div className="flex space-x-3">
           <Button icon={<Download className="w-5 h-5" />} variant="primary" size="medium" style={{ marginRight: 8 }}>
-            Export
+            <span className="text-[#003366] font-semibold">Export</span>
           </Button>
         </div>
       </div>
@@ -337,10 +337,10 @@ export const OrderReports: React.FC = () => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
-            <Download className="w-6 h-6 text-[#003366]" />
-            <h3 className="text-lg font-semibold text-gray-900">Export Report</h3>
+            <Download className="w-6 h-6 text-[#003366] dark:text-blue-300" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Export Report</h3>
           </div>
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-gray-500 dark:text-gray-300">
             {filteredOrders.length} orders found
           </div>
         </div>
@@ -349,42 +349,45 @@ export const OrderReports: React.FC = () => {
           <Button
             onClick={() => handleExport('excel')}
             disabled={isExporting}
-            icon={<FileSpreadsheet className="w-5 h-5" />}
+            icon={<FileSpreadsheet className="w-5 h-5 text-green-600 dark:text-green-300" />}
             variant="secondary"
             size="large"
             fullWidth
+            title="Export to Excel"
           >
             <div className="text-left">
-              <p className="font-medium">Export to Excel</p>
-              <p className="text-sm opacity-90">Detailed spreadsheet with charts</p>
+              <p className="font-medium text-green-700 dark:text-green-300">Export to Excel</p>
+              <p className="text-sm opacity-90 dark:text-gray-300">Detailed spreadsheet with charts</p>
             </div>
           </Button>
 
           <Button
             onClick={() => handleExport('pdf')}
             disabled={isExporting}
-            icon={<FileText className="w-5 h-5" />}
+            icon={<FileText className="w-5 h-5 text-red-600 dark:text-red-400" />}
             variant="danger"
             size="large"
             fullWidth
+            title="Export to PDF"
           >
             <div className="text-left">
-              <p className="font-medium">Export to PDF</p>
-              <p className="text-sm opacity-90">Professional report format</p>
+              <p className="font-medium text-red-700 dark:text-red-400">Export to PDF</p>
+              <p className="text-sm opacity-90 dark:text-gray-300">Professional report format</p>
             </div>
           </Button>
 
           <Button
             onClick={() => handleExport('word')}
             disabled={isExporting}
-            icon={<FileText className="w-5 h-5" />}
+            icon={<FileText className="w-5 h-5 text-blue-600 dark:text-blue-300" />}
             variant="primary"
             size="large"
             fullWidth
+            title="Export to Word"
           >
             <div className="text-left">
-              <p className="font-medium">Export to Word</p>
-              <p className="text-sm opacity-90">Editable document format</p>
+              <p className="font-medium text-blue-700 dark:text-blue-300">Export to Word</p>
+              <p className="text-sm opacity-90 dark:text-gray-300">Editable document format</p>
             </div>
           </Button>
         </div>
