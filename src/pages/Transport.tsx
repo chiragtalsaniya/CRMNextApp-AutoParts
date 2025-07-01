@@ -1,10 +1,9 @@
-
 import React, { useEffect, useState, ChangeEvent } from 'react';
 import { transportAPI, storesAPI } from '../services/api';
 import { Transport, Store } from '../types';
 import { Plus, Edit, Trash2, Eye, X, Filter } from 'lucide-react';
 
-
+export const TransportPage: React.FC = () => {
   const [transports, setTransports] = useState<Transport[]>([]);
   const [stores, setStores] = useState<Store[]>([]);
   const [storeMap, setStoreMap] = useState<Record<string, string>>({});
@@ -29,6 +28,7 @@ import { Plus, Edit, Trash2, Eye, X, Filter } from 'lucide-react';
   useEffect(() => {
     fetchTransports();
   }, [filter]);
+
   const fetchStores = async () => {
     try {
       const res = await storesAPI.getStores();
@@ -359,6 +359,6 @@ import { Plus, Edit, Trash2, Eye, X, Filter } from 'lucide-react';
       )}
     </div>
   );
-};
+}
 
 export default TransportPage;
