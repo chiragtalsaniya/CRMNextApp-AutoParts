@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from '../components/Button';
 import { DashboardStats } from '../components/Dashboard/DashboardStats';
 import { useAuth } from '../context/AuthContext';
 
@@ -179,7 +180,7 @@ export const Dashboard: React.FC = () => {
         <div className="xl:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-gray-900 dark:text-white">Recent Activity</h3>
-            <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">View All</button>
+            <Button variant="ghost" size="small">View All</Button>
           </div>
           <div className="space-y-4">
             {activities.map((activity, index) => (
@@ -199,15 +200,18 @@ export const Dashboard: React.FC = () => {
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Quick Actions</h3>
           <div className="space-y-3">
             {quickActions.map((action, index) => (
-              <button
+              <Button
                 key={index}
-                className={`w-full p-4 text-left rounded-xl transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400 ${getActionColor(action.color)} dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-100 shadow-sm hover:shadow-md`}
-                tabIndex={0}
+                fullWidth
+                style={{ textAlign: 'left' }}
+                variant={action.color === 'danger' ? 'danger' : 'primary'}
                 aria-label={action.title}
               >
-                <p className="font-semibold dark:text-gray-100 mb-1">{action.title}</p>
-                <p className="text-sm opacity-75 dark:text-gray-300">{action.description}</p>
-              </button>
+                <div>
+                  <p className="font-semibold dark:text-gray-100 mb-1">{action.title}</p>
+                  <p className="text-sm opacity-75 dark:text-gray-300">{action.description}</p>
+                </div>
+              </Button>
             ))}
           </div>
         </div>

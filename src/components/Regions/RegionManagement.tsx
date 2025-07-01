@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Button } from '../Button';
 import { 
   Plus, 
   Search, 
@@ -129,9 +130,9 @@ export const RegionManagement: React.FC = () => {
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900">{title}</h2>
-              <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+              <Button onClick={onClose} variant="ghost" size="small" style={{ padding: 0, minWidth: 0, background: 'none' }}>
                 <X className="w-6 h-6" />
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -181,18 +182,22 @@ export const RegionManagement: React.FC = () => {
           </div>
 
           <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
-            <button
+            <Button
               onClick={onClose}
-              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              variant="secondary"
+              size="large"
+              style={{ minWidth: 120 }}
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleSaveRegion}
-              className="px-6 py-3 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors"
+              variant="primary"
+              size="large"
+              style={{ minWidth: 120 }}
             >
               Save Region
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -302,21 +307,15 @@ export const RegionManagement: React.FC = () => {
           <p className="text-gray-600">Manage geographical regions and territories</p>
         </div>
         <div className="flex space-x-3">
-          <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2">
-            <Upload className="w-5 h-5" />
-            <span>Import</span>
-          </button>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
-            <Download className="w-5 h-5" />
-            <span>Export</span>
-          </button>
-          <button 
-            onClick={handleAddRegion}
-            className="bg-[#003366] text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
-          >
-            <Plus className="w-5 h-5" />
-            <span>Add Region</span>
-          </button>
+          <Button icon={<Upload className="w-5 h-5" />} variant="secondary" size="medium" style={{ marginRight: 8 }}>
+            Import
+          </Button>
+          <Button icon={<Download className="w-5 h-5" />} variant="primary" size="medium" style={{ marginRight: 8 }}>
+            Export
+          </Button>
+          <Button onClick={handleAddRegion} icon={<Plus className="w-5 h-5" />} variant="primary" size="medium">
+            Add Region
+          </Button>
         </div>
       </div>
 

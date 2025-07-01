@@ -3,6 +3,7 @@ import { Plus, Search, Edit, Trash2, Building2, Phone, Mail, Upload, Eye, X, Ima
 import { Company } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { companiesAPI } from '../../services/api';
+import { Button } from '../Button';
 
 export const CompanyList: React.FC = () => {
   const { user, canAccessCompany, getAccessibleCompanies } = useAuth();
@@ -149,9 +150,9 @@ export const CompanyList: React.FC = () => {
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900">{title}</h2>
-              <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+              <Button onClick={onClose} variant="ghost" size="small" style={{ padding: 0, minWidth: 0, background: 'none' }}>
                 <X className="w-6 h-6" />
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -243,18 +244,22 @@ export const CompanyList: React.FC = () => {
           </div>
 
           <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
-            <button
+            <Button
               onClick={onClose}
-              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              variant="secondary"
+              size="large"
+              style={{ minWidth: 120 }}
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleSaveCompany}
-              className="px-6 py-3 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors"
+              variant="primary"
+              size="large"
+              style={{ minWidth: 120 }}
             >
               Save Company
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -286,9 +291,9 @@ export const CompanyList: React.FC = () => {
                   <p className="text-gray-600">Company ID: {company.id}</p>
                 </div>
               </div>
-              <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+              <Button onClick={onClose} variant="ghost" size="small" style={{ padding: 0, minWidth: 0, background: 'none' }}>
                 <X className="w-6 h-6" />
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -361,16 +366,15 @@ export const CompanyList: React.FC = () => {
           </div>
 
           <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
-            <button
+            <Button
               onClick={() => {
                 onClose();
                 handleEditCompany(company);
               }}
-              className="px-6 py-3 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
+              icon={<Edit className="w-4 h-4" />} variant="primary" size="large"
             >
-              <Edit className="w-4 h-4" />
-              <span>Edit Company</span>
-            </button>
+              Edit Company
+            </Button>
           </div>
         </div>
       </div>
@@ -384,13 +388,9 @@ export const CompanyList: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900">Companies</h1>
           <p className="text-gray-600">Manage auto parts distributor companies and their branding</p>
         </div>
-        <button 
-          onClick={handleAddCompany}
-          className="bg-[#003366] text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
-        >
-          <Plus className="w-5 h-5" />
-          <span>Add Company</span>
-        </button>
+        <Button onClick={handleAddCompany} icon={<Plus className="w-5 h-5" />} variant="primary" size="medium">
+          Add Company
+        </Button>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100">
@@ -460,24 +460,9 @@ export const CompanyList: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-2">
-                      <button 
-                        onClick={() => handleViewCompany(company)}
-                        className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button 
-                        onClick={() => handleEditCompany(company)}
-                        className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button 
-                        onClick={() => handleDeleteCompany(company.id)}
-                        className="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 rounded-lg transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      <Button onClick={() => handleViewCompany(company)} icon={<Eye className="w-4 h-4" />} variant="ghost" size="small" style={{ padding: 4 }} />
+                      <Button onClick={() => handleEditCompany(company)} icon={<Edit className="w-4 h-4" />} variant="ghost" size="small" style={{ padding: 4 }} />
+                      <Button onClick={() => handleDeleteCompany(company.id)} icon={<Trash2 className="w-4 h-4" />} variant="danger" size="small" style={{ padding: 4 }} />
                     </div>
                   </td>
                 </tr>
@@ -543,7 +528,9 @@ export const CompanyList: React.FC = () => {
             />
             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Something went wrong</h3>
             <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
-            <button onClick={() => window.location.reload()} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Retry</button>
+            <Button onClick={() => window.location.reload()} variant="primary" size="medium" style={{ marginTop: 16 }}>
+              Retry
+            </Button>
           </div>
         </div>
       )}

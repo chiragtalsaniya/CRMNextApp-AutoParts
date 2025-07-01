@@ -24,6 +24,7 @@ import { useAuth } from '../../context/AuthContext';
 import { NewOrderFormModal } from './NewOrderForm';
 import { ordersAPI } from '../../services/api';
 import { Dialog, DialogBackdrop, DialogTitle } from '@headlessui/react';
+import { Button } from '../Button';
 
 // Fix selectedStatus useState type
 const [selectedStatus, setSelectedStatus] = useState<OrderStatus | ''>('');
@@ -501,22 +502,21 @@ export const OrderManagement: React.FC = () => {
           </p>
         </div>
         <div className="flex space-x-3">
-          <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2">
-            <Upload className="w-5 h-5" />
-            <span>Import</span>
-          </button>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
-            <Download className="w-5 h-5" />
-            <span>Export</span>
-          </button>
+          <Button icon={<Upload className="w-5 h-5" />} variant="secondary" size="medium" style={{ marginRight: 8 }}>
+            Import
+          </Button>
+          <Button icon={<Download className="w-5 h-5" />} variant="primary" size="medium" style={{ marginRight: 8 }}>
+            Export
+          </Button>
           {user?.role !== 'retailer' && (
-            <button 
+            <Button 
               onClick={() => setShowNewOrderForm(true)}
-              className="bg-[#003366] text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
+              icon={<Plus className="w-5 h-5" />} 
+              variant="primary"
+              size="medium"
             >
-              <Plus className="w-5 h-5" />
-              <span>New Order</span>
-            </button>
+              New Order
+            </Button>
           )}
         </div>
       </div>

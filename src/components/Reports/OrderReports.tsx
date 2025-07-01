@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Button } from '../Button';
 import { 
   Download, 
   FileText, 
@@ -208,6 +209,11 @@ export const OrderReports: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900">Order Reports</h1>
           <p className="text-gray-600">Generate and export comprehensive order reports</p>
         </div>
+        <div className="flex space-x-3">
+          <Button icon={<Download className="w-5 h-5" />} variant="primary" size="medium" style={{ marginRight: 8 }}>
+            Export
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -340,41 +346,47 @@ export const OrderReports: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button
+          <Button
             onClick={() => handleExport('excel')}
             disabled={isExporting}
-            className="flex items-center justify-center space-x-3 bg-green-600 text-white px-6 py-4 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            icon={<FileSpreadsheet className="w-5 h-5" />}
+            variant="secondary"
+            size="large"
+            fullWidth
           >
-            <FileSpreadsheet className="w-5 h-5" />
             <div className="text-left">
               <p className="font-medium">Export to Excel</p>
               <p className="text-sm opacity-90">Detailed spreadsheet with charts</p>
             </div>
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={() => handleExport('pdf')}
             disabled={isExporting}
-            className="flex items-center justify-center space-x-3 bg-red-600 text-white px-6 py-4 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            icon={<FileText className="w-5 h-5" />}
+            variant="danger"
+            size="large"
+            fullWidth
           >
-            <FileText className="w-5 h-5" />
             <div className="text-left">
               <p className="font-medium">Export to PDF</p>
               <p className="text-sm opacity-90">Professional report format</p>
             </div>
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={() => handleExport('word')}
             disabled={isExporting}
-            className="flex items-center justify-center space-x-3 bg-blue-600 text-white px-6 py-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            icon={<FileText className="w-5 h-5" />}
+            variant="primary"
+            size="large"
+            fullWidth
           >
-            <FileText className="w-5 h-5" />
             <div className="text-left">
               <p className="font-medium">Export to Word</p>
               <p className="text-sm opacity-90">Editable document format</p>
             </div>
-          </button>
+          </Button>
         </div>
 
         {isExporting && (
