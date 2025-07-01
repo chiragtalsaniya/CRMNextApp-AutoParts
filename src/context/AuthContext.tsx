@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useContext } from 'react';
+import React, { createContext, useEffect, useContext, useState } from 'react';
 import { User, UserRole } from '../types';
 import { authAPI, companiesAPI, storesAPI, retailersAPI } from '../services/api';
 
@@ -24,11 +24,11 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = React.useState<User | null>(null);
-  const [loading, setLoading] = React.useState(true);
-  const [allCompanyIds, setAllCompanyIds] = React.useState<string[]>([]);
-  const [allStoreIds, setAllStoreIds] = React.useState<string[]>([]);
-  const [allRetailerIds, setAllRetailerIds] = React.useState<number[]>([]);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [allCompanyIds, setAllCompanyIds] = useState<string[]>([]);
+  const [allStoreIds, setAllStoreIds] = useState<string[]>([]);
+  const [allRetailerIds, setAllRetailerIds] = useState<number[]>([]);
 
   React.useEffect(() => {
     const initializeAuth = async () => {
