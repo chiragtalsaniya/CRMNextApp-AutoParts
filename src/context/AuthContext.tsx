@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useEffect, useContext } from 'react';
 import { User, UserRole } from '../types';
 import { authAPI, companiesAPI, storesAPI, retailersAPI } from '../services/api';
 
