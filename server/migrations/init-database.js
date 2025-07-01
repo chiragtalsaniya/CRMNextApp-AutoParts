@@ -238,14 +238,15 @@ export const runMigrations = async () => {
     // Transport table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS transport (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        store_id VARCHAR(15),
-        type VARCHAR(100),
-        provider VARCHAR(255),
-        contact_number VARCHAR(50),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-      )
+        id INT NOT NULL AUTO_INCREMENT,
+        store_id VARCHAR(15) DEFAULT NULL,
+        type VARCHAR(100) DEFAULT NULL,
+        provider VARCHAR(255) DEFAULT NULL,
+        contact_number VARCHAR(50) DEFAULT NULL,
+        created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
     `);
     console.log('✅ Transport table created');
 

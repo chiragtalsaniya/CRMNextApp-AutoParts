@@ -20,6 +20,7 @@ import orderRoutes from './routes/orders.js';
 import regionRoutes from './routes/regions.js';
 import reportRoutes from './routes/reports.js';
 import itemStatusRoutes from './routes/item-status.js';
+import transportRoutes from './routes/transport.js';
 
 // Import database connection
 import { connectDB } from './config/database.js';
@@ -100,6 +101,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/regions', regionRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/item-status', itemStatusRoutes);
+app.use('/api/transport', transportRoutes);
 
 // No-cache headers for all API responses
 app.use((req, res, next) => {
