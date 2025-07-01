@@ -24,7 +24,7 @@ import { useAuth } from '../../context/AuthContext';
 import { NewOrderFormModal } from './NewOrderForm';
 import { ordersAPI } from '../../services/api';
 import { Dialog, DialogBackdrop, DialogTitle } from '@headlessui/react';
-import { Button } from '../Button';
+
 
 
 // Patch OrderMaster type for UI fields (temporary, until backend returns these fields always)
@@ -496,25 +496,35 @@ export const OrderManagement: React.FC = () => {
           </p>
         </div>
         <div className="flex space-x-3">
-          <Button icon={<Upload className="w-5 h-5" />} variant="secondary" size="medium" style={{ marginRight: 8 }} aria-label="Import Orders" title="Import Orders">
+          <button
+            type="button"
+            className="flex items-center px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors mr-2"
+            aria-label="Import Orders"
+            title="Import Orders"
+          >
+            <Upload className="w-5 h-5 mr-2" />
             Import
-          </Button>
-          <Button icon={<Download className="w-5 h-5" />} variant="primary" size="medium" style={{ marginRight: 8 }} aria-label="Export Orders" title="Export Orders">
+          </button>
+          <button
+            type="button"
+            className="flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors mr-2"
+            aria-label="Export Orders"
+            title="Export Orders"
+          >
+            <Download className="w-5 h-5 mr-2" />
             Export
-          </Button>
+          </button>
           {user?.role !== 'retailer' && (
-            <Button
-              icon={<Plus className="w-5 h-5" aria-hidden="true" />}
-              variant="primary"
-              size="medium"
+            <button
+              type="button"
               onClick={() => setShowNewOrderForm(true)}
+              className="flex items-center px-4 py-2 rounded-lg bg-[#003366] text-white font-semibold hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003366] transition-colors"
               aria-label="Create new order"
               title="Create new order"
-              className="bg-[#003366] text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003366]"
-              style={{ minWidth: 0 }}
             >
+              <Plus className="w-5 h-5 mr-2" aria-hidden="true" />
               <span>New Order</span>
-            </Button>
+            </button>
           )}
         </div>
       </div>

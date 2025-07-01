@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Button } from '../Button';
 import { 
   Download, 
   FileText, 
@@ -17,71 +16,81 @@ import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
 import { Order, OrderStatus } from '../../types';
 import { exportToExcel, exportToPDF, exportToWord } from '../../utils/exportUtils';
 
-const mockOrders: Order[] = [
+import { OrderMaster, OrderItem } from '../../types';
+
+const mockOrders: OrderMaster[] = [
   {
-    id: 'ORD-2024-001',
-    retailer_id: '1',
-    salesman_id: '1',
-    store_id: '1',
-    status: 'delivered',
-    total_price: 156.97,
-    created_at: '2024-01-15T10:30:00Z',
-    items: [
-      { id: '1', order_id: 'ORD-2024-001', part_id: '1', quantity: 4, price_per_unit: 12.99, part_name: 'NGK Spark Plug' },
-      { id: '2', order_id: 'ORD-2024-001', part_id: '2', quantity: 2, price_per_unit: 45.99, part_name: 'Brake Pads - Front' }
-    ]
+    Order_Id: 1,
+    CRMOrderId: 'ORD-2024-001',
+    Retailer_Id: 1,
+    Place_By: 'Admin',
+    Place_Date: Date.parse('2024-01-15T10:30:00Z'),
+    Order_Status: 'Completed',
+    Branch: 'Main',
+    Remark: 'Delivered on time',
+    PO_Number: 'PO-001',
+    Urgent_Status: false,
   },
   {
-    id: 'ORD-2024-002',
-    retailer_id: '2',
-    salesman_id: '1',
-    store_id: '1',
-    status: 'shipped',
-    total_price: 89.97,
-    created_at: '2024-01-14T14:15:00Z',
-    items: [
-      { id: '3', order_id: 'ORD-2024-002', part_id: '3', quantity: 10, price_per_unit: 8.99, part_name: 'Oil Filter' }
-    ]
+    Order_Id: 2,
+    CRMOrderId: 'ORD-2024-002',
+    Retailer_Id: 2,
+    Place_By: 'Admin',
+    Place_Date: Date.parse('2024-01-14T14:15:00Z'),
+    Order_Status: 'Dispatched',
+    Branch: 'Main',
+    Remark: '',
+    PO_Number: 'PO-002',
+    Urgent_Status: false,
   },
   {
-    id: 'ORD-2024-003',
-    retailer_id: '3',
-    salesman_id: '2',
-    store_id: '1',
-    status: 'processing',
-    total_price: 234.50,
-    created_at: '2024-01-13T09:20:00Z',
-    items: [
-      { id: '4', order_id: 'ORD-2024-003', part_id: '1', quantity: 8, price_per_unit: 12.99, part_name: 'NGK Spark Plug' },
-      { id: '5', order_id: 'ORD-2024-003', part_id: '4', quantity: 6, price_per_unit: 15.99, part_name: 'Air Filter' }
-    ]
+    Order_Id: 3,
+    CRMOrderId: 'ORD-2024-003',
+    Retailer_Id: 3,
+    Place_By: 'Manager',
+    Place_Date: Date.parse('2024-01-13T09:20:00Z'),
+    Order_Status: 'Processing',
+    Branch: 'Main',
+    Remark: '',
+    PO_Number: 'PO-003',
+    Urgent_Status: true,
   },
   {
-    id: 'ORD-2024-004',
-    retailer_id: '1',
-    salesman_id: '1',
-    store_id: '1',
-    status: 'pending',
-    total_price: 67.45,
-    created_at: '2024-01-12T16:45:00Z',
-    items: [
-      { id: '6', order_id: 'ORD-2024-004', part_id: '2', quantity: 1, price_per_unit: 45.99, part_name: 'Brake Pads - Front' },
-      { id: '7', order_id: 'ORD-2024-004', part_id: '3', quantity: 2, price_per_unit: 8.99, part_name: 'Oil Filter' }
-    ]
+    Order_Id: 4,
+    CRMOrderId: 'ORD-2024-004',
+    Retailer_Id: 1,
+    Place_By: 'Admin',
+    Place_Date: Date.parse('2024-01-12T16:45:00Z'),
+    Order_Status: 'Pending',
+    Branch: 'Main',
+    Remark: '',
+    PO_Number: 'PO-004',
+    Urgent_Status: false,
   },
   {
-    id: 'ORD-2024-005',
-    retailer_id: '4',
-    salesman_id: '2',
-    store_id: '1',
-    status: 'delivered',
-    total_price: 445.20,
-    created_at: '2024-01-11T11:30:00Z',
-    items: [
-      { id: '8', order_id: 'ORD-2024-005', part_id: '1', quantity: 12, price_per_unit: 12.99, part_name: 'NGK Spark Plug' },
-      { id: '9', order_id: 'ORD-2024-005', part_id: '4', quantity: 18, price_per_unit: 15.99, part_name: 'Air Filter' }
-    ]
-  }
+    Order_Id: 5,
+    CRMOrderId: 'ORD-2024-005',
+    Retailer_Id: 4,
+    Place_By: 'Manager',
+    Place_Date: Date.parse('2024-01-11T11:30:00Z'),
+    Order_Status: 'Completed',
+    Branch: 'Main',
+    Remark: '',
+    PO_Number: 'PO-005',
+    Urgent_Status: false,
+  },
+];
+
+const mockOrderItems: OrderItem[] = [
+  { Order_Item_Id: 1, Order_Id: 1, Part_Admin: 'NGK Spark Plug', Order_Qty: 4, ItemAmount: 51.96, MRP: 12.99 },
+  { Order_Item_Id: 2, Order_Id: 1, Part_Admin: 'Brake Pads - Front', Order_Qty: 2, ItemAmount: 91.98, MRP: 45.99 },
+  { Order_Item_Id: 3, Order_Id: 2, Part_Admin: 'Oil Filter', Order_Qty: 10, ItemAmount: 89.90, MRP: 8.99 },
+  { Order_Item_Id: 4, Order_Id: 3, Part_Admin: 'NGK Spark Plug', Order_Qty: 8, ItemAmount: 103.92, MRP: 12.99 },
+  { Order_Item_Id: 5, Order_Id: 3, Part_Admin: 'Air Filter', Order_Qty: 6, ItemAmount: 95.58, MRP: 15.99 },
+  { Order_Item_Id: 6, Order_Id: 4, Part_Admin: 'Brake Pads - Front', Order_Qty: 1, ItemAmount: 45.99, MRP: 45.99 },
+  { Order_Item_Id: 7, Order_Id: 4, Part_Admin: 'Oil Filter', Order_Qty: 2, ItemAmount: 17.98, MRP: 8.99 },
+  { Order_Item_Id: 8, Order_Id: 5, Part_Admin: 'NGK Spark Plug', Order_Qty: 12, ItemAmount: 155.88, MRP: 12.99 },
+  { Order_Item_Id: 9, Order_Id: 5, Part_Admin: 'Air Filter', Order_Qty: 18, ItemAmount: 287.82, MRP: 15.99 },
 ];
 
 interface ReportFilters {
@@ -95,7 +104,7 @@ interface ReportFilters {
 }
 
 export const OrderReports: React.FC = () => {
-  const [orders] = useState<Order[]>(mockOrders);
+  const [orders] = useState<OrderMaster[]>(mockOrders);
   const [filters, setFilters] = useState<ReportFilters>({
     dateRange: 'month',
     startDate: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
@@ -144,26 +153,27 @@ export const OrderReports: React.FC = () => {
   };
 
   const filteredOrders = orders.filter(order => {
-    const orderDate = new Date(order.created_at);
+    const orderDate = order.Place_Date ? new Date(order.Place_Date) : new Date();
     const startDate = new Date(filters.startDate);
     const endDate = new Date(filters.endDate);
-    
     const matchesDate = orderDate >= startDate && orderDate <= endDate;
-    const matchesStatus = filters.status === 'all' || order.status === filters.status;
-    
+    const matchesStatus = filters.status === 'all' || order.Order_Status === filters.status;
     return matchesDate && matchesStatus;
   });
 
   const getOrderStats = () => {
     const totalOrders = filteredOrders.length;
-    const totalRevenue = filteredOrders.reduce((sum, order) => sum + order.total_price, 0);
+    // Calculate total revenue from mockOrderItems for filtered orders
+    const filteredOrderIds = new Set(filteredOrders.map(o => o.Order_Id));
+    const totalRevenue = mockOrderItems
+      .filter(item => item.Order_Id && filteredOrderIds.has(item.Order_Id))
+      .reduce((sum, item) => sum + (item.ItemAmount || 0), 0);
     const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
-    
     const statusCounts = filteredOrders.reduce((acc, order) => {
-      acc[order.status] = (acc[order.status] || 0) + 1;
+      const status = order.Order_Status || 'Pending';
+      acc[status] = (acc[status] || 0) + 1;
       return acc;
     }, {} as Record<OrderStatus, number>);
-
     return {
       totalOrders,
       totalRevenue,
@@ -175,8 +185,13 @@ export const OrderReports: React.FC = () => {
   const handleExport = async (format: 'excel' | 'pdf' | 'word') => {
     setIsExporting(true);
     try {
+      // For export, we need to provide both orders and orderItems (flattened)
+      // Use mockOrderItems for export (since mockOrders don't have .items)
+      const filteredOrderIds = new Set(filteredOrders.map(o => o.Order_Id));
+      const exportOrderItems = mockOrderItems.filter(item => item.Order_Id && filteredOrderIds.has(item.Order_Id));
       const reportData = {
         orders: filteredOrders,
+        orderItems: exportOrderItems,
         filters,
         stats: getOrderStats(),
         generatedAt: new Date().toISOString()
@@ -210,9 +225,14 @@ export const OrderReports: React.FC = () => {
           <p className="text-gray-600">Generate and export comprehensive order reports</p>
         </div>
         <div className="flex space-x-3">
-          <Button icon={<Download className="w-5 h-5" />} variant="primary" size="medium" style={{ marginRight: 8 }}>
-            <span className="text-[#003366] font-semibold">Export</span>
-          </Button>
+          <button
+            type="button"
+            className="flex items-center px-4 py-2 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors font-semibold space-x-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003366]"
+            style={{ marginRight: 8 }}
+          >
+            <Download className="w-5 h-5" />
+            <span>Export</span>
+          </button>
         </div>
       </div>
 
@@ -324,7 +344,7 @@ export const OrderReports: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Completed Orders</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">{stats.statusCounts.delivered || 0}</p>
+              <p className="text-2xl font-bold text-gray-900 mt-1">{stats.statusCounts.Completed || 0}</p>
             </div>
             <div className="bg-green-100 p-3 rounded-lg">
               <CheckCircle className="w-6 h-6 text-green-600" />
@@ -346,50 +366,47 @@ export const OrderReports: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Button
+          <button
+            type="button"
             onClick={() => handleExport('excel')}
             disabled={isExporting}
-            icon={<FileSpreadsheet className="w-5 h-5 text-green-600 dark:text-green-300" />}
-            variant="secondary"
-            size="large"
-            fullWidth
             title="Export to Excel"
+            className="flex w-full items-center px-4 py-3 bg-green-50 dark:bg-green-900 text-green-700 dark:text-green-300 rounded-lg border border-green-200 dark:border-green-700 hover:bg-green-100 dark:hover:bg-green-800 transition-colors font-medium space-x-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
+            <FileSpreadsheet className="w-5 h-5 text-green-600 dark:text-green-300 mr-2" />
             <div className="text-left">
-              <p className="font-medium text-green-700 dark:text-green-300">Export to Excel</p>
+              <p className="font-medium">Export to Excel</p>
               <p className="text-sm opacity-90 dark:text-gray-300">Detailed spreadsheet with charts</p>
             </div>
-          </Button>
+          </button>
 
-          <Button
+          <button
+            type="button"
             onClick={() => handleExport('pdf')}
             disabled={isExporting}
-            icon={<FileText className="w-5 h-5 text-red-600 dark:text-red-400" />}
-            variant="danger"
-            size="large"
-            fullWidth
             title="Export to PDF"
+            className="flex w-full items-center px-4 py-3 bg-red-50 dark:bg-red-900 text-red-700 dark:text-red-400 rounded-lg border border-red-200 dark:border-red-700 hover:bg-red-100 dark:hover:bg-red-800 transition-colors font-medium space-x-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
+            <FileText className="w-5 h-5 text-red-600 dark:text-red-400 mr-2" />
             <div className="text-left">
-              <p className="font-medium text-red-700 dark:text-red-400">Export to PDF</p>
+              <p className="font-medium">Export to PDF</p>
               <p className="text-sm opacity-90 dark:text-gray-300">Professional report format</p>
             </div>
-          </Button>
+          </button>
 
-          <Button
+          <button
+            type="button"
             onClick={() => handleExport('word')}
             disabled={isExporting}
-            icon={<FileText className="w-5 h-5 text-blue-600 dark:text-blue-300" />}
-            variant="primary"
-            size="large"
-            fullWidth
             title="Export to Word"
+            className="flex w-full items-center px-4 py-3 bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-lg border border-blue-200 dark:border-blue-700 hover:bg-blue-100 dark:hover:bg-blue-800 transition-colors font-medium space-x-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
+            <FileText className="w-5 h-5 text-blue-600 dark:text-blue-300 mr-2" />
             <div className="text-left">
-              <p className="font-medium text-blue-700 dark:text-blue-300">Export to Word</p>
+              <p className="font-medium">Export to Word</p>
               <p className="text-sm opacity-90 dark:text-gray-300">Editable document format</p>
             </div>
-          </Button>
+          </button>
         </div>
 
         {isExporting && (
@@ -422,28 +439,28 @@ export const OrderReports: React.FC = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredOrders.slice(0, 10).map((order) => (
-                <tr key={order.id} className="hover:bg-gray-50">
+                <tr key={order.Order_Id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {order.id}
+                    {order.CRMOrderId || order.Order_Id}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {format(new Date(order.created_at), 'MMM dd, yyyy')}
+                    {order.Place_Date ? format(new Date(order.Place_Date), 'MMM dd, yyyy') : ''}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      order.status === 'delivered' ? 'bg-green-100 text-green-800' :
-                      order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
-                      order.status === 'processing' ? 'bg-yellow-100 text-yellow-800' :
+                      order.Order_Status === 'Completed' ? 'bg-green-100 text-green-800' :
+                      order.Order_Status === 'Dispatched' ? 'bg-blue-100 text-blue-800' :
+                      order.Order_Status === 'Processing' ? 'bg-yellow-100 text-yellow-800' :
                       'bg-gray-100 text-gray-800'
                     }`}>
-                      {order.status}
+                      {order.Order_Status}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {order.items.length} items
+                    {mockOrderItems.filter(item => item.Order_Id === order.Order_Id).length} items
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    ${order.total_price.toFixed(2)}
+                    ${mockOrderItems.filter(item => item.Order_Id === order.Order_Id).reduce((sum, item) => sum + (item.ItemAmount || 0), 0).toFixed(2)}
                   </td>
                 </tr>
               ))}

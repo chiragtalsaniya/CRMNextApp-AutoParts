@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from '../Button';
+
 import { 
   Plus, 
   Search, 
@@ -130,9 +130,15 @@ export const RegionManagement: React.FC = () => {
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900">{title}</h2>
-              <Button onClick={onClose} variant="ghost" size="small" style={{ padding: 0, minWidth: 0, background: 'none' }}>
+              <button
+                type="button"
+                onClick={onClose}
+                className="p-1 rounded-lg bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                title="Close"
+                aria-label="Close"
+              >
                 <X className="w-6 h-6" />
-              </Button>
+              </button>
             </div>
           </div>
 
@@ -182,22 +188,20 @@ export const RegionManagement: React.FC = () => {
           </div>
 
           <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
-            <Button
+            <button
+              type="button"
               onClick={onClose}
-              variant="secondary"
-              size="large"
-              style={{ minWidth: 120 }}
+              className="min-w-[120px] px-5 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
             >
               Cancel
-            </Button>
-            <Button
+            </button>
+            <button
+              type="button"
               onClick={handleSaveRegion}
-              variant="primary"
-              size="large"
-              style={{ minWidth: 120 }}
+              className="min-w-[120px] px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors"
             >
               Save Region
-            </Button>
+            </button>
           </div>
         </div>
       </div>
@@ -307,15 +311,34 @@ export const RegionManagement: React.FC = () => {
           <p className="text-gray-600">Manage geographical regions and territories</p>
         </div>
         <div className="flex space-x-3">
-          <Button icon={<Upload className="w-5 h-5" />} variant="secondary" size="medium" style={{ marginRight: 8 }}>
+          <button
+            type="button"
+            className="flex items-center px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors mr-2"
+            aria-label="Import Regions"
+            title="Import Regions"
+          >
+            <Upload className="w-5 h-5 mr-2" />
             Import
-          </Button>
-          <Button icon={<Download className="w-5 h-5" />} variant="primary" size="medium" style={{ marginRight: 8 }}>
+          </button>
+          <button
+            type="button"
+            className="flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors mr-2"
+            aria-label="Export Regions"
+            title="Export Regions"
+          >
+            <Download className="w-5 h-5 mr-2" />
             Export
-          </Button>
-          <Button onClick={handleAddRegion} icon={<Plus className="w-5 h-5" />} variant="primary" size="medium">
+          </button>
+          <button
+            type="button"
+            onClick={handleAddRegion}
+            className="flex items-center px-4 py-2 rounded-lg bg-[#003366] text-white font-semibold hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003366] transition-colors"
+            aria-label="Add Region"
+            title="Add Region"
+          >
+            <Plus className="w-5 h-5 mr-2" />
             Add Region
-          </Button>
+          </button>
         </div>
       </div>
 

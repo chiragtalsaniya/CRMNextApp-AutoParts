@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '../components/Button';
+
 import { DashboardStats } from '../components/Dashboard/DashboardStats';
 import { useAuth } from '../context/AuthContext';
 
@@ -180,9 +180,14 @@ export const Dashboard: React.FC = () => {
         <div className="xl:col-span-2 bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-xl font-bold text-gray-900 dark:text-white">Recent Activity</h3>
-            <Button variant="ghost" size="small" title="View all recent activity" aria-label="View all recent activity">
-              <span className="text-blue-700 dark:text-blue-300 font-semibold">View All</span>
-            </Button>
+            <button
+              type="button"
+              className="px-3 py-1.5 rounded-lg text-blue-700 dark:text-blue-300 font-semibold bg-transparent hover:bg-blue-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-600 transition-colors text-sm"
+              title="View all recent activity"
+              aria-label="View all recent activity"
+            >
+              View All
+            </button>
           </div>
           <div className="space-y-4">
             {activities.map((activity, index) => (
@@ -202,32 +207,43 @@ export const Dashboard: React.FC = () => {
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Quick Actions</h3>
           <div className="space-y-3">
             {quickActions.map((action, index) => (
-              <Button
+              <button
                 key={index}
-                fullWidth
-                style={{ textAlign: 'left' }}
-                variant={action.color === 'danger' ? 'danger' : 'primary'}
+                type="button"
+                className={`w-full flex flex-col items-start px-5 py-3 rounded-xl border-none shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors text-left
+                  ${
+                    action.color === 'danger'
+                      ? 'bg-red-50 hover:bg-red-100 text-red-900 dark:bg-red-900 dark:hover:bg-red-800 dark:text-red-200 focus:ring-red-400'
+                      : action.color === 'blue'
+                        ? 'bg-blue-50 hover:bg-blue-100 text-blue-900 dark:bg-blue-900 dark:hover:bg-blue-800 dark:text-blue-200 focus:ring-blue-400'
+                        : action.color === 'green'
+                          ? 'bg-green-50 hover:bg-green-100 text-green-900 dark:bg-green-900 dark:hover:bg-green-800 dark:text-green-200 focus:ring-green-400'
+                          : action.color === 'purple'
+                            ? 'bg-purple-50 hover:bg-purple-100 text-purple-900 dark:bg-purple-900 dark:hover:bg-purple-800 dark:text-purple-200 focus:ring-purple-400'
+                            : action.color === 'orange'
+                              ? 'bg-orange-50 hover:bg-orange-100 text-orange-900 dark:bg-orange-900 dark:hover:bg-orange-800 dark:text-orange-200 focus:ring-orange-400'
+                              : 'bg-gray-50 hover:bg-gray-100 text-gray-900 dark:bg-gray-900 dark:hover:bg-gray-800 dark:text-gray-200 focus:ring-gray-400'
+                  }
+                `}
                 aria-label={action.title}
                 title={action.title}
               >
-                <div>
-                  <p className={
-                    `font-semibold mb-1 ` +
-                    (action.color === 'danger'
-                      ? 'text-red-700 dark:text-red-400'
-                      : action.color === 'blue'
-                        ? 'text-blue-700 dark:text-blue-300'
-                        : action.color === 'green'
-                          ? 'text-green-700 dark:text-green-300'
-                          : action.color === 'purple'
-                            ? 'text-purple-700 dark:text-purple-300'
-                            : action.color === 'orange'
-                              ? 'text-orange-700 dark:text-orange-300'
-                              : 'text-gray-700 dark:text-gray-300')
-                  }>{action.title}</p>
-                  <p className="text-sm opacity-75 dark:text-gray-300">{action.description}</p>
-                </div>
-              </Button>
+                <span className={
+                  `font-semibold mb-1 ` +
+                  (action.color === 'danger'
+                    ? 'text-red-700 dark:text-red-400'
+                    : action.color === 'blue'
+                      ? 'text-blue-700 dark:text-blue-300'
+                      : action.color === 'green'
+                        ? 'text-green-700 dark:text-green-300'
+                        : action.color === 'purple'
+                          ? 'text-purple-700 dark:text-purple-300'
+                          : action.color === 'orange'
+                            ? 'text-orange-700 dark:text-orange-300'
+                            : 'text-gray-700 dark:text-gray-300')
+                }>{action.title}</span>
+                <span className="text-sm opacity-75 dark:text-gray-300">{action.description}</span>
+              </button>
             ))}
           </div>
         </div>

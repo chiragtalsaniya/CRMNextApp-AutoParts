@@ -3,7 +3,7 @@ import { Plus, Search, Edit, Trash2, Building2, Phone, Mail, Upload, Eye, X, Ima
 import { Company } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { companiesAPI } from '../../services/api';
-import { Button } from '../Button';
+
 
 export const CompanyList: React.FC = () => {
   const { user, canAccessCompany, getAccessibleCompanies } = useAuth();
@@ -150,9 +150,15 @@ export const CompanyList: React.FC = () => {
           <div className="p-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-900">{title}</h2>
-              <Button onClick={onClose} variant="ghost" size="small" style={{ padding: 0, minWidth: 0, background: 'none' }}>
+              <button
+                type="button"
+                onClick={onClose}
+                className="p-1 rounded-lg bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                title="Close"
+                aria-label="Close"
+              >
                 <X className="w-6 h-6" />
-              </Button>
+              </button>
             </div>
           </div>
 
@@ -244,22 +250,20 @@ export const CompanyList: React.FC = () => {
           </div>
 
           <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
-            <Button
+            <button
+              type="button"
               onClick={onClose}
-              variant="secondary"
-              size="large"
-              style={{ minWidth: 120 }}
+              className="min-w-[120px] px-5 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
             >
               Cancel
-            </Button>
-            <Button
+            </button>
+            <button
+              type="button"
               onClick={handleSaveCompany}
-              variant="primary"
-              size="large"
-              style={{ minWidth: 120 }}
+              className="min-w-[120px] px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors"
             >
               Save Company
-            </Button>
+            </button>
           </div>
         </div>
       </div>
@@ -291,9 +295,15 @@ export const CompanyList: React.FC = () => {
                   <p className="text-gray-600">Company ID: {company.id}</p>
                 </div>
               </div>
-              <Button onClick={onClose} variant="ghost" size="small" style={{ padding: 0, minWidth: 0, background: 'none' }}>
+              <button
+                type="button"
+                onClick={onClose}
+                className="p-1 rounded-lg bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                title="Close"
+                aria-label="Close"
+              >
                 <X className="w-6 h-6" />
-              </Button>
+              </button>
             </div>
           </div>
 
@@ -366,15 +376,17 @@ export const CompanyList: React.FC = () => {
           </div>
 
           <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
-            <Button
+            <button
+              type="button"
               onClick={() => {
                 onClose();
                 handleEditCompany(company);
               }}
-              icon={<Edit className="w-4 h-4" />} variant="primary" size="large"
+              className="px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors flex items-center"
             >
+              <Edit className="w-4 h-4 mr-2" />
               Edit Company
-            </Button>
+            </button>
           </div>
         </div>
       </div>
@@ -388,9 +400,14 @@ export const CompanyList: React.FC = () => {
           <h1 className="text-2xl font-bold text-gray-900">Companies</h1>
           <p className="text-gray-600">Manage auto parts distributor companies and their branding</p>
         </div>
-        <Button onClick={handleAddCompany} icon={<Plus className="w-5 h-5" />} variant="primary" size="medium">
+        <button
+          type="button"
+          onClick={handleAddCompany}
+          className="flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors"
+        >
+          <Plus className="w-5 h-5 mr-2" />
           Add Company
-        </Button>
+        </button>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100">
@@ -460,9 +477,33 @@ export const CompanyList: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-2">
-                      <Button onClick={() => handleViewCompany(company)} icon={<Eye className="w-4 h-4" />} variant="ghost" size="small" style={{ padding: 4 }} />
-                      <Button onClick={() => handleEditCompany(company)} icon={<Edit className="w-4 h-4" />} variant="ghost" size="small" style={{ padding: 4 }} />
-                      <Button onClick={() => handleDeleteCompany(company.id)} icon={<Trash2 className="w-4 h-4" />} variant="danger" size="small" style={{ padding: 4 }} />
+                      <button
+                        type="button"
+                        onClick={() => handleViewCompany(company)}
+                        className="p-2 rounded-lg bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        title="View"
+                        aria-label="View"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleEditCompany(company)}
+                        className="p-2 rounded-lg bg-transparent hover:bg-yellow-100 dark:hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                        title="Edit"
+                        aria-label="Edit"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteCompany(company.id)}
+                        className="p-2 rounded-lg bg-transparent hover:bg-red-100 dark:hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
+                        title="Delete"
+                        aria-label="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -528,9 +569,13 @@ export const CompanyList: React.FC = () => {
             />
             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Something went wrong</h3>
             <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
-            <Button onClick={() => window.location.reload()} variant="primary" size="medium" style={{ marginTop: 16 }}>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="mt-4 px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors"
+            >
               Retry
-            </Button>
+            </button>
           </div>
         </div>
       )}

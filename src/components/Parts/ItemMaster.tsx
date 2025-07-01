@@ -19,7 +19,7 @@ import {
   X
 } from 'lucide-react';
 import { Part, PartCategory, FocusGroup } from '../../types';
-import { Button } from '../Button';
+
 
 const mockParts: Part[] = [
   {
@@ -749,15 +749,34 @@ export const ItemMaster: React.FC<ItemMasterProps> = ({ onPartSelect, selectionM
           <p className="text-gray-600">Comprehensive parts inventory management system</p>
         </div>
         <div className="flex space-x-3">
-          <Button icon={<Upload className="w-5 h-5" />} variant="secondary" size="medium" style={{ marginRight: 8 }}>
+          <button
+            type="button"
+            className="flex items-center px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors mr-2"
+            aria-label="Import Parts"
+            title="Import Parts"
+          >
+            <Upload className="w-5 h-5 mr-2" />
             Import
-          </Button>
-          <Button icon={<Download className="w-5 h-5" />} variant="primary" size="medium" style={{ marginRight: 8 }}>
+          </button>
+          <button
+            type="button"
+            className="flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors mr-2"
+            aria-label="Export Parts"
+            title="Export Parts"
+          >
+            <Download className="w-5 h-5 mr-2" />
             Export
-          </Button>
-          <Button onClick={handleAddPart} icon={<Plus className="w-5 h-5" />} variant="primary" size="medium">
+          </button>
+          <button
+            type="button"
+            onClick={handleAddPart}
+            className="flex items-center px-4 py-2 rounded-lg bg-[#003366] text-white font-semibold hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003366] transition-colors"
+            aria-label="Add Part"
+            title="Add Part"
+          >
+            <Plus className="w-5 h-5 mr-2" />
             Add Part
-          </Button>
+          </button>
         </div>
       </div>
 
@@ -964,15 +983,16 @@ export const ItemMaster: React.FC<ItemMasterProps> = ({ onPartSelect, selectionM
           />
           <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No parts found</h3>
           <p className="text-gray-600 dark:text-gray-400 mb-4">Try adjusting your search criteria or add a new part.</p>
-          <Button
+          <button
+            type="button"
             onClick={handleAddPart}
-            icon={<Plus className="w-4 h-4 mr-2" />} 
-            variant="primary"
-            size="medium"
-            style={{ marginTop: 8 }}
+            className="mt-2 flex items-center px-4 py-2 rounded-lg bg-[#003366] text-white font-semibold hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003366] transition-colors"
+            aria-label="Add Part"
+            title="Add Part"
           >
+            <Plus className="w-4 h-4 mr-2" />
             Add Part
-          </Button>
+          </button>
         </div>
       )}
 
