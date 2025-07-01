@@ -1,12 +1,13 @@
 
 import React, { useEffect, useState, ChangeEvent } from 'react';
-import { transportAPI } from '../services/api';
-import { Transport } from '../types';
+import { transportAPI, storesAPI } from '../services/api';
+import { Transport, Store } from '../types';
 import { Plus, Edit, Trash2, Eye, X, Filter } from 'lucide-react';
 
 
-export const TransportPage: React.FC = () => {
   const [transports, setTransports] = useState<Transport[]>([]);
+  const [stores, setStores] = useState<Store[]>([]);
+  const [storeMap, setStoreMap] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState({ store_id: '', type: '', provider: '' });
@@ -18,9 +19,31 @@ export const TransportPage: React.FC = () => {
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<Transport | null>(null);
 
+  // Predefined transport types
+  const TRANSPORT_TYPES = ['Truck', 'Van', 'Bike', 'Courier', 'Other'];
+
+  useEffect(() => {
+    fetchStores();
+  }, []);
+
   useEffect(() => {
     fetchTransports();
   }, [filter]);
+  const fetchStores = async () => {
+    try {
+      const res = await storesAPI.getStores();
+      // Support both .stores and direct array
+      const storeList: Store[] = res.data.stores || res.data || [];
+      setStores(storeList);
+      const map: Record<string, string> = {};
+      storeList.forEach(s => {
+        if (s.Branch_Code && s.Branch_Name) map[s.Branch_Code] = s.Branch_Name;
+      });
+      setStoreMap(map);
+    } catch (err) {
+      setError('Failed to load stores');
+    }
+  };
 
   const fetchTransports = async () => {
     setLoading(true);
@@ -66,7 +89,18 @@ export const TransportPage: React.FC = () => {
     setFilter(f => ({ ...f, [e.target.name]: e.target.value }));
   };
 
+  // Validation for required fields
+  const validateForm = () => {
+    if (!form.store_id || !form.type || !form.provider || !form.contact_number) {
+      setError('All fields are required.');
+      return false;
+    }
+    setError(null);
+    return true;
+  };
+
   const handleSave = async () => {
+    if (!validateForm()) return;
     setSaving(true);
     try {
       if (modalMode === 'add') {
@@ -98,8 +132,8 @@ export const TransportPage: React.FC = () => {
   };
 
   const filteredTransports = transports.filter(t =>
-    (!filter.store_id || t.store_id?.toLowerCase().includes(filter.store_id.toLowerCase())) &&
-    (!filter.type || t.type?.toLowerCase().includes(filter.type.toLowerCase())) &&
+    (!filter.store_id || t.store_id === filter.store_id) &&
+    (!filter.type || t.type === filter.type) &&
     (!filter.provider || t.provider?.toLowerCase().includes(filter.provider.toLowerCase()))
   );
 
@@ -118,20 +152,28 @@ export const TransportPage: React.FC = () => {
       {/* Filters */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 flex flex-wrap gap-4 items-center">
         <Filter className="w-5 h-5 text-blue-600" />
-        <input
+        <select
           name="store_id"
           value={filter.store_id}
           onChange={handleFilterChange}
-          placeholder="Store ID"
           className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
-        />
-        <input
+        >
+          <option value="">All Stores</option>
+          {stores.map(s => (
+            <option key={s.Branch_Code} value={s.Branch_Code}>{s.Branch_Name}</option>
+          ))}
+        </select>
+        <select
           name="type"
           value={filter.type}
           onChange={handleFilterChange}
-          placeholder="Type"
           className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
-        />
+        >
+          <option value="">All Types</option>
+          {TRANSPORT_TYPES.map(type => (
+            <option key={type} value={type}>{type}</option>
+          ))}
+        </select>
         <input
           name="provider"
           value={filter.provider}
@@ -157,7 +199,7 @@ export const TransportPage: React.FC = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Store ID</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Store</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Provider</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact Number</th>
@@ -170,7 +212,7 @@ export const TransportPage: React.FC = () => {
               {filteredTransports.map((t) => (
                 <tr key={t.id}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{t.id}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{t.store_id}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{storeMap[t.store_id] || t.store_id}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{t.type}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{t.provider}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{t.contact_number}</td>
@@ -227,26 +269,36 @@ export const TransportPage: React.FC = () => {
               onSubmit={e => { e.preventDefault(); if (modalMode !== 'view') handleSave(); }}
             >
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Store ID</label>
-                <input
+                <label className="block text-sm font-medium text-gray-700 mb-1">Store</label>
+                <select
                   name="store_id"
                   value={form.store_id || ''}
                   onChange={handleChange}
                   disabled={modalMode === 'view'}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
                   required
-                />
+                >
+                  <option value="">Select Store</option>
+                  {stores.map(s => (
+                    <option key={s.Branch_Code} value={s.Branch_Code}>{s.Branch_Name}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                <input
+                <select
                   name="type"
                   value={form.type || ''}
                   onChange={handleChange}
                   disabled={modalMode === 'view'}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
                   required
-                />
+                >
+                  <option value="">Select Type</option>
+                  {TRANSPORT_TYPES.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Provider</label>
