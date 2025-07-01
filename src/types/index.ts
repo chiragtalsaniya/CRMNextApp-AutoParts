@@ -228,11 +228,13 @@ export interface LegacyOrderItem {
 }
 
 export interface Transport {
-  id: string;
+  id: number;
   store_id: string;
   type: string;
   provider: string;
   contact_number: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Region {

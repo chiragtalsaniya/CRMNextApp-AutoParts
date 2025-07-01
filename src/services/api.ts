@@ -223,3 +223,12 @@ export const reportsAPI = {
       responseType: 'blob'
     })
 };
+
+// Transport API
+export const transportAPI = {
+  getTransports: (params?: any) => api.get('/transport', { params }),
+  getTransport: (id: number) => api.get(`/transport/${id}`),
+  createTransport: (data: any) => api.post('/transport', data),
+  updateTransport: (id: number, data: any) => api.put(`/transport/${id}`, data),
+  deleteTransport: (id: number) => api.delete(`/transport/${id}`),
+};
