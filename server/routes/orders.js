@@ -344,7 +344,7 @@ router.post('/',
 // Update order status
 router.patch('/:id/status', 
   authenticateToken,
-  authorizeRoles('admin', 'manager', 'storeman'),
+  authorizeRoles('super_admin', 'admin', 'manager', 'storeman'),
   async (req, res) => {
     try {
       const orderId = req.params.id;

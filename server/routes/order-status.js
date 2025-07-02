@@ -4,7 +4,7 @@ import { authenticateToken, authorizeRoles } from '../middleware/auth.js';
 const router = express.Router();
 
 // PATCH /orders/:id/status
-router.patch('/:id/status', authenticateToken, authorizeRoles('admin', 'manager', 'storeman'), async (req, res) => {
+router.patch('/:id/status', authenticateToken, authorizeRoles('super_admin', 'admin', 'manager', 'storeman'), async (req, res) => {
   const { status, notes } = req.body;
   const validStatuses = [
     'New', 'Pending', 'Processing', 'Hold', 'Picked', 'Dispatched', 'Completed', 'Cancelled'

@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { OrderCart } from './OrderCart';
 import { createOrder } from '../../services/orders';
 import { RetailerSelect } from './RetailerSelect';
 import { PartsCatalog } from './PartsCatalog';
+import { useAuth } from '../../context/AuthContext';
+import { companiesAPI } from '../../services/api';
+import { storesAPI } from '../../services/api';
 
 export const OrderCreate: React.FC<{ onClose?: () => void }> = ({ onClose }) => {
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === 'super_admin';
   // Step state: 'retailer' | 'parts' | 'review'
   const [step, setStep] = useState<'retailer' | 'parts' | 'review'>('retailer');
   // Form state for each step
@@ -13,6 +18,23 @@ export const OrderCreate: React.FC<{ onClose?: () => void }> = ({ onClose }) => 
   const [orderDetails, setOrderDetails] = useState<any>({ po_number: '', urgent: false, remark: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMsg, setSubmitMsg] = useState('');
+  const [company, setCompany] = useState<any>(null);
+  const [companies, setCompanies] = useState<any[]>([]);
+  const [store, setStore] = useState<any>(null);
+  const [stores, setStores] = useState<any[]>([]);
+
+  // Fetch companies for super admin
+  useEffect(() => {
+    if (isSuperAdmin) {
+      companiesAPI.getCompanies().then(res => setCompanies(res.data || []));
+    }
+  }, [isSuperAdmin]);
+  // Fetch stores when company is selected
+  useEffect(() => {
+    if (isSuperAdmin && company) {
+      storesAPI.getStores({ company_id: company.Company_Id }).then(res => setStores(res.data || []));
+    }
+  }, [isSuperAdmin, company]);
 
   // Handler for order submission
   const handleSubmit = async () => {
@@ -51,11 +73,11 @@ export const OrderCreate: React.FC<{ onClose?: () => void }> = ({ onClose }) => 
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-md p-6">
+    <div className="max-w-2xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 transition-colors duration-200" style={{ fontSize: 'var(--app-font-size)' }}>
       {/* Step Indicator */}
       <div className="flex justify-between mb-6">
         {['retailer', 'parts', 'review'].map((s, i) => (
-          <div key={s} className={`flex-1 flex flex-col items-center ${step === s ? 'font-bold text-blue-600 dark:text-blue-400' : 'text-gray-400'}`}>
+          <div key={s} className={`flex-1 flex flex-col items-center ${step === s ? 'font-bold text-blue-600 dark:text-blue-400' : 'text-gray-400 dark:text-gray-500'}`}>
             <div className={`w-8 h-8 rounded-full flex items-center justify-center mb-1 ${step === s ? 'bg-blue-100 dark:bg-blue-900' : 'bg-gray-200 dark:bg-gray-700'}`}>{i+1}</div>
             <span className="text-xs capitalize">{s}</span>
           </div>
@@ -64,6 +86,40 @@ export const OrderCreate: React.FC<{ onClose?: () => void }> = ({ onClose }) => 
       {/* Step Content */}
       {step === 'retailer' && (
         <div>
+          {isSuperAdmin && (
+            <>
+              <label className="block text-xs mb-1">Select Company</label>
+              <select
+                className="w-full mb-2 px-2 py-1 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+                value={company?.Company_Id || ''}
+                onChange={e => {
+                  const selected = companies.find(c => c.Company_Id == e.target.value);
+                  setCompany(selected);
+                  setStore(null);
+                }}
+              >
+                <option value="">-- Select Company --</option>
+                {companies.map(c => (
+                  <option key={c.Company_Id} value={c.Company_Id}>{c.Company_Name}</option>
+                ))}
+              </select>
+              <label className="block text-xs mb-1">Select Store</label>
+              <select
+                className="w-full mb-2 px-2 py-1 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+                value={store?.Branch_Code || ''}
+                onChange={e => {
+                  const selected = stores.find(s => s.Branch_Code == e.target.value);
+                  setStore(selected);
+                }}
+                disabled={!company}
+              >
+                <option value="">-- Select Store --</option>
+                {stores.map(s => (
+                  <option key={s.Branch_Code} value={s.Branch_Code}>{s.Branch_Name}</option>
+                ))}
+              </select>
+            </>
+          )}
           <RetailerSelect value={retailer} onChange={setRetailer} />
           {retailer && (
             <div className="mt-2 p-2 rounded bg-blue-50 dark:bg-blue-900">
@@ -71,14 +127,26 @@ export const OrderCreate: React.FC<{ onClose?: () => void }> = ({ onClose }) => 
               <div className="text-xs text-gray-500">{retailer.Contact_Person}</div>
             </div>
           )}
-          <button className="mt-4 btn btn-primary w-full" onClick={() => setStep('parts')} disabled={!retailer}>Next: Parts</button>
+          <button
+            className="mt-4 btn btn-primary w-full bg-[#003366] text-white dark:bg-blue-800 dark:text-white hover:bg-blue-800 dark:hover:bg-blue-900 focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => setStep('parts')}
+            disabled={isSuperAdmin ? !(company && store && retailer) : !retailer}
+          >
+            Next: Parts
+          </button>
         </div>
       )}
       {step === 'parts' && (
         <div>
           <PartsCatalog onAdd={item => setCart([...cart, item])} />
           <OrderCart cart={cart} setCart={setCart} />
-          <button className="mt-4 btn btn-secondary w-full" onClick={() => setStep('review')} disabled={cart.length === 0}>Next: Review</button>
+          <button
+            className="mt-4 btn btn-secondary w-full bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-700"
+            onClick={() => setStep('review')}
+            disabled={cart.length === 0}
+          >
+            Next: Review
+          </button>
         </div>
       )}
       {step === 'review' && (
@@ -118,10 +186,10 @@ export const OrderCreate: React.FC<{ onClose?: () => void }> = ({ onClose }) => 
             value={orderDetails.remark}
             onChange={e => setOrderDetails((prev: any) => ({ ...prev, remark: e.target.value }))}
           />
-          <button className="mt-4 btn btn-success w-full" onClick={handleSubmit} disabled={isSubmitting}>
+          <button className="mt-4 btn btn-success w-full bg-green-600 dark:bg-green-700 text-white hover:bg-green-700 dark:hover:bg-green-800 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleSubmit} disabled={isSubmitting}>
             {isSubmitting ? 'Submitting...' : 'Submit Order'}
           </button>
-          {submitMsg && <div className="mt-2 text-center text-sm font-medium text-green-600 dark:text-green-400">{submitMsg}</div>}
+          {submitMsg && <div className="mt-2 text-center text-sm font-medium text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 rounded-lg p-2 border border-green-200 dark:border-green-700 transition-colors duration-200">{submitMsg}</div>}
         </div>
       )}
       <button className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 dark:hover:text-white" onClick={onClose}>×</button>
