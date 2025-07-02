@@ -5,6 +5,16 @@ const api = axios.create({
   // ...add interceptors, auth, etc. as needed
 });
 
+// Attach access token to every request if present
+api.interceptors.request.use(config => {
+  const token = localStorage.getItem('accessToken');
+  if (token) {
+    config.headers = config.headers || {};
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 // Auth API
 export const authAPI = {
   login: (email: string, password: string) => 
