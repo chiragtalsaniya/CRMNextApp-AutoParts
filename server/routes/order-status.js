@@ -16,4 +16,5 @@ router.patch('/:id/status', authenticateToken, authorizeRoles('admin', 'manager'
   return res.json({ success: true });
 });
 
-module.exports = router;
+// For ES module compatibility
+export default router;
