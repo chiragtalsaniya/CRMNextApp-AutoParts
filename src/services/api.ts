@@ -17,14 +17,19 @@ api.interceptors.request.use(config => {
 
 // Auth API
 export const authAPI = {
-  login: (email: string, password: string) => 
-    api.post('/auth/login', { email, password }),
+  login: async (email: string, password: string) => {
+    const res = await api.post('/auth/login', { email, password });
+    if (res.data && res.data.token) {
+      localStorage.setItem('accessToken', res.data.token);
+    }
+    return res;
+  },
   
   getProfile: () => 
     api.get('/auth/profile'),
   
   logout: () => {
-    localStorage.removeItem('auth_token');
+    localStorage.removeItem('accessToken');
     return Promise.resolve();
   },
   
