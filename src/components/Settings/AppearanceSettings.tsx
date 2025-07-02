@@ -85,7 +85,7 @@ export const AppearanceSettings: React.FC = () => {
             </div>
           </label>
 
-          <label className={`relative cursor-pointer rounded-lg border-2 p-4 ${settings.theme === 'dark' ? 'border-[#003366] bg-blue-50' : 'border-gray-200 dark:border-gray-700'}`}>
+          <label className={`relative cursor-pointer rounded-lg border-2 p-4 transition-colors duration-200 ${settings.theme === 'dark' ? 'border-[#003366] bg-blue-50 dark:bg-gray-700 dark:border-blue-400' : 'border-gray-200 dark:border-gray-700 dark:bg-gray-800'}`}>
             <input
               type="radio"
               name="theme"
@@ -103,7 +103,7 @@ export const AppearanceSettings: React.FC = () => {
             </div>
           </label>
 
-          <label className={`relative cursor-pointer rounded-lg border-2 p-4 ${settings.theme === 'auto' ? 'border-[#003366] bg-blue-50' : 'border-gray-200 dark:border-gray-700'}`}>
+          <label className={`relative cursor-pointer rounded-lg border-2 p-4 transition-colors duration-200 ${settings.theme === 'auto' ? 'border-[#003366] bg-blue-50 dark:bg-gray-700 dark:border-blue-400' : 'border-gray-200 dark:border-gray-700 dark:bg-gray-800'}`}>
             <input
               type="radio"
               name="theme"
@@ -134,7 +134,7 @@ export const AppearanceSettings: React.FC = () => {
           {colorOptions.map((color) => (
             <label
               key={color.value}
-              className={`relative cursor-pointer rounded-lg border-2 p-4 ${settings.primaryColor === color.value ? 'border-gray-400' : 'border-gray-200'}`}
+              className={`relative cursor-pointer rounded-lg border-2 p-4 flex items-center space-x-3 transition-colors duration-200 ${settings.primaryColor === color.value ? 'border-[#003366] dark:border-blue-400 bg-blue-50 dark:bg-gray-700' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'}`}
             >
               <input
                 type="radio"
@@ -144,13 +144,14 @@ export const AppearanceSettings: React.FC = () => {
                 onChange={handleInputChange}
                 className="sr-only"
               />
-              <div className="flex items-center space-x-3">
-                <div
-                  className="w-6 h-6 rounded-full border border-gray-300"
-                  style={{ backgroundColor: color.value }}
-                />
-                <span className="font-medium text-gray-900">{color.name}</span>
-              </div>
+              <span
+                className="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600 mr-3"
+                style={{ backgroundColor: color.value }}
+              />
+              <span className="text-gray-900 dark:text-white font-medium">{color.name}</span>
+              {settings.primaryColor === color.value && (
+                <span className="ml-auto text-xs px-2 py-1 rounded bg-[#003366] text-white dark:bg-blue-500">Selected</span>
+              )}
             </label>
           ))}
         </div>
@@ -164,16 +165,15 @@ export const AppearanceSettings: React.FC = () => {
         </div>
 
         <div className="space-y-6">
+          {/* Font Size Dropdown */}
           <div>
-            <label htmlFor="fontSize" className="block text-sm font-medium text-gray-700 mb-2">
-              Font Size
-            </label>
+            <label htmlFor="fontSize" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Font Size</label>
             <select
               id="fontSize"
               name="fontSize"
               value={settings.fontSize}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
             >
               <option value="small">Small</option>
               <option value="medium">Medium</option>
@@ -182,16 +182,15 @@ export const AppearanceSettings: React.FC = () => {
             </select>
           </div>
 
+          {/* Language Dropdown */}
           <div>
-            <label htmlFor="language" className="block text-sm font-medium text-gray-700 mb-2">
-              Language
-            </label>
+            <label htmlFor="language" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Language</label>
             <select
               id="language"
               name="language"
               value={settings.language}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
             >
               <option value="en">English</option>
               <option value="es">Spanish</option>
@@ -202,40 +201,40 @@ export const AppearanceSettings: React.FC = () => {
             </select>
           </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-900">Compact Mode</p>
-                <p className="text-xs text-gray-500">Reduce spacing and padding for more content</p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="compactMode"
-                  checked={settings.compactMode}
-                  onChange={handleInputChange}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#003366]"></div>
-              </label>
+          {/* Compact Mode Toggle */}
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-900 dark:text-white">Compact Mode</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Reduce spacing for denser layout</p>
             </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                name="compactMode"
+                checked={settings.compactMode}
+                onChange={handleInputChange}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 dark:after:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#003366] dark:peer-checked:bg-blue-500"></div>
+            </label>
+          </div>
 
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-900">Show Animations</p>
-                <p className="text-xs text-gray-500">Enable smooth transitions and animations</p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="showAnimations"
-                  checked={settings.showAnimations}
-                  onChange={handleInputChange}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#003366]"></div>
-              </label>
+          {/* Animations Toggle */}
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-900 dark:text-white">Show Animations</p>
+              <p className="text-xs text-gray-500 dark:text-gray-300">Enable or disable UI animations</p>
             </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                name="showAnimations"
+                checked={settings.showAnimations}
+                onChange={handleInputChange}
+                className="sr-only peer"
+              />
+              <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 dark:after:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#003366] dark:peer-checked:bg-blue-500"></div>
+            </label>
           </div>
         </div>
       </div>

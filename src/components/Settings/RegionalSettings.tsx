@@ -72,7 +72,7 @@ export const RegionalSettings: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Location & Time */}
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700 transition-colors">
         <div className="flex items-center space-x-3 mb-6">
           <Globe className="w-6 h-6 text-[#003366] dark:text-blue-200" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Location & Time</h3>
@@ -90,7 +90,7 @@ export const RegionalSettings: React.FC = () => {
                 name="country"
                 value={settings.country}
                 onChange={handleInputChange}
-                className="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+              className="pl-10 w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors"
               >
                 {countries.map(country => (
                   <option key={country.value} value={country.value}>
@@ -112,7 +112,7 @@ export const RegionalSettings: React.FC = () => {
                 name="timezone"
                 value={settings.timezone}
                 onChange={handleInputChange}
-                className="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+              className="pl-10 w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors"
               >
                 {timezones.map(tz => (
                   <option key={tz.value} value={tz.value}>
@@ -142,7 +142,7 @@ export const RegionalSettings: React.FC = () => {
               name="dateFormat"
               value={settings.dateFormat}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors"
             >
               <option value="MM/DD/YYYY">MM/DD/YYYY (12/31/2024)</option>
               <option value="DD/MM/YYYY">DD/MM/YYYY (31/12/2024)</option>
@@ -160,7 +160,7 @@ export const RegionalSettings: React.FC = () => {
               name="timeFormat"
               value={settings.timeFormat}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors"
             >
               <option value="12">12-hour (2:30 PM)</option>
               <option value="24">24-hour (14:30)</option>
@@ -176,7 +176,7 @@ export const RegionalSettings: React.FC = () => {
               name="firstDayOfWeek"
               value={settings.firstDayOfWeek}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors"
             >
               <option value="0">Sunday</option>
               <option value="1">Monday</option>
@@ -202,7 +202,7 @@ export const RegionalSettings: React.FC = () => {
               name="currency"
               value={settings.currency}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors"
             >
               {currencies.map(currency => (
                 <option key={currency.value} value={currency.value}>
@@ -221,7 +221,7 @@ export const RegionalSettings: React.FC = () => {
               name="currencyPosition"
               value={settings.currencyPosition}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors"
             >
               <option value="before">Before amount ($100)</option>
               <option value="after">After amount (100$)</option>
@@ -237,7 +237,7 @@ export const RegionalSettings: React.FC = () => {
               name="numberFormat"
               value={settings.numberFormat}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors"
             >
               <option value="US">US (1,234.56)</option>
               <option value="EU">European (1.234,56)</option>
@@ -248,7 +248,7 @@ export const RegionalSettings: React.FC = () => {
       </div>
 
       {/* Preview */}
-      <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-6">
+      <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-6 transition-colors">
         <h4 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-4">Preview</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
@@ -278,7 +278,7 @@ export const RegionalSettings: React.FC = () => {
       </div>
 
       {message && (
-        <div className={`p-4 rounded-lg ${message.includes('success') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+        <div className={`p-4 rounded-lg ${message.includes('success') ? 'bg-green-50 text-green-700 dark:bg-green-900 dark:text-green-200' : 'bg-red-50 text-red-700 dark:bg-red-900 dark:text-red-200'}`}>
           {message}
         </div>
       )}
@@ -287,7 +287,7 @@ export const RegionalSettings: React.FC = () => {
         <button
           type="submit"
           disabled={isLoading}
-          className="bg-[#003366] text-white px-6 py-3 rounded-lg hover:bg-blue-800 focus:ring-2 focus:ring-[#003366] focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+          className="bg-[#003366] text-white px-6 py-3 rounded-lg hover:bg-blue-800 dark:hover:bg-blue-900 focus:ring-2 focus:ring-[#003366] focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
         >
           {isLoading ? (
             <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

@@ -54,7 +54,7 @@ export const SecuritySettings: React.FC = () => {
   return (
     <div className={`space-y-8 transition-colors duration-200 bg-white dark:bg-gray-900 min-h-screen ${appearance.compactMode ? 'space-y-4' : ''}`} style={{ fontSize: 'var(--app-font-size)' }}>
       {/* Change Password */}
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700 transition-colors">
         <div className="flex items-center space-x-3 mb-6">
           <Key className="w-6 h-6 text-[#003366] dark:text-blue-200" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Change Password</h3>
@@ -72,7 +72,7 @@ export const SecuritySettings: React.FC = () => {
                 name="currentPassword"
                 value={passwordData.currentPassword}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:border-transparent outline-none"
+                className="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
                 placeholder="Enter current password"
                 required
               />
@@ -98,7 +98,7 @@ export const SecuritySettings: React.FC = () => {
                   name="newPassword"
                   value={passwordData.newPassword}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
                   placeholder="Enter new password"
                   required
                 />
@@ -123,7 +123,7 @@ export const SecuritySettings: React.FC = () => {
                   name="confirmPassword"
                   value={passwordData.confirmPassword}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
                   placeholder="Confirm new password"
                   required
                 />
@@ -139,7 +139,7 @@ export const SecuritySettings: React.FC = () => {
           </div>
 
           {message && (
-            <div className={`p-4 rounded-lg ${message.includes('success') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+            <div className={`p-4 rounded-lg ${message.includes('success') ? 'bg-green-50 text-green-700 dark:bg-green-900 dark:text-green-200' : 'bg-red-50 text-red-700 dark:bg-red-900 dark:text-red-200'}`}> 
               {message}
             </div>
           )}
@@ -148,7 +148,7 @@ export const SecuritySettings: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="bg-[#003366] text-white px-6 py-3 rounded-lg hover:bg-blue-800 focus:ring-2 focus:ring-[#003366] focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+            className="bg-[#003366] text-white px-6 py-3 rounded-lg hover:bg-blue-800 dark:hover:bg-blue-900 focus:ring-2 focus:ring-[#003366] focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
             >
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -162,7 +162,7 @@ export const SecuritySettings: React.FC = () => {
       </div>
 
       {/* Two-Factor Authentication */}
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700 transition-colors">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
             <Smartphone className="w-6 h-6 text-[#003366] dark:text-blue-200" />
@@ -186,7 +186,7 @@ export const SecuritySettings: React.FC = () => {
         </div>
 
         {twoFactorEnabled && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-4 transition-colors">
             <div className="flex items-center space-x-2 mb-2">
               <Shield className="w-5 h-5 text-blue-600" />
               <span className="text-sm font-medium text-blue-900">Two-Factor Authentication Enabled</span>
@@ -199,7 +199,7 @@ export const SecuritySettings: React.FC = () => {
       </div>
 
       {/* Active Sessions */}
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700 transition-colors">
         <div className="flex items-center space-x-3 mb-6">
           <Clock className="w-6 h-6 text-[#003366] dark:text-blue-200" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Active Sessions</h3>
@@ -207,17 +207,17 @@ export const SecuritySettings: React.FC = () => {
 
         <div className="space-y-4">
           {sessions.map((session) => (
-            <div key={session.id} className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+            <div key={session.id} className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-700 transition-colors">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center transition-colors">
                     <Smartphone className="w-5 h-5 text-gray-600" />
                   </div>
                   <div>
                     <div className="flex items-center space-x-2">
                       <p className="text-sm font-medium text-gray-900 dark:text-white">{session.device}</p>
                       {session.current && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 transition-colors">
                           Current
                         </span>
                       )}
