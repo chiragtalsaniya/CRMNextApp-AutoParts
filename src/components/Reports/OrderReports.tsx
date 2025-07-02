@@ -223,12 +223,15 @@ export const OrderReports: React.FC = () => {
 
   const stats = getOrderStats();
 
+  // Theme context for appearance settings
+  const { appearance } = require('../../context/ThemeContext').useTheme();
+
   return (
-    <div className="space-y-6 bg-white dark:bg-gray-900 min-h-screen transition-colors duration-200">
+    <div className={`space-y-6 bg-white dark:bg-gray-900 min-h-screen transition-colors duration-200 ${appearance.compactMode ? 'space-y-3' : ''}`} style={{ fontSize: 'var(--app-font-size)' }}>
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Order Reports</h1>
-          <p className="text-gray-600">Generate and export comprehensive order reports</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Order Reports</h1>
+          <p className="text-gray-600 dark:text-gray-400">Generate and export comprehensive order reports</p>
         </div>
         <div className="flex space-x-3">
           <button
@@ -243,19 +246,19 @@ export const OrderReports: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
         <div className="flex items-center space-x-3 mb-6">
-          <Filter className="w-6 h-6 text-[#003366]" />
-          <h3 className="text-lg font-semibold text-gray-900">Report Filters</h3>
+          <Filter className="w-6 h-6 text-[#003366] dark:text-blue-200" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Report Filters</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Date Range</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Date Range</label>
             <select
               value={filters.dateRange}
               onChange={(e) => handleFilterChange('dateRange', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             >
               <option value="today">Today</option>
               <option value="week">Last 7 Days</option>
@@ -269,32 +272,32 @@ export const OrderReports: React.FC = () => {
           {filters.dateRange === 'custom' && (
             <>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Start Date</label>
                 <input
                   type="date"
                   value={filters.startDate}
                   onChange={(e) => handleFilterChange('startDate', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">End Date</label>
                 <input
                   type="date"
                   value={filters.endDate}
                   onChange={(e) => handleFilterChange('endDate', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 />
               </div>
             </>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Order Status</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Order Status</label>
             <select
               value={filters.status}
               onChange={(e) => handleFilterChange('status', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             >
               <option value="all">All Status</option>
               <option value="pending">Pending</option>

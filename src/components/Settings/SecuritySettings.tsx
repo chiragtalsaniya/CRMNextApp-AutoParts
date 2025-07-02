@@ -48,8 +48,10 @@ export const SecuritySettings: React.FC = () => {
     { id: 3, device: 'Firefox on MacOS', location: 'Los Angeles, US', lastActive: '2 days ago', current: false },
   ];
 
+  // Theme context for appearance settings
+  const { appearance } = require('../../context/ThemeContext').useTheme();
   return (
-    <div className="space-y-8">
+    <div className={`space-y-8 transition-colors duration-200 bg-white dark:bg-gray-900 min-h-screen ${appearance.compactMode ? 'space-y-4' : ''}`} style={{ fontSize: 'var(--app-font-size)' }}>
       {/* Change Password */}
       <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
         <div className="flex items-center space-x-3 mb-6">

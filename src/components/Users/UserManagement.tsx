@@ -555,24 +555,24 @@ export const UserManagement: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 bg-white dark:bg-gray-900 min-h-screen transition-colors">
+    <div className="space-y-6 bg-white dark:bg-gray-950 min-h-screen transition-colors">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
-          <p className="text-gray-600">Manage system users with profile pictures and permissions</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">User Management</h1>
+          <p className="text-gray-600 dark:text-gray-400">Manage system users with profile pictures and permissions</p>
         </div>
         <div className="flex space-x-3">
-          <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2">
+          <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 dark:hover:bg-green-800 transition-colors flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-green-400">
             <Upload className="w-5 h-5" />
             <span>Import</span>
           </button>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
             <Download className="w-5 h-5" />
             <span>Export</span>
           </button>
           <button 
             onClick={handleAddUser}
-            className="bg-[#003366] text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
+            className="bg-[#003366] text-white px-4 py-2 rounded-lg hover:bg-blue-800 dark:hover:bg-blue-900 transition-colors flex items-center space-x-2 focus:outline-none focus:ring-2 focus:ring-blue-900"
           >
             <Plus className="w-5 h-5" />
             <span>Add User</span>
@@ -585,8 +585,8 @@ export const UserManagement: React.FC = () => {
         <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-100 dark:border-gray-800">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Users</p>
-              <p className="text-2xl font-bold text-gray-900">{users.length}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Total Users</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{users.length}</p>
             </div>
             <UserIcon className="w-8 h-8 text-blue-500" />
           </div>
@@ -594,8 +594,8 @@ export const UserManagement: React.FC = () => {
         <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-100 dark:border-gray-800">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Staff Users</p>
-              <p className="text-2xl font-bold text-gray-900">{users.filter(u => u.role !== 'retailer').length}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Staff Users</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{users.filter(u => u.role !== 'retailer').length}</p>
             </div>
             <Building2 className="w-8 h-8 text-green-500" />
           </div>
@@ -603,8 +603,8 @@ export const UserManagement: React.FC = () => {
         <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-100 dark:border-gray-800">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Retailer Users</p>
-              <p className="text-2xl font-bold text-gray-900">{users.filter(u => u.role === 'retailer').length}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Retailer Users</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{users.filter(u => u.role === 'retailer').length}</p>
             </div>
             <UserCheck className="w-8 h-8 text-pink-500" />
           </div>
@@ -612,8 +612,8 @@ export const UserManagement: React.FC = () => {
         <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-100 dark:border-gray-800">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">With Photos</p>
-              <p className="text-2xl font-bold text-gray-900">{users.filter(u => u.profile_image).length}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">With Photos</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{users.filter(u => u.profile_image).length}</p>
             </div>
             <ImageIcon className="w-8 h-8 text-purple-500" />
           </div>
@@ -621,7 +621,7 @@ export const UserManagement: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
         <div className="flex items-center space-x-3 mb-4">
           <Filter className="w-5 h-5 text-[#003366] dark:text-blue-400" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Filters</h3>
@@ -671,7 +671,7 @@ export const UserManagement: React.FC = () => {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-800">
@@ -685,7 +685,7 @@ export const UserManagement: React.FC = () => {
             </thead>
             <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
               {filteredUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="w-10 h-10 bg-[#003366] rounded-full flex items-center justify-center mr-3 overflow-hidden">
@@ -736,19 +736,19 @@ export const UserManagement: React.FC = () => {
                     <div className="flex items-center justify-end space-x-2">
                       <button 
                         onClick={() => handleViewUser(user)}
-                        className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition-colors"
+                        className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-900"
                       >
                         <Eye className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => handleEditUser(user)}
-                        className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition-colors"
+                        className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-900"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => handleDeleteUser(user.id)}
-                        className="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg transition-colors"
+                        className="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-red-900"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -772,7 +772,7 @@ export const UserManagement: React.FC = () => {
             <img
               src="/empty-state.svg"
               alt="No users illustration"
-              className="w-40 h-40 mx-auto mb-4 opacity-80"
+              className="w-40 h-40 mx-auto mb-4 opacity-80 dark:opacity-90"
               loading="lazy"
               style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.08))' }}
             />
@@ -780,7 +780,7 @@ export const UserManagement: React.FC = () => {
             <p className="text-gray-600 dark:text-gray-400 mb-4">Try adjusting your search criteria or add a new user.</p>
             <button
               onClick={handleAddUser}
-              className="inline-flex items-center px-5 py-2.5 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors mt-2"
+              className="inline-flex items-center px-5 py-2.5 bg-[#003366] text-white rounded-lg hover:bg-blue-800 dark:hover:bg-blue-900 transition-colors mt-2 focus:outline-none focus:ring-2 focus:ring-blue-900"
             >
               <Plus className="w-4 h-4 mr-2" /> Add User
             </button>
@@ -806,18 +806,18 @@ export const UserManagement: React.FC = () => {
       />
 
       {error && (
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950">
           <div className="text-center flex flex-col items-center justify-center">
             <img
               src="/error-state.svg"
               alt="Error illustration"
-              className="w-32 h-32 mx-auto mb-4 opacity-90"
+              className="w-32 h-32 mx-auto mb-4 opacity-90 dark:opacity-100"
               loading="lazy"
               style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.10))' }}
             />
             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Something went wrong</h3>
             <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
-            <button onClick={() => window.location.reload()} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Retry</button>
+            <button onClick={() => window.location.reload()} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-900">Retry</button>
           </div>
         </div>
       )}

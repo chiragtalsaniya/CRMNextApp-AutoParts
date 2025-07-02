@@ -55,8 +55,10 @@ export const AppearanceSettings: React.FC = () => {
     { name: 'Orange', value: '#ea580c' }
   ];
 
+  // Theme context for appearance settings
+  const { appearance } = require('../../context/ThemeContext').useTheme();
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className={`space-y-8 transition-colors duration-200 ${appearance.compactMode ? 'space-y-4' : ''}`} style={{ fontSize: 'var(--app-font-size)' }}>
       {/* Theme Selection */}
       <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
         <div className="flex items-center space-x-3 mb-6">

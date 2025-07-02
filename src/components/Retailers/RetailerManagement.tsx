@@ -209,11 +209,11 @@ export const RetailerManagement: React.FC = () => {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto transition-colors">
+        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700 transition-colors">
           <div className="p-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900">{title}</h2>
-              <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{title}</h2>
+              <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -222,9 +222,9 @@ export const RetailerManagement: React.FC = () => {
           <div className="p-6 space-y-8">
             {/* Retailer Image Upload Section */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-4">Retailer Image</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">Retailer Image</label>
               <div className="flex items-center space-x-6">
-                <div className="w-32 h-24 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg flex items-center justify-center bg-gray-50 dark:bg-gray-800">
+                <div className="w-32 h-24 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-gray-50 dark:bg-gray-800">
                   {retailerImagePreview ? (
                     <img 
                       src={retailerImagePreview} 
@@ -245,7 +245,7 @@ export const RetailerManagement: React.FC = () => {
                   />
                   <label
                     htmlFor="retailer-image-upload"
-                    className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
+                    className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
                   >
                     <Upload className="w-4 h-4 mr-2" />
                     Upload Retailer Image
@@ -259,71 +259,71 @@ export const RetailerManagement: React.FC = () => {
 
             {/* Basic Information */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Basic Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Retailer Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Retailer Name *</label>
                   <input
                     type="text"
                     value={formData.Retailer_Name || ''}
                     onChange={(e) => setFormData(prev => ({ ...prev, Retailer_Name: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     placeholder="Enter retailer name"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">CRM ID</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">CRM ID</label>
                   <input
                     type="text"
                     value={formData.RetailerCRMId || ''}
                     onChange={(e) => setFormData(prev => ({ ...prev, RetailerCRMId: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     placeholder="Enter CRM ID"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">TFAT ID</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">TFAT ID</label>
                   <input
                     type="text"
                     value={formData.Retailer_TFAT_Id || ''}
                     onChange={(e) => setFormData(prev => ({ ...prev, Retailer_TFAT_Id: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     placeholder="Enter TFAT ID"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Contact Person *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Contact Person *</label>
                   <input
                     type="text"
                     value={formData.Contact_Person || ''}
                     onChange={(e) => setFormData(prev => ({ ...prev, Contact_Person: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     placeholder="Enter contact person name"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email Address</label>
                   <input
                     type="email"
                     value={formData.Retailer_Email || ''}
                     onChange={(e) => setFormData(prev => ({ ...prev, Retailer_Email: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     placeholder="retailer@example.com"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Retailer Type</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Retailer Type</label>
                   <select
                     value={formData.Type_Id || 0}
                     onChange={(e) => setFormData(prev => ({ ...prev, Type_Id: parseInt(e.target.value) || 0 }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   >
                     <option value={0}>Select Type</option>
                     {retailerTypes.map(type => (
@@ -336,7 +336,7 @@ export const RetailerManagement: React.FC = () => {
 
             {/* Contact Information */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Contact Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Primary Mobile</label>
@@ -344,7 +344,7 @@ export const RetailerManagement: React.FC = () => {
                     type="tel"
                     value={formData.Retailer_Mobile || ''}
                     onChange={(e) => setFormData(prev => ({ ...prev, Retailer_Mobile: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     placeholder="+1 (555) 123-4567"
                   />
                 </div>
@@ -386,7 +386,7 @@ export const RetailerManagement: React.FC = () => {
 
             {/* Location Information */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Location Information</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Location Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
@@ -394,7 +394,7 @@ export const RetailerManagement: React.FC = () => {
                     value={formData.Retailer_Address || ''}
                     onChange={(e) => setFormData(prev => ({ ...prev, Retailer_Address: e.target.value }))}
                     rows={3}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none resize-none"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     placeholder="Enter complete address"
                   />
                 </div>
@@ -405,7 +405,7 @@ export const RetailerManagement: React.FC = () => {
                     type="text"
                     value={formData.Area_Name || ''}
                     onChange={(e) => setFormData(prev => ({ ...prev, Area_Name: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     placeholder="Enter area name"
                   />
                 </div>
@@ -463,7 +463,7 @@ export const RetailerManagement: React.FC = () => {
 
             {/* Business Information */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Business Information</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Business Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">GST Number</label>
@@ -471,7 +471,7 @@ export const RetailerManagement: React.FC = () => {
                     type="text"
                     value={formData.GST_No || ''}
                     onChange={(e) => setFormData(prev => ({ ...prev, GST_No: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     placeholder="GST123456789"
                   />
                 </div>
@@ -525,10 +525,10 @@ export const RetailerManagement: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
+          <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-4">
             <button
               onClick={onClose}
-              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               Cancel
             </button>
@@ -729,11 +729,11 @@ export const RetailerManagement: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-white dark:bg-gray-900 min-h-screen transition-colors">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Retailer Management</h1>
-          <p className="text-gray-600">Comprehensive retailer database with image management</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Retailer Management</h1>
+          <p className="text-gray-600 dark:text-gray-400">Comprehensive retailer database with image management</p>
         </div>
         <div className="flex space-x-3">
           <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2">
@@ -755,28 +755,28 @@ export const RetailerManagement: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
         <div className="flex items-center space-x-3 mb-4">
-          <Filter className="w-5 h-5 text-[#003366]" />
-          <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+          <Filter className="w-5 h-5 text-[#003366] dark:text-blue-400" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Filters</h3>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
             <input
               type="text"
               placeholder="Search retailers..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+              className="pl-10 pr-4 py-3 w-full border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             />
           </div>
           
           <select
             value={selectedArea}
             onChange={(e) => setSelectedArea(e.target.value)}
-            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+            className="px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           >
             <option value="all">All Areas</option>
             {areas.map(area => (
@@ -787,18 +787,18 @@ export const RetailerManagement: React.FC = () => {
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+            className="px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           >
             <option value="all">All Status</option>
             <option value="1">Active</option>
             <option value="0">Inactive</option>
           </select>
 
-          <div className="text-sm text-gray-600 flex items-center">
+          <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
             <span className="font-medium">{filteredRetailers.length}</span> retailers found
           </div>
 
-          <div className="text-sm text-gray-600 flex items-center justify-end">
+          <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center justify-end">
             <span className="font-medium">
               {filteredRetailers.filter(r => r.Retailer_Status === 1).length} active
             </span>

@@ -54,8 +54,10 @@ export const ProfileSettings: React.FC = () => {
     }
   };
 
+  // Theme context for appearance settings
+  const { appearance } = require('../../context/ThemeContext').useTheme();
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 transition-colors duration-200 bg-white dark:bg-gray-900 min-h-screen ${appearance.compactMode ? 'space-y-3' : ''}`} style={{ fontSize: 'var(--app-font-size)' }}>
       {/* Profile Image Section */}
       <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Profile Picture</h3>
