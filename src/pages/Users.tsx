@@ -1,6 +1,15 @@
 import React from 'react';
 import { UserManagement } from '../components/Users/UserManagement';
+import { useTheme } from '../context/ThemeContext';
 
 export const Users: React.FC = () => {
-  return <UserManagement />;
+  const { appearance } = useTheme?.() || {};
+  // Fallbacks for font size and compact mode
+  const fontSizeClass = appearance?.fontSize === 'large' ? 'text-lg' : appearance?.fontSize === 'small' ? 'text-sm' : appearance?.fontSize === 'extra-large' ? 'text-xl' : 'text-base';
+  const compactClass = appearance?.compactMode ? 'p-2 sm:p-4' : 'p-4 sm:p-8';
+  return (
+    <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors ${fontSizeClass} ${compactClass}`}>
+      <UserManagement />
+    </div>
+  );
 };

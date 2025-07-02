@@ -3,8 +3,9 @@ import { Save, Palette, Monitor, Sun, Moon } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
 export const AppearanceSettings: React.FC = () => {
+  const themeContext = useTheme();
   const [settings, setSettings] = useState({
-    theme: 'light',
+    theme: (themeContext.theme as string) || 'light',
     primaryColor: '#003366',
     fontSize: 'medium',
     compactMode: false,
@@ -13,7 +14,6 @@ export const AppearanceSettings: React.FC = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
-  const { theme, setTheme } = useTheme();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +21,10 @@ export const AppearanceSettings: React.FC = () => {
     setMessage('');
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Apply theme
+      themeContext.setTheme(settings.theme as typeof themeContext.theme);
+      // Optionally, persist other settings to localStorage or backend here
+      localStorage.setItem('appearanceSettings', JSON.stringify(settings));
       setMessage('Appearance settings updated successfully!');
     } catch (error) {
       setMessage('Failed to update appearance settings. Please try again.');
@@ -32,10 +35,15 @@ export const AppearanceSettings: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    setSettings(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
-    }));
+    setSettings(prev => {
+      const newSettings = {
+        ...prev,
+        [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+      };
+      // Live update theme if changed
+      if (name === 'theme') themeContext.setTheme(value as typeof themeContext.theme);
+      return newSettings;
+    });
   };
 
   const colorOptions = [
@@ -57,13 +65,13 @@ export const AppearanceSettings: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <label className={`relative cursor-pointer rounded-lg border-2 p-4 ${theme === 'light' ? 'border-[#003366] bg-blue-50' : 'border-gray-200 dark:border-gray-700'}`}>
+          <label className={`relative cursor-pointer rounded-lg border-2 p-4 ${settings.theme === 'light' ? 'border-[#003366] bg-blue-50' : 'border-gray-200 dark:border-gray-700'}`}>
             <input
               type="radio"
               name="theme"
               value="light"
-              checked={theme === 'light'}
-              onChange={() => setTheme('light')}
+              checked={settings.theme === 'light'}
+              onChange={handleInputChange}
               className="sr-only"
             />
             <div className="flex items-center space-x-3">
@@ -75,13 +83,13 @@ export const AppearanceSettings: React.FC = () => {
             </div>
           </label>
 
-          <label className={`relative cursor-pointer rounded-lg border-2 p-4 ${theme === 'dark' ? 'border-[#003366] bg-blue-50' : 'border-gray-200 dark:border-gray-700'}`}>
+          <label className={`relative cursor-pointer rounded-lg border-2 p-4 ${settings.theme === 'dark' ? 'border-[#003366] bg-blue-50' : 'border-gray-200 dark:border-gray-700'}`}>
             <input
               type="radio"
               name="theme"
               value="dark"
-              checked={theme === 'dark'}
-              onChange={() => setTheme('dark')}
+              checked={settings.theme === 'dark'}
+              onChange={handleInputChange}
               className="sr-only"
             />
             <div className="flex items-center space-x-3">
@@ -93,13 +101,13 @@ export const AppearanceSettings: React.FC = () => {
             </div>
           </label>
 
-          <label className={`relative cursor-pointer rounded-lg border-2 p-4 ${theme === 'auto' ? 'border-[#003366] bg-blue-50' : 'border-gray-200 dark:border-gray-700'}`}>
+          <label className={`relative cursor-pointer rounded-lg border-2 p-4 ${settings.theme === 'auto' ? 'border-[#003366] bg-blue-50' : 'border-gray-200 dark:border-gray-700'}`}>
             <input
               type="radio"
               name="theme"
               value="auto"
-              checked={theme === 'auto'}
-              onChange={() => setTheme('auto')}
+              checked={settings.theme === 'auto'}
+              onChange={handleInputChange}
               className="sr-only"
             />
             <div className="flex items-center space-x-3">
