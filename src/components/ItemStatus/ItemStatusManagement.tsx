@@ -27,6 +27,8 @@ import { format } from 'date-fns';
 import { itemStatusAPI } from '../../services/api';
 import { safeFormat } from '../../utils/safeFormat';
 
+import { useTheme } from '../../context/ThemeContext';
+
 export const ItemStatusManagement: React.FC = () => {
   const { user, getAccessibleStores } = useAuth();
   const [itemStatus, setItemStatus] = useState<ItemStatus[]>([]);
@@ -504,11 +506,11 @@ export const ItemStatusManagement: React.FC = () => {
   };
 
   // Theme context for appearance settings
-  const { appearance } = require('../../context/ThemeContext').useTheme();
+  const { appearance } = useTheme();
 
   return (
     <div
-      className={`space-y-6 transition-colors duration-200 ${appearance.compactMode ? 'space-y-3' : ''}`}
+      className={`space-y-6 transition-colors duration-200${appearance && appearance.compactMode ? ' space-y-3' : ''}`}
       style={{ fontSize: `var(--app-font-size)` }}
     >
       <div className="flex justify-between items-center">
