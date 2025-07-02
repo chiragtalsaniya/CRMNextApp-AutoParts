@@ -306,34 +306,40 @@ export const TransportPage: React.FC = () => {
             </h2>
             {error && modalMode !== 'view' && <div className="text-red-600 dark:text-red-400 text-sm mb-2 text-center">{error}</div>}
             {modalMode === 'view' ? (
-              <div className="space-y-4 text-gray-900 dark:text-gray-100">
-                <div className="flex flex-col gap-1">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">ID</span>
-                  <span className="font-semibold text-gray-900 dark:text-gray-100">{selected?.id}</span>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Provider</span>
-                  <span className="font-semibold text-gray-900 dark:text-gray-100">{selected?.provider}</span>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Type</span>
-                  <span className={`inline-flex items-center gap-2 font-semibold px-2 py-1 rounded-lg text-sm ${typeIconMap[selected?.type || 'Other']?.color}`}>{typeIconMap[selected?.type || 'Other']?.icon} {selected?.type}</span>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Store</span>
-                  <span className="font-semibold text-gray-900 dark:text-gray-100">{storeMap[selected?.store_id || ''] || selected?.store_id}</span>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Contact Number</span>
-                  <span className="font-semibold text-gray-900 dark:text-gray-100 whitespace-pre-line">{formatContactNumbers(selected?.contact_number)}</span>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Created At</span>
-                  <span className="text-gray-700 dark:text-gray-300 text-sm">{readableDate(selected?.created_at)}</span>
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Updated At</span>
-                  <span className="text-gray-700 dark:text-gray-300 text-sm">{readableDate(selected?.updated_at)}</span>
+              <div className="space-y-6 text-gray-900 dark:text-gray-100">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">ID</span>
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">{selected?.id}</span>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">Provider</span>
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">{selected?.provider}</span>
+                  </div>
+                  <div className="flex flex-col gap-1 col-span-2">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">Type</span>
+                    <span className={`inline-flex items-center gap-2 font-semibold px-2 py-1 rounded-lg text-sm ${typeIconMap[selected?.type || 'Other']?.color}`}>{typeIconMap[selected?.type || 'Other']?.icon} {selected?.type}</span>
+                  </div>
+                  <div className="flex flex-col gap-1 col-span-2">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">Store</span>
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">{storeMap[selected?.store_id || ''] || selected?.store_id}</span>
+                  </div>
+                  <div className="flex flex-col gap-1 col-span-2">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">Contact Number(s)</span>
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {(selected?.contact_number || '').split(',').map((num, idx) => (
+                        <span key={idx} className="inline-flex items-center px-2 py-1 rounded bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 text-xs font-mono border border-gray-200 dark:border-gray-700">{num.trim()}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">Created At</span>
+                    <span className="text-gray-700 dark:text-gray-300 text-sm">{readableDate(selected?.created_at)}</span>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">Updated At</span>
+                    <span className="text-gray-700 dark:text-gray-300 text-sm">{readableDate(selected?.updated_at)}</span>
+                  </div>
                 </div>
               </div>
             ) : (
