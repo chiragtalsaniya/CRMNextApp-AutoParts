@@ -218,21 +218,21 @@ export const OrderManagement: React.FC = () => {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
-          <div className="p-6 border-b border-gray-200">
+          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="w-12 h-12 bg-[#003366] rounded-lg flex items-center justify-center">
                   {getStatusIcon(selectedOrder.Order_Status)}
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">Order #{selectedOrder.Order_Id}</h2>
-                  <p className="text-gray-600">{selectedOrder.CRMOrderId}</p>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Order #{selectedOrder.Order_Id}</h2>
+                  <p className="text-gray-600 dark:text-gray-400">{selectedOrder.CRMOrderId}</p>
                   <div className="flex items-center space-x-2 mt-1">
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getOrderStatusColor(selectedOrder.Order_Status)}`}>
                       {selectedOrder.Order_Status}
                     </span>
                     {selectedOrder.Urgent_Status && (
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
                         <Zap className="w-3 h-3 mr-1" />
                         Urgent
                       </span>
@@ -242,7 +242,7 @@ export const OrderManagement: React.FC = () => {
               </div>
               <button 
                 onClick={() => setShowOrderDetails(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
               >
                 <XCircle className="w-6 h-6" />
               </button>
@@ -253,19 +253,19 @@ export const OrderManagement: React.FC = () => {
             {/* Order Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">Order Details</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Order Details</h3>
                 <div className="space-y-3">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">PO Number</p>
-                    <p className="text-gray-900">{orderUI.PO_Number || 'Not specified'}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">PO Number</p>
+                    <p className="text-gray-900 dark:text-gray-100">{orderUI.PO_Number || 'Not specified'}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Branch</p>
-                    <p className="text-gray-900">{orderUI.Branch_Name || orderUI.Branch || 'Not specified'}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Branch</p>
+                    <p className="text-gray-900 dark:text-gray-100">{orderUI.Branch_Name || orderUI.Branch || 'Not specified'}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Urgency</p>
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${orderUI.Urgent_Status ? 'bg-orange-100 text-orange-800' : 'bg-green-100 text-green-800'}`}>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Urgency</p>
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${orderUI.Urgent_Status ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'}`}>
                       {orderUI.Urgent_Status ? (
                         <>
                           <Zap className="w-3 h-3 mr-1" />
@@ -277,64 +277,64 @@ export const OrderManagement: React.FC = () => {
                     </span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Transport</p>
-                    <p className="text-gray-900">{orderUI.TransportBy || 'Not assigned'}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Transport</p>
+                    <p className="text-gray-900 dark:text-gray-100">{orderUI.TransportBy || 'Not assigned'}</p>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">Timeline</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Timeline</h3>
                 <div className="space-y-3">
                   {selectedOrder.Place_Date && (
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Placed</p>
-                      <p className="text-gray-900">{format(timestampToDate(selectedOrder.Place_Date)!, 'MMM dd, yyyy HH:mm')}</p>
-                      <p className="text-xs text-gray-500">by {selectedOrder.Place_By}</p>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Placed</p>
+                      <p className="text-gray-900 dark:text-gray-100">{format(timestampToDate(selectedOrder.Place_Date)!, 'MMM dd, yyyy HH:mm')}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">by {selectedOrder.Place_By}</p>
                     </div>
                   )}
                   {selectedOrder.Confirm_Date && (
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Confirmed</p>
-                      <p className="text-gray-900">{format(timestampToDate(selectedOrder.Confirm_Date)!, 'MMM dd, yyyy HH:mm')}</p>
-                      <p className="text-xs text-gray-500">by {selectedOrder.Confirm_By}</p>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Confirmed</p>
+                      <p className="text-gray-900 dark:text-gray-100">{format(timestampToDate(selectedOrder.Confirm_Date)!, 'MMM dd, yyyy HH:mm')}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">by {selectedOrder.Confirm_By}</p>
                     </div>
                   )}
                   {selectedOrder.Pick_Date && (
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Picked</p>
-                      <p className="text-gray-900">{format(timestampToDate(selectedOrder.Pick_Date)!, 'MMM dd, yyyy HH:mm')}</p>
-                      <p className="text-xs text-gray-500">by {selectedOrder.Pick_By}</p>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Picked</p>
+                      <p className="text-gray-900 dark:text-gray-100">{format(timestampToDate(selectedOrder.Pick_Date)!, 'MMM dd, yyyy HH:mm')}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">by {selectedOrder.Pick_By}</p>
                     </div>
                   )}
                   {selectedOrder.Delivered_Date && (
                     <div>
-                      <p className="text-sm font-medium text-gray-600">Delivered</p>
-                      <p className="text-gray-900">{format(timestampToDate(selectedOrder.Delivered_Date)!, 'MMM dd, yyyy HH:mm')}</p>
-                      <p className="text-xs text-gray-500">by {selectedOrder.Delivered_By}</p>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Delivered</p>
+                      <p className="text-gray-900 dark:text-gray-100">{format(timestampToDate(selectedOrder.Delivered_Date)!, 'MMM dd, yyyy HH:mm')}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">by {selectedOrder.Delivered_By}</p>
                     </div>
                   )}
                 </div>
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">Summary</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Summary</h3>
                 <div className="space-y-3">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total Items</p>
-                    <p className="text-gray-900">{items.length}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Items</p>
+                    <p className="text-gray-900 dark:text-gray-100">{items.length}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total Amount</p>
-                    <p className="text-2xl font-bold text-[#003366]">{formatCurrency(orderTotal)}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Amount</p>
+                    <p className="text-2xl font-bold text-[#003366] dark:text-blue-300">{formatCurrency(orderTotal)}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Retailer</p>
-                    <p className="text-gray-900">{orderUI.Retailer_Name || `ID: ${orderUI.Retailer_Id}` || 'Not specified'}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Retailer</p>
+                    <p className="text-gray-900 dark:text-gray-100">{orderUI.Retailer_Name || `ID: ${orderUI.Retailer_Id}` || 'Not specified'}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Dispatch ID</p>
-                    <p className="text-gray-900">{orderUI.DispatchId || 'Not assigned'}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Dispatch ID</p>
+                    <p className="text-gray-900 dark:text-gray-100">{orderUI.DispatchId || 'Not assigned'}</p>
                   </div>
                 </div>
               </div>
@@ -343,75 +343,75 @@ export const OrderManagement: React.FC = () => {
             {/* Remarks */}
             {selectedOrder.Remark && (
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Remarks</h3>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-gray-700">{selectedOrder.Remark}</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Remarks</h3>
+                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                  <p className="text-gray-700 dark:text-gray-300">{selectedOrder.Remark}</p>
                 </div>
               </div>
             )}
 
             {/* Order Items */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Order Items</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Order Items</h3>
               <div className="overflow-x-auto">
-                <table className="w-full border border-gray-200 rounded-lg">
+                <table className="w-full border border-gray-200 dark:border-gray-700 rounded-lg">
                   <thead className="bg-gray-50 dark:bg-gray-800">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">MRP</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Discounts</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Urgency</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Item</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Qty</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">MRP</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Discounts</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Amount</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Urgency</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
                     {Array.isArray(items) ? items.map((item: OrderItem) => (
-                      <tr key={item.Order_Item_Id} className="hover:bg-gray-50">
+                      <tr key={item.Order_Item_Id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                         <td className="px-4 py-3">
                           <div>
-                            <p className="text-sm font-medium text-gray-900">{item.Part_Salesman}</p>
-                            <p className="text-xs text-gray-500">{item.Part_Admin}</p>
+                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{item.Part_Salesman}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{item.Part_Admin}</p>
                           </div>
                         </td>
                         <td className="px-4 py-3">
                           <div>
-                            <p className="text-sm text-gray-900">Ordered: {item.Order_Qty}</p>
-                            <p className="text-xs text-gray-500">Dispatched: {item.Dispatch_Qty || 0}</p>
+                            <p className="text-sm text-gray-900 dark:text-gray-100">Ordered: {item.Order_Qty}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">Dispatched: {item.Dispatch_Qty || 0}</p>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-900">
+                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                           {formatCurrency(item.MRP)}
                         </td>
                         <td className="px-4 py-3">
                           <div className="text-xs space-y-1">
-                            <p>Basic: {item.Discount || 0}%</p>
-                            <p>Scheme: {item.SchemeDisc || 0}%</p>
-                            <p>Additional: {item.AdditionalDisc || 0}%</p>
+                            <p className="dark:text-gray-400">Basic: {item.Discount || 0}%</p>
+                            <p className="dark:text-gray-400">Scheme: {item.SchemeDisc || 0}%</p>
+                            <p className="dark:text-gray-400">Additional: {item.AdditionalDisc || 0}%</p>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">
                           {formatCurrency(item.ItemAmount)}
                         </td>
                         <td className="px-4 py-3">
                           <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                            item.OrderItemStatus === 'Completed' ? 'bg-green-100 text-green-800' :
-                            item.OrderItemStatus === 'Dispatched' ? 'bg-blue-100 text-blue-800' :
-                            item.OrderItemStatus === 'Processing' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-gray-100 text-gray-800'
+                            item.OrderItemStatus === 'Completed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                            item.OrderItemStatus === 'Dispatched' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
+                            item.OrderItemStatus === 'Processing' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+                            'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
                           }`}>
                             {item.OrderItemStatus}
                           </span>
                         </td>
                         <td className="px-4 py-3">
                           {item.Urgent_Status ? (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
                               <Zap className="w-3 h-3 mr-1" />
                               Urgent
                             </span>
                           ) : (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                               Normal
                             </span>
                           )}
@@ -426,11 +426,11 @@ export const OrderManagement: React.FC = () => {
             {/* Location Information */}
             {(selectedOrder.Latitude && selectedOrder.Longitude) && (
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Delivery Location</h3>
-                <div className="bg-gray-50 p-4 rounded-lg flex items-center space-x-3">
-                  <MapPin className="w-5 h-5 text-gray-400" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Delivery Location</h3>
+                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg flex items-center space-x-3">
+                  <MapPin className="w-5 h-5 text-gray-400 dark:text-gray-300" />
                   <div>
-                    <p className="text-sm text-gray-900">
+                    <p className="text-sm text-gray-900 dark:text-gray-100">
                       Coordinates: {selectedOrder.Latitude}, {selectedOrder.Longitude}
                     </p>
                   </div>
@@ -439,10 +439,10 @@ export const OrderManagement: React.FC = () => {
             )}
           </div>
 
-          <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
+          <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-4">
             <button
               onClick={() => setShowOrderDetails(false)}
-              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               Close
             </button>
@@ -538,7 +538,7 @@ export const OrderManagement: React.FC = () => {
         </div>
       </div>
 
-      {/* Order Details Modal */}
+      {/* Order Details Modal (dark mode improvements) */}
       {showOrderDetails && selectedOrder && (() => {
         const orderUI = getOrderUI(selectedOrder);
         const items = orderUI.items || [];
@@ -546,21 +546,21 @@ export const OrderManagement: React.FC = () => {
         return (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
-              <div className="p-6 border-b border-gray-200">
+              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <div className="w-12 h-12 bg-[#003366] rounded-lg flex items-center justify-center">
                       {getStatusIcon(selectedOrder.Order_Status)}
                     </div>
                     <div>
-                      <h2 className="text-xl font-bold text-gray-900">Order #{selectedOrder.Order_Id}</h2>
-                      <p className="text-gray-600">{selectedOrder.CRMOrderId}</p>
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Order #{selectedOrder.Order_Id}</h2>
+                      <p className="text-gray-600 dark:text-gray-400">{selectedOrder.CRMOrderId}</p>
                       <div className="flex items-center space-x-2 mt-1">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getOrderStatusColor(selectedOrder.Order_Status)}`}>
                           {selectedOrder.Order_Status}
                         </span>
                         {selectedOrder.Urgent_Status && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
                             <Zap className="w-3 h-3 mr-1" />
                             Urgent
                           </span>
@@ -570,7 +570,7 @@ export const OrderManagement: React.FC = () => {
                   </div>
                   <button 
                     onClick={() => setShowOrderDetails(false)}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
                   >
                     <XCircle className="w-6 h-6" />
                   </button>
@@ -581,19 +581,19 @@ export const OrderManagement: React.FC = () => {
                 {/* Order Information */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Order Details</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Order Details</h3>
                     <div className="space-y-3">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">PO Number</p>
-                        <p className="text-gray-900">{orderUI.PO_Number || 'Not specified'}</p>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">PO Number</p>
+                        <p className="text-gray-900 dark:text-gray-100">{orderUI.PO_Number || 'Not specified'}</p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Branch</p>
-                        <p className="text-gray-900">{orderUI.Branch_Name || orderUI.Branch || 'Not specified'}</p>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Branch</p>
+                        <p className="text-gray-900 dark:text-gray-100">{orderUI.Branch_Name || orderUI.Branch || 'Not specified'}</p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Urgency</p>
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${orderUI.Urgent_Status ? 'bg-orange-100 text-orange-800' : 'bg-green-100 text-green-800'}`}>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Urgency</p>
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${orderUI.Urgent_Status ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'}`}>
                           {orderUI.Urgent_Status ? (
                             <>
                               <Zap className="w-3 h-3 mr-1" />
@@ -605,64 +605,64 @@ export const OrderManagement: React.FC = () => {
                         </span>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Transport</p>
-                        <p className="text-gray-900">{orderUI.TransportBy || 'Not assigned'}</p>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Transport</p>
+                        <p className="text-gray-900 dark:text-gray-100">{orderUI.TransportBy || 'Not assigned'}</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Timeline</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Timeline</h3>
                     <div className="space-y-3">
                       {selectedOrder.Place_Date && (
                         <div>
-                          <p className="text-sm font-medium text-gray-600">Placed</p>
-                          <p className="text-gray-900">{format(timestampToDate(selectedOrder.Place_Date)!, 'MMM dd, yyyy HH:mm')}</p>
-                          <p className="text-xs text-gray-500">by {selectedOrder.Place_By}</p>
+                          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Placed</p>
+                          <p className="text-gray-900 dark:text-gray-100">{format(timestampToDate(selectedOrder.Place_Date)!, 'MMM dd, yyyy HH:mm')}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">by {selectedOrder.Place_By}</p>
                         </div>
                       )}
                       {selectedOrder.Confirm_Date && (
                         <div>
-                          <p className="text-sm font-medium text-gray-600">Confirmed</p>
-                          <p className="text-gray-900">{format(timestampToDate(selectedOrder.Confirm_Date)!, 'MMM dd, yyyy HH:mm')}</p>
-                          <p className="text-xs text-gray-500">by {selectedOrder.Confirm_By}</p>
+                          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Confirmed</p>
+                          <p className="text-gray-900 dark:text-gray-100">{format(timestampToDate(selectedOrder.Confirm_Date)!, 'MMM dd, yyyy HH:mm')}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">by {selectedOrder.Confirm_By}</p>
                         </div>
                       )}
                       {selectedOrder.Pick_Date && (
                         <div>
-                          <p className="text-sm font-medium text-gray-600">Picked</p>
-                          <p className="text-gray-900">{format(timestampToDate(selectedOrder.Pick_Date)!, 'MMM dd, yyyy HH:mm')}</p>
-                          <p className="text-xs text-gray-500">by {selectedOrder.Pick_By}</p>
+                          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Picked</p>
+                          <p className="text-gray-900 dark:text-gray-100">{format(timestampToDate(selectedOrder.Pick_Date)!, 'MMM dd, yyyy HH:mm')}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">by {selectedOrder.Pick_By}</p>
                         </div>
                       )}
                       {selectedOrder.Delivered_Date && (
                         <div>
-                          <p className="text-sm font-medium text-gray-600">Delivered</p>
-                          <p className="text-gray-900">{format(timestampToDate(selectedOrder.Delivered_Date)!, 'MMM dd, yyyy HH:mm')}</p>
-                          <p className="text-xs text-gray-500">by {selectedOrder.Delivered_By}</p>
+                          <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Delivered</p>
+                          <p className="text-gray-900 dark:text-gray-100">{format(timestampToDate(selectedOrder.Delivered_Date)!, 'MMM dd, yyyy HH:mm')}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">by {selectedOrder.Delivered_By}</p>
                         </div>
                       )}
                     </div>
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Summary</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Summary</h3>
                     <div className="space-y-3">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Total Items</p>
-                        <p className="text-gray-900">{items.length}</p>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Items</p>
+                        <p className="text-gray-900 dark:text-gray-100">{items.length}</p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Total Amount</p>
-                        <p className="text-2xl font-bold text-[#003366]">{formatCurrency(orderTotal)}</p>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Amount</p>
+                        <p className="text-2xl font-bold text-[#003366] dark:text-blue-300">{formatCurrency(orderTotal)}</p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Retailer</p>
-                        <p className="text-gray-900">{orderUI.Retailer_Name || `ID: ${orderUI.Retailer_Id}` || 'Not specified'}</p>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Retailer</p>
+                        <p className="text-gray-900 dark:text-gray-100">{orderUI.Retailer_Name || `ID: ${orderUI.Retailer_Id}` || 'Not specified'}</p>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Dispatch ID</p>
-                        <p className="text-gray-900">{orderUI.DispatchId || 'Not assigned'}</p>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Dispatch ID</p>
+                        <p className="text-gray-900 dark:text-gray-100">{orderUI.DispatchId || 'Not assigned'}</p>
                       </div>
                     </div>
                   </div>
@@ -671,75 +671,75 @@ export const OrderManagement: React.FC = () => {
                 {/* Remarks */}
                 {selectedOrder.Remark && (
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Remarks</h3>
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-gray-700">{selectedOrder.Remark}</p>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Remarks</h3>
+                    <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                      <p className="text-gray-700 dark:text-gray-300">{selectedOrder.Remark}</p>
                     </div>
                   </div>
                 )}
 
                 {/* Order Items */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Order Items</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Order Items</h3>
                   <div className="overflow-x-auto">
-                    <table className="w-full border border-gray-200 rounded-lg">
+                    <table className="w-full border border-gray-200 dark:border-gray-700 rounded-lg">
                       <thead className="bg-gray-50 dark:bg-gray-800">
                         <tr>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qty</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">MRP</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Discounts</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Urgency</th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Item</th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Qty</th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">MRP</th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Discounts</th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Amount</th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Urgency</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
                         {Array.isArray(items) ? items.map((item: OrderItem) => (
-                          <tr key={item.Order_Item_Id} className="hover:bg-gray-50">
+                          <tr key={item.Order_Item_Id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                             <td className="px-4 py-3">
                               <div>
-                                <p className="text-sm font-medium text-gray-900">{item.Part_Salesman}</p>
-                                <p className="text-xs text-gray-500">{item.Part_Admin}</p>
+                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{item.Part_Salesman}</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">{item.Part_Admin}</p>
                               </div>
                             </td>
                             <td className="px-4 py-3">
                               <div>
-                                <p className="text-sm text-gray-900">Ordered: {item.Order_Qty}</p>
-                                <p className="text-xs text-gray-500">Dispatched: {item.Dispatch_Qty || 0}</p>
+                                <p className="text-sm text-gray-900 dark:text-gray-100">Ordered: {item.Order_Qty}</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">Dispatched: {item.Dispatch_Qty || 0}</p>
                               </div>
                             </td>
-                            <td className="px-4 py-3 text-sm text-gray-900">
+                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
                               {formatCurrency(item.MRP)}
                             </td>
                             <td className="px-4 py-3">
                               <div className="text-xs space-y-1">
-                                <p>Basic: {item.Discount || 0}%</p>
-                                <p>Scheme: {item.SchemeDisc || 0}%</p>
-                                <p>Additional: {item.AdditionalDisc || 0}%</p>
+                                <p className="dark:text-gray-400">Basic: {item.Discount || 0}%</p>
+                                <p className="dark:text-gray-400">Scheme: {item.SchemeDisc || 0}%</p>
+                                <p className="dark:text-gray-400">Additional: {item.AdditionalDisc || 0}%</p>
                               </div>
                             </td>
-                            <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                            <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">
                               {formatCurrency(item.ItemAmount)}
                             </td>
                             <td className="px-4 py-3">
                               <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                item.OrderItemStatus === 'Completed' ? 'bg-green-100 text-green-800' :
-                                item.OrderItemStatus === 'Dispatched' ? 'bg-blue-100 text-blue-800' :
-                                item.OrderItemStatus === 'Processing' ? 'bg-yellow-100 text-yellow-800' :
-                                'bg-gray-100 text-gray-800'
+                                item.OrderItemStatus === 'Completed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                                item.OrderItemStatus === 'Dispatched' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
+                                item.OrderItemStatus === 'Processing' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+                                'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
                               }`}>
                                 {item.OrderItemStatus}
                               </span>
                             </td>
                             <td className="px-4 py-3">
                               {item.Urgent_Status ? (
-                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
                                   <Zap className="w-3 h-3 mr-1" />
                                   Urgent
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                                   Normal
                                 </span>
                               )}
@@ -754,11 +754,11 @@ export const OrderManagement: React.FC = () => {
                 {/* Location Information */}
                 {(selectedOrder.Latitude && selectedOrder.Longitude) && (
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Delivery Location</h3>
-                    <div className="bg-gray-50 p-4 rounded-lg flex items-center space-x-3">
-                      <MapPin className="w-5 h-5 text-gray-400" />
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Delivery Location</h3>
+                    <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg flex items-center space-x-3">
+                      <MapPin className="w-5 h-5 text-gray-400 dark:text-gray-300" />
                       <div>
-                        <p className="text-sm text-gray-900">
+                        <p className="text-sm text-gray-900 dark:text-gray-100">
                           Coordinates: {selectedOrder.Latitude}, {selectedOrder.Longitude}
                         </p>
                       </div>
@@ -767,10 +767,10 @@ export const OrderManagement: React.FC = () => {
                 )}
               </div>
 
-              <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
+              <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-4">
                 <button
                   onClick={() => setShowOrderDetails(false)}
-                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
                   Close
                 </button>
@@ -798,26 +798,24 @@ export const OrderManagement: React.FC = () => {
       {/* Filters */}
       <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
         <div className="flex items-center space-x-3 mb-4">
-          <Filter className="w-5 h-5 text-[#003366]" />
-          <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+          <Filter className="w-5 h-5 text-[#003366] dark:text-blue-400" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Filters</h3>
         </div>
-        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
             <input
               type="text"
               placeholder="Search orders..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+              className="pl-10 pr-4 py-3 w-full border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             />
           </div>
-          
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as OrderStatus | 'all')}
-            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+            className="px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           >
             <option value="all">All Status</option>
             <option value="New">New</option>
@@ -829,18 +827,16 @@ export const OrderManagement: React.FC = () => {
             <option value="Pending">Pending</option>
             <option value="Cancelled">Cancelled</option>
           </select>
-
           <select
             value={urgencyFilter}
             onChange={(e) => setUrgencyFilter(e.target.value)}
-            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+            className="px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           >
             <option value="all">All Urgency</option>
             <option value="urgent">Urgent Only</option>
             <option value="normal">Normal Only</option>
           </select>
-
-          <div className="text-sm text-gray-600 flex items-center">
+          <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
             <span className="font-medium">{filteredOrders.length}</span> orders found
           </div>
         </div>
@@ -892,13 +888,13 @@ export const OrderManagement: React.FC = () => {
               </thead>
               <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
                 {Array.isArray(filteredOrders) ? filteredOrders.map((order) => (
-                  <tr key={order.Order_Id} className="hover:bg-gray-50">
+                  <tr key={order.Order_Id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">#{order.Order_Id}</div>
-                        <div className="text-sm text-gray-500">{order.CRMOrderId}</div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">#{order.Order_Id}</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">{order.CRMOrderId}</div>
                         {order.PO_Number && (
-                          <div className="text-xs text-gray-400">PO: {order.PO_Number}</div>
+                          <div className="text-xs text-gray-400 dark:text-gray-500">PO: {order.PO_Number}</div>
                         )}
                       </div>
                     </td>
@@ -923,14 +919,14 @@ export const OrderManagement: React.FC = () => {
                     {user?.role !== 'retailer' && (
                       <td className="px-6 py-4 whitespace-nowrap">
                         {/* Cast order as OrderMasterWithUI for Branch_Name/Retailer_Name */}
-                        <div className="text-sm text-gray-900">{(order as OrderMasterWithUI).Branch_Name || order.Branch || 'Not assigned'}</div>
+                        <div className="text-sm text-gray-900 dark:text-gray-100">{(order as OrderMasterWithUI).Branch_Name || order.Branch || 'Not assigned'}</div>
                       </td>
                     )}
                     <td className="px-6 py-4 whitespace-nowrap">
                       {/* Cast order as OrderMasterWithUI for Branch_Name/Retailer_Name */}
-                      <div className="text-sm text-gray-900">{(order as OrderMasterWithUI).Retailer_Name || `ID: ${order.Retailer_Id}` || 'Unknown'}</div>
+                      <div className="text-sm text-gray-900 dark:text-gray-100">{(order as OrderMasterWithUI).Retailer_Name || `ID: ${order.Retailer_Id}` || 'Unknown'}</div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       {order.Place_Date ? format(timestampToDate(order.Place_Date)!, 'MMM dd, yyyy') : 'Not set'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -981,7 +977,7 @@ export const OrderManagement: React.FC = () => {
               <select
                 value={selectedStatus}
                 onChange={e => setSelectedStatus(e.target.value as OrderStatus)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2"
               >
                 {nextStatuses.map(status => (
                   <option key={status} value={status}>{status}</option>
@@ -993,7 +989,7 @@ export const OrderManagement: React.FC = () => {
               <textarea
                 value={statusNotes}
                 onChange={e => setStatusNotes(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2"
                 rows={2}
               />
             </div>
