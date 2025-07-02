@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
+import { useTheme } from '../../context/ThemeContext';
 import { 
   Download, 
   FileText, 
   FileSpreadsheet, 
-  Calendar, 
   Filter,
   BarChart3,
   TrendingUp,
   Package,
   DollarSign,
-  Clock,
   CheckCircle
 } from 'lucide-react';
 import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
-import { Order, OrderStatus } from '../../types';
+import { OrderStatus } from '../../types';
 import { exportToExcel, exportToPDF, exportToWord } from '../../utils/exportUtils';
 
 import { OrderMaster, OrderItem } from '../../types';
@@ -115,6 +114,7 @@ export const OrderReports: React.FC = () => {
     retailerId: 'all'
   });
   const [isExporting, setIsExporting] = useState(false);
+  const { appearance } = useTheme();
 
   // ...existing code...
 
@@ -223,11 +223,9 @@ export const OrderReports: React.FC = () => {
 
   const stats = getOrderStats();
 
-  // Theme context for appearance settings
-  const { appearance } = require('../../context/ThemeContext').useTheme();
 
   return (
-    <div className={`space-y-6 bg-white dark:bg-gray-900 min-h-screen transition-colors duration-200 ${appearance.compactMode ? 'space-y-3' : ''}`} style={{ fontSize: 'var(--app-font-size)' }}>
+    <div className={`space-y-6 bg-white dark:bg-gray-900 min-h-screen transition-colors duration-200${appearance && appearance.compactMode ? ' space-y-3' : ''}`} style={{ fontSize: 'var(--app-font-size)' }}>
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Order Reports</h1>
