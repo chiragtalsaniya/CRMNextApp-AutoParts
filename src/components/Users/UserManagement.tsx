@@ -183,11 +183,11 @@ export const UserManagement: React.FC = () => {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-          <div className="p-6 border-b border-gray-200">
+        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
+          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900">{title}</h2>
-              <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{title}</h2>
+              <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -196,9 +196,9 @@ export const UserManagement: React.FC = () => {
           <div className="p-6 space-y-6">
             {/* Profile Image Upload Section */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-4">Profile Picture</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">Profile Picture</label>
               <div className="flex items-center space-x-6">
-                <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-full flex items-center justify-center bg-gray-50 overflow-hidden">
+                <div className="w-24 h-24 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-full flex items-center justify-center bg-gray-50 dark:bg-gray-800 overflow-hidden">
                   {profileImagePreview ? (
                     <img 
                       src={profileImagePreview} 
@@ -206,7 +206,7 @@ export const UserManagement: React.FC = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <ImageIcon className="w-8 h-8 text-gray-400" />
+                    <ImageIcon className="w-8 h-8 text-gray-400 dark:text-gray-500" />
                   )}
                 </div>
                 <div className="flex-1">
@@ -219,12 +219,12 @@ export const UserManagement: React.FC = () => {
                   />
                   <label
                     htmlFor="profile-image-upload"
-                    className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
+                    className="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
                   >
                     <Upload className="w-4 h-4 mr-2" />
                     Upload Profile Picture
                   </label>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                     Recommended: 400x400px, PNG or JPG format
                   </p>
                 </div>
@@ -233,31 +233,31 @@ export const UserManagement: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Full Name *</label>
                 <input
                   type="text"
                   value={formData.name || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   placeholder="Enter full name"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email Address *</label>
                 <input
                   type="email"
                   value={formData.email || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   placeholder="Enter email address"
                   required
                 />
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Role *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Role *</label>
                 <select
                   value={formData.role || ''}
                   onChange={(e) => {
@@ -271,7 +271,7 @@ export const UserManagement: React.FC = () => {
                       retailer_id: undefined
                     }));
                   }}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   required
                 >
                   <option value="">Select Role</option>
@@ -287,7 +287,7 @@ export const UserManagement: React.FC = () => {
               {/* Company Assignment (for non-super_admin and non-retailer roles) */}
               {formData.role && !['super_admin', 'retailer'].includes(formData.role) && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Company</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Company</label>
                   <select
                     value={formData.company_id || ''}
                     onChange={(e) => setFormData(prev => ({ 
@@ -295,7 +295,7 @@ export const UserManagement: React.FC = () => {
                       company_id: e.target.value,
                       store_id: '' // Reset store when company changes
                     }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   >
                     <option value="">Select Company</option>
                     {companies.map(company => (
@@ -308,11 +308,11 @@ export const UserManagement: React.FC = () => {
               {/* Store Assignment (for specific roles) */}
               {formData.company_id && ['manager', 'storeman', 'salesman'].includes(formData.role || '') && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Store</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Store</label>
                   <select
                     value={formData.store_id || ''}
                     onChange={(e) => setFormData(prev => ({ ...prev, store_id: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   >
                     <option value="">Select Store</option>
                     {availableStores.map(store => (
@@ -327,11 +327,11 @@ export const UserManagement: React.FC = () => {
               {/* Retailer Assignment (for retailer role) */}
               {formData.role === 'retailer' && (
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Retailer *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Retailer *</label>
                   <select
                     value={formData.retailer_id || ''}
                     onChange={(e) => setFormData(prev => ({ ...prev, retailer_id: parseInt(e.target.value) || undefined }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     required
                   >
                     <option value="">Select Retailer</option>
@@ -346,9 +346,9 @@ export const UserManagement: React.FC = () => {
             </div>
 
             {/* Role Information */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h4 className="text-sm font-medium text-blue-900 mb-2">Role Permissions</h4>
-              <div className="text-sm text-blue-700">
+            <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+              <h4 className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">Role Permissions</h4>
+              <div className="text-sm text-blue-700 dark:text-blue-200">
                 {formData.role === 'super_admin' && 'Full system access including company and user management'}
                 {formData.role === 'admin' && 'Company-level access including store and user management'}
                 {formData.role === 'manager' && 'Store-level access including inventory and order management'}
@@ -360,10 +360,10 @@ export const UserManagement: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
+          <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-4">
             <button
               onClick={onClose}
-              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               Cancel
             </button>
@@ -384,8 +384,8 @@ export const UserManagement: React.FC = () => {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-          <div className="p-6 border-b border-gray-200">
+        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
+          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="w-16 h-16 bg-[#003366] rounded-full flex items-center justify-center overflow-hidden">
@@ -402,14 +402,12 @@ export const UserManagement: React.FC = () => {
                   )}
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">{user.name}</h2>
-                  <p className="text-gray-600">{user.email}</p>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1 ${getRoleColor(user.role)}`}>
-                    {user.role.replace('_', ' ').toUpperCase()}
-                  </span>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{user.name}</h2>
+                  <p className="text-gray-600 dark:text-gray-400">{user.email}</p>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1 ${getRoleColor(user.role)}`}>{user.role.replace('_', ' ').toUpperCase()}</span>
                 </div>
               </div>
-              <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+              <button onClick={onClose} className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -419,8 +417,8 @@ export const UserManagement: React.FC = () => {
             {/* Profile Image */}
             {user.profile_image && (
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Picture</h3>
-                <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 mx-auto">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Profile Picture</h3>
+                <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-800 mx-auto">
                   <img 
                     src={user.profile_image} 
                     alt={user.name}
@@ -432,61 +430,61 @@ export const UserManagement: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">User Information</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">User Information</h3>
                 
                 <div className="space-y-3">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">User ID</p>
-                    <p className="text-gray-900 font-mono">{user.id}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">User ID</p>
+                    <p className="text-gray-900 dark:text-gray-100 font-mono">{user.id}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Created</p>
-                    <p className="text-gray-900">{new Date(user.created_at).toLocaleDateString()}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Created</p>
+                    <p className="text-gray-900 dark:text-gray-100">{new Date(user.created_at).toLocaleDateString()}</p>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900">Assignment</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Assignment</h3>
                 
                 <div className="space-y-3">
                   {user.company_id && (
                     <div className="flex items-center space-x-3">
-                      <Building2 className="w-4 h-4 text-gray-400" />
+                      <Building2 className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Company</p>
-                        <p className="text-gray-900">{getCompanyName(user.company_id)}</p>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Company</p>
+                        <p className="text-gray-900 dark:text-gray-100">{getCompanyName(user.company_id)}</p>
                       </div>
                     </div>
                   )}
                   
                   {user.store_id && (
                     <div className="flex items-center space-x-3">
-                      <Store className="w-4 h-4 text-gray-400" />
+                      <Store className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Store</p>
-                        <p className="text-gray-900">{getStoreName(user.store_id)}</p>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Store</p>
+                        <p className="text-gray-900 dark:text-gray-100">{getStoreName(user.store_id)}</p>
                       </div>
                     </div>
                   )}
                   
                   {user.retailer_id && (
                     <div className="flex items-center space-x-3">
-                      <UserCheck className="w-4 h-4 text-gray-400" />
+                      <UserCheck className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Retailer</p>
-                        <p className="text-gray-900">{getRetailerName(user.retailer_id)}</p>
-                        <p className="text-xs text-gray-500">ID: {user.retailer_id}</p>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Retailer</p>
+                        <p className="text-gray-900 dark:text-gray-100">{getRetailerName(user.retailer_id)}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">ID: {user.retailer_id}</p>
                       </div>
                     </div>
                   )}
                   
                   {user.region_id && (
                     <div className="flex items-center space-x-3">
-                      <Shield className="w-4 h-4 text-gray-400" />
+                      <Shield className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Region</p>
-                        <p className="text-gray-900">{user.region_id}</p>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Region</p>
+                        <p className="text-gray-900 dark:text-gray-100">{user.region_id}</p>
                       </div>
                     </div>
                   )}
@@ -494,8 +492,8 @@ export const UserManagement: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h4 className="text-sm font-medium text-gray-900 mb-2">Permissions</h4>
+            <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+              <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Permissions</h4>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="flex items-center space-x-2">
                   <CheckCircle className="w-4 h-4 text-green-500" />
@@ -529,7 +527,7 @@ export const UserManagement: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
+          <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-4">
             <button
               onClick={() => {
                 onClose();
@@ -547,7 +545,7 @@ export const UserManagement: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-white dark:bg-gray-900 min-h-screen transition-colors">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
@@ -574,7 +572,7 @@ export const UserManagement: React.FC = () => {
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg p-4 border border-gray-100">
+        <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-100 dark:border-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Total Users</p>
@@ -583,7 +581,7 @@ export const UserManagement: React.FC = () => {
             <UserIcon className="w-8 h-8 text-blue-500" />
           </div>
         </div>
-        <div className="bg-white rounded-lg p-4 border border-gray-100">
+        <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-100 dark:border-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Staff Users</p>
@@ -592,7 +590,7 @@ export const UserManagement: React.FC = () => {
             <Building2 className="w-8 h-8 text-green-500" />
           </div>
         </div>
-        <div className="bg-white rounded-lg p-4 border border-gray-100">
+        <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-100 dark:border-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">Retailer Users</p>
@@ -601,7 +599,7 @@ export const UserManagement: React.FC = () => {
             <UserCheck className="w-8 h-8 text-pink-500" />
           </div>
         </div>
-        <div className="bg-white rounded-lg p-4 border border-gray-100">
+        <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-100 dark:border-gray-800">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600">With Photos</p>
@@ -615,26 +613,26 @@ export const UserManagement: React.FC = () => {
       {/* Filters */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-center space-x-3 mb-4">
-          <Filter className="w-5 h-5 text-[#003366]" />
-          <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+          <Filter className="w-5 h-5 text-[#003366] dark:text-blue-400" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Filters</h3>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
             <input
               type="text"
               placeholder="Search users..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+              className="pl-10 pr-4 py-3 w-full border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             />
           </div>
           
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value as UserRole | 'all')}
-            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+            className="px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           >
             <option value="all">All Roles</option>
             <option value="super_admin">Super Admin</option>
@@ -648,7 +646,7 @@ export const UserManagement: React.FC = () => {
           <select
             value={selectedCompany}
             onChange={(e) => setSelectedCompany(e.target.value)}
-            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+            className="px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
           >
             <option value="all">All Companies</option>
             {companies.map(company => (
@@ -656,7 +654,7 @@ export const UserManagement: React.FC = () => {
             ))}
           </select>
 
-          <div className="text-sm text-gray-600 flex items-center">
+          <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
             <span className="font-medium">{filteredUsers.length}</span> users found
           </div>
         </div>
@@ -666,18 +664,18 @@ export const UserManagement: React.FC = () => {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assignment</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">User</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Role</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Assignment</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Created</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
               {filteredUsers.map((user) => (
-                <tr key={user.id} className="hover:bg-gray-50">
+                <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="w-10 h-10 bg-[#003366] rounded-full flex items-center justify-center mr-3 overflow-hidden">
@@ -694,28 +692,26 @@ export const UserManagement: React.FC = () => {
                         )}
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                        <div className="text-sm text-gray-500">{user.email}</div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.name}</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">{user.email}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
-                      {user.role.replace('_', ' ').toUpperCase()}
-                    </span>
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>{user.role.replace('_', ' ').toUpperCase()}</span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
+                    <div className="text-sm text-gray-900 dark:text-gray-100">
                       {user.role === 'retailer' && user.retailer_id ? (
                         <div>
                           <div>{getRetailerName(user.retailer_id)}</div>
-                          <div className="text-xs text-gray-500">Retailer ID: {user.retailer_id}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">Retailer ID: {user.retailer_id}</div>
                         </div>
                       ) : user.company_id ? (
                         <div>
                           <div>{getCompanyName(user.company_id)}</div>
                           {user.store_id && (
-                            <div className="text-xs text-gray-500">{getStoreName(user.store_id)}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">{getStoreName(user.store_id)}</div>
                           )}
                         </div>
                       ) : (
@@ -723,26 +719,26 @@ export const UserManagement: React.FC = () => {
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {new Date(user.created_at).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-2">
                       <button 
                         onClick={() => handleViewUser(user)}
-                        className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition-colors"
                       >
                         <Eye className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => handleEditUser(user)}
-                        className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                        className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition-colors"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => handleDeleteUser(user.id)}
-                        className="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 rounded-lg transition-colors"
+                        className="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
