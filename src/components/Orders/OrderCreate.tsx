@@ -22,19 +22,51 @@ export const OrderCreate: React.FC<{ onClose?: () => void }> = ({ onClose }) => 
   const [companies, setCompanies] = useState<any[]>([]);
   const [store, setStore] = useState<any>(null);
   const [stores, setStores] = useState<any[]>([]);
+  const [retailers, setRetailers] = useState<any[]>([]);
 
   // Fetch companies for super admin
   useEffect(() => {
     if (isSuperAdmin) {
-      companiesAPI.getCompanies().then(res => setCompanies(res.data || []));
+      companiesAPI.getCompanies().then(res => {
+        // Normalize company data for select
+        const data = (res.data || []).map((c: any) => ({
+          id: c.id || c.Company_Id,
+          name: c.name || c.Company_Name
+        }));
+        setCompanies(data);
+      });
     }
   }, [isSuperAdmin]);
   // Fetch stores when company is selected
   useEffect(() => {
     if (isSuperAdmin && company) {
-      storesAPI.getStores({ company_id: company.Company_Id }).then(res => setStores(res.data || []));
+      storesAPI.getStores({ company_id: company.id }).then(res => {
+        setStores(res.data || []);
+      });
+    } else {
+      setStores([]);
+      setStore(null);
     }
   }, [isSuperAdmin, company]);
+
+  // Fetch retailers when store is selected
+  useEffect(() => {
+    if (isSuperAdmin && store) {
+      // You may need to adjust the API param name for store
+      // Assuming store.Branch_Code or store.id
+      // If your API expects branch_code or store_id, adjust accordingly
+      // Here, we use Branch_Code if present, else id
+      const branchCode = store.Branch_Code || store.id;
+      import('../../services/api').then(({ retailersAPI }) => {
+        retailersAPI.getRetailers({ branch_code: branchCode }).then(res => {
+          setRetailers(res.data?.retailers || []);
+        });
+      });
+    } else {
+      setRetailers([]);
+      setRetailer(null);
+    }
+  }, [isSuperAdmin, store]);
 
   // Handler for order submission
   const handleSubmit = async () => {
@@ -91,36 +123,36 @@ export const OrderCreate: React.FC<{ onClose?: () => void }> = ({ onClose }) => 
               <label className="block text-xs mb-1">Select Company</label>
               <select
                 className="w-full mb-2 px-2 py-1 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
-                value={company?.Company_Id || ''}
+                value={company?.id || ''}
                 onChange={e => {
-                  const selected = companies.find(c => c.Company_Id == e.target.value);
+                  const selected = companies.find(c => c.id == e.target.value);
                   setCompany(selected);
                   setStore(null);
                 }}
               >
                 <option value="">-- Select Company --</option>
                 {companies.map(c => (
-                  <option key={c.Company_Id} value={c.Company_Id}>{c.Company_Name}</option>
+                  <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
               <label className="block text-xs mb-1">Select Store</label>
               <select
                 className="w-full mb-2 px-2 py-1 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
-                value={store?.Branch_Code || ''}
+                value={store?.Branch_Code || store?.id || ''}
                 onChange={e => {
-                  const selected = stores.find(s => s.Branch_Code == e.target.value);
+                  const selected = stores.find(s => (s.Branch_Code || s.id) == e.target.value);
                   setStore(selected);
                 }}
                 disabled={!company}
               >
                 <option value="">-- Select Store --</option>
                 {stores.map(s => (
-                  <option key={s.Branch_Code} value={s.Branch_Code}>{s.Branch_Name}</option>
+                  <option key={s.Branch_Code || s.id} value={s.Branch_Code || s.id}>{s.Branch_Name || s.name}</option>
                 ))}
               </select>
             </>
           )}
-          <RetailerSelect value={retailer} onChange={setRetailer} />
+          <RetailerSelect value={retailer} onChange={setRetailer} retailers={isSuperAdmin ? retailers : undefined} />
           {retailer && (
             <div className="mt-2 p-2 rounded bg-blue-50 dark:bg-blue-900">
               <div className="font-medium">{retailer.Retailer_Name}</div>
