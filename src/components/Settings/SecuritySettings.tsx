@@ -162,13 +162,13 @@ export const SecuritySettings: React.FC = () => {
       </div>
 
       {/* Two-Factor Authentication */}
-      <div className="bg-gray-50 rounded-lg p-6">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
-            <Smartphone className="w-6 h-6 text-[#003366]" />
+            <Smartphone className="w-6 h-6 text-[#003366] dark:text-blue-200" />
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">Two-Factor Authentication</h3>
-              <p className="text-sm text-gray-600">Add an extra layer of security to your account</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Two-Factor Authentication</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Add an extra layer of security to your account</p>
             </div>
           </div>
           <div className="flex items-center">
@@ -177,9 +177,9 @@ export const SecuritySettings: React.FC = () => {
               id="twoFactor"
               checked={twoFactorEnabled}
               onChange={(e) => setTwoFactorEnabled(e.target.checked)}
-              className="w-4 h-4 text-[#003366] bg-gray-100 border-gray-300 rounded focus:ring-[#003366] focus:ring-2"
+              className="w-4 h-4 text-[#003366] bg-gray-100 dark:bg-gray-900 border-gray-300 dark:border-gray-700 rounded focus:ring-[#003366] focus:ring-2"
             />
-            <label htmlFor="twoFactor" className="ml-2 text-sm font-medium text-gray-900">
+            <label htmlFor="twoFactor" className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-200">
               Enable 2FA
             </label>
           </div>
@@ -199,30 +199,30 @@ export const SecuritySettings: React.FC = () => {
       </div>
 
       {/* Active Sessions */}
-      <div className="bg-gray-50 rounded-lg p-6">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
-          <Clock className="w-6 h-6 text-[#003366]" />
-          <h3 className="text-lg font-semibold text-gray-900">Active Sessions</h3>
+          <Clock className="w-6 h-6 text-[#003366] dark:text-blue-200" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Active Sessions</h3>
         </div>
 
         <div className="space-y-4">
           {sessions.map((session) => (
-            <div key={session.id} className="bg-white rounded-lg p-4 border border-gray-200">
+            <div key={session.id} className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
                     <Smartphone className="w-5 h-5 text-gray-600" />
                   </div>
                   <div>
                     <div className="flex items-center space-x-2">
-                      <p className="text-sm font-medium text-gray-900">{session.device}</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">{session.device}</p>
                       {session.current && (
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
                           Current
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-500">{session.location} • {session.lastActive}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{session.location} • {session.lastActive}</p>
                   </div>
                 </div>
                 {!session.current && (

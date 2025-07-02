@@ -89,15 +89,15 @@ export const SystemSettings: React.FC = () => {
 
       {/* System Configuration */}
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-gray-50 rounded-lg p-6">
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
           <div className="flex items-center space-x-3 mb-6">
-            <Database className="w-6 h-6 text-[#003366]" />
-            <h3 className="text-lg font-semibold text-gray-900">System Configuration</h3>
+            <Database className="w-6 h-6 text-[#003366] dark:text-blue-200" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">System Configuration</h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="sessionTimeout" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="sessionTimeout" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Session Timeout (minutes)
               </label>
               <input
@@ -106,14 +106,14 @@ export const SystemSettings: React.FC = () => {
                 name="sessionTimeout"
                 value={settings.sessionTimeout}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                 min="5"
                 max="480"
               />
             </div>
 
             <div>
-              <label htmlFor="apiRateLimit" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="apiRateLimit" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 API Rate Limit (requests/hour)
               </label>
               <input
@@ -122,14 +122,14 @@ export const SystemSettings: React.FC = () => {
                 name="apiRateLimit"
                 value={settings.apiRateLimit}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                 min="100"
                 max="10000"
               />
             </div>
 
             <div>
-              <label htmlFor="backupFrequency" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="backupFrequency" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Backup Frequency
               </label>
               <select
@@ -137,7 +137,7 @@ export const SystemSettings: React.FC = () => {
                 name="backupFrequency"
                 value={settings.backupFrequency}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
               >
                 <option value="hourly">Hourly</option>
                 <option value="daily">Daily</option>
@@ -147,7 +147,7 @@ export const SystemSettings: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="dataRetention" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="dataRetention" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                 Data Retention (days)
               </label>
               <input
@@ -156,7 +156,7 @@ export const SystemSettings: React.FC = () => {
                 name="dataRetention"
                 value={settings.dataRetention}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
                 min="30"
                 max="2555"
               />
@@ -235,10 +235,10 @@ export const SystemSettings: React.FC = () => {
         </div>
 
         {/* Backup & Restore */}
-        <div className="bg-gray-50 rounded-lg p-6">
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
           <div className="flex items-center space-x-3 mb-6">
-            <Database className="w-6 h-6 text-[#003366]" />
-            <h3 className="text-lg font-semibold text-gray-900">Backup & Restore</h3>
+            <Database className="w-6 h-6 text-[#003366] dark:text-blue-200" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Backup & Restore</h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

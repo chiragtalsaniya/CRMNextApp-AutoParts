@@ -126,10 +126,10 @@ export const RegionalSettings: React.FC = () => {
       </div>
 
       {/* Date & Time Format */}
-      <div className="bg-gray-50 rounded-lg p-6">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
-          <Clock className="w-6 h-6 text-[#003366]" />
-          <h3 className="text-lg font-semibold text-gray-900">Date & Time Format</h3>
+          <Clock className="w-6 h-6 text-[#003366] dark:text-blue-200" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Date & Time Format</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -186,10 +186,10 @@ export const RegionalSettings: React.FC = () => {
       </div>
 
       {/* Currency & Numbers */}
-      <div className="bg-gray-50 rounded-lg p-6">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
-          <DollarSign className="w-6 h-6 text-[#003366]" />
-          <h3 className="text-lg font-semibold text-gray-900">Currency & Numbers</h3>
+          <DollarSign className="w-6 h-6 text-[#003366] dark:text-blue-200" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Currency & Numbers</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -248,8 +248,8 @@ export const RegionalSettings: React.FC = () => {
       </div>
 
       {/* Preview */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-        <h4 className="text-lg font-semibold text-blue-900 mb-4">Preview</h4>
+      <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-6">
+        <h4 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-4">Preview</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
             <p className="text-blue-700 font-medium">Date & Time:</p>

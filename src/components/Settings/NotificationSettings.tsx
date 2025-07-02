@@ -123,7 +123,6 @@ export const NotificationSettings: React.FC = () => {
         settings={settings.emailNotifications}
         category="emailNotifications"
       />
-
       <NotificationSection
         title="Push Notifications"
         icon={Smartphone}
@@ -131,7 +130,6 @@ export const NotificationSettings: React.FC = () => {
         settings={settings.pushNotifications}
         category="pushNotifications"
       />
-
       <NotificationSection
         title="SMS Notifications"
         icon={Bell}
@@ -139,13 +137,12 @@ export const NotificationSettings: React.FC = () => {
         settings={settings.smsNotifications}
         category="smsNotifications"
       />
-
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+      <div className="bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
         <div className="flex items-center space-x-2">
-          <AlertCircle className="w-5 h-5 text-yellow-600" />
-          <p className="text-sm font-medium text-yellow-800">Important Note</p>
+          <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-300" />
+          <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">Important Note</p>
         </div>
-        <p className="text-sm text-yellow-700 mt-1">
+        <p className="text-sm text-yellow-700 dark:text-yellow-100 mt-1">
           Critical security alerts and system notifications cannot be disabled for your safety and account security.
         </p>
       </div>

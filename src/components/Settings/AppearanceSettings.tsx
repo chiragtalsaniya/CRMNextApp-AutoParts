@@ -56,9 +56,9 @@ export const AppearanceSettings: React.FC = () => {
   ];
 
   // Theme context for appearance settings
-  const { appearance } = require('../../context/ThemeContext').useTheme();
+  const { appearance } = useTheme();
   return (
-    <form onSubmit={handleSubmit} className={`space-y-8 transition-colors duration-200 ${appearance.compactMode ? 'space-y-4' : ''}`} style={{ fontSize: 'var(--app-font-size)' }}>
+    <form onSubmit={handleSubmit} className={`space-y-8 transition-colors duration-200 bg-white dark:bg-gray-900 ${appearance.compactMode ? 'space-y-4' : ''}`} style={{ fontSize: 'var(--app-font-size)' }}>
       {/* Theme Selection */}
       <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
@@ -124,10 +124,10 @@ export const AppearanceSettings: React.FC = () => {
       </div>
 
       {/* Color Scheme */}
-      <div className="bg-gray-50 rounded-lg p-6">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
-          <Palette className="w-6 h-6 text-[#003366]" />
-          <h3 className="text-lg font-semibold text-gray-900">Primary Color</h3>
+          <Palette className="w-6 h-6 text-[#003366] dark:text-blue-200" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Primary Color</h3>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -157,10 +157,10 @@ export const AppearanceSettings: React.FC = () => {
       </div>
 
       {/* Display Options */}
-      <div className="bg-gray-50 rounded-lg p-6">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
-          <Monitor className="w-6 h-6 text-[#003366]" />
-          <h3 className="text-lg font-semibold text-gray-900">Display Options</h3>
+          <Monitor className="w-6 h-6 text-[#003366] dark:text-blue-200" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Display Options</h3>
         </div>
 
         <div className="space-y-6">
