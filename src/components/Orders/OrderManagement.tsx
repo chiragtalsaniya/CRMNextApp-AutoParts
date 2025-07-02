@@ -18,10 +18,10 @@ import {
   Zap,
   MapPin
 } from 'lucide-react';
-import { OrderMaster, OrderItem, OrderStatus, NewOrderForm, getOrderStatusColor, timestampToDate, formatCurrency } from '../../types';
+import { OrderMaster, OrderItem, OrderStatus, getOrderStatusColor, timestampToDate, formatCurrency } from '../../types';
 import { format } from 'date-fns';
 import { useAuth } from '../../context/AuthContext';
-import { NewOrderFormModal } from './NewOrderForm';
+import { OrderCreate } from './OrderCreate';
 import { ordersAPI } from '../../services/api';
 import { Dialog, DialogBackdrop, DialogTitle } from '@headlessui/react';
 
@@ -145,24 +145,7 @@ export const OrderManagement: React.FC = () => {
     }
   };
 
-  const handleNewOrder = async (orderData: NewOrderForm) => {
-    try {
-      setLoading(true);
-      const response = await ordersAPI.createOrder(orderData);
-      
-      // Refresh orders list
-      const ordersResponse = await ordersAPI.getOrders();
-      setOrders(ordersResponse.data.orders || []);
-      
-      setShowNewOrderForm(false);
-      alert('Order created successfully!');
-    } catch (err) {
-      console.error('Failed to create order:', err);
-      alert('Failed to create order. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   const getOrderItems = (orderId: number) => {
     return orderItems.filter(item => item.Order_Id === orderId);
@@ -959,12 +942,15 @@ export const OrderManagement: React.FC = () => {
         </div>
       )}
 
-      {/* New Order Form Modal */}
-      <NewOrderFormModal 
-        isOpen={showNewOrderForm}
-        onClose={() => setShowNewOrderForm(false)}
-        onSubmit={handleNewOrder}
-      />
+
+      {/* New Order Modal (OrderCreate) */}
+      {showNewOrderForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+          <div className="relative w-full max-w-2xl mx-auto">
+            <OrderCreate onClose={() => setShowNewOrderForm(false)} />
+          </div>
+        </div>
+      )}
 
       {/* Status Update Modal */}
       <Dialog open={showStatusModal} onClose={() => setShowStatusModal(false)} className="fixed z-50 inset-0 overflow-y-auto">
