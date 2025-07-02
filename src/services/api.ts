@@ -1,4 +1,9 @@
-import api from '../lib/database';
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: '/api',
+  // ...add interceptors, auth, etc. as needed
+});
 
 // Auth API
 export const authAPI = {
@@ -232,3 +237,5 @@ export const transportAPI = {
   updateTransport: (id: number, data: any) => api.put(`/transport/${id}`, data),
   deleteTransport: (id: number) => api.delete(`/transport/${id}`),
 };
+
+export default api;

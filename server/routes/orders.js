@@ -21,6 +21,10 @@ function transformOrder(order) {
   };
 }
 
+// TODO: Implement DB logic for GET, POST, PATCH
+// Use req.user for role-based filtering and permissions
+// Use Order model/schema for DB operations
+
 // Get orders with filtering and pagination
 router.get('/', authenticateToken, async (req, res) => {
   try {

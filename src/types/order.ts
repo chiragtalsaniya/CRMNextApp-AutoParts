@@ -1,0 +1,29 @@
+export interface Order {
+  Order_Id: number;
+  CRMOrderId: string;
+  Retailer_Id: number;
+  Retailer_Name: string;
+  Contact_Person: string;
+  Order_Status: string;
+  PO_Number: string;
+  PO_Date: number;
+  Urgent_Status: number;
+  Remark?: string;
+  Branch: string;
+  Branch_Name: string;
+  Company_Name: string;
+  Place_By: string;
+  Place_Date: number;
+  Confirm_By?: string;
+  Confirm_Date?: number;
+  Pick_By?: string;
+  Pick_Date?: number;
+  Pack_By?: string;
+  Pack_Date?: number;
+  Delivered_By?: string;
+  Delivered_Date?: number;
+  created_at: string;
+  updated_at: string;
+  Last_Sync: number;
+  IsSync: number;
+}
