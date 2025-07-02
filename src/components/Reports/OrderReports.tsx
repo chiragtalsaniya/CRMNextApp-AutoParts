@@ -116,6 +116,12 @@ export const OrderReports: React.FC = () => {
   });
   const [isExporting, setIsExporting] = useState(false);
 
+  // ...existing code...
+
+  // Example: Add dark: classes to main containers, tables, and filter controls
+  // <div className="bg-white dark:bg-gray-900 ...">
+  // <input className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white ..." />
+
   const handleFilterChange = (key: keyof ReportFilters, value: string) => {
     setFilters(prev => {
       const newFilters = { ...prev, [key]: value };

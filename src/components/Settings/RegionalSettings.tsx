@@ -72,10 +72,10 @@ export const RegionalSettings: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Location & Time */}
-      <div className="bg-gray-50 rounded-lg p-6">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
-          <Globe className="w-6 h-6 text-[#003366]" />
-          <h3 className="text-lg font-semibold text-gray-900">Location & Time</h3>
+          <Globe className="w-6 h-6 text-[#003366] dark:text-blue-200" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Location & Time</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

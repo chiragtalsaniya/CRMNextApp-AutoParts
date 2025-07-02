@@ -64,11 +64,11 @@ export const StoreManagement: React.FC = () => {
   // Check if user can access store management
   if (!user || !['super_admin', 'admin'].includes(user.role)) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
           <Shield className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Access Restricted</h3>
-          <p className="text-gray-600">Only Super Administrators and Company Administrators can manage stores.</p>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Access Restricted</h3>
+          <p className="text-gray-600 dark:text-gray-300">Only Super Administrators and Company Administrators can manage stores.</p>
         </div>
       </div>
     );

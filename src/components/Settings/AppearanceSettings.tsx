@@ -58,14 +58,14 @@ export const AppearanceSettings: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Theme Selection */}
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
           <Palette className="w-6 h-6 text-[#003366] dark:text-blue-200" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Theme</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <label className={`relative cursor-pointer rounded-lg border-2 p-4 ${settings.theme === 'light' ? 'border-[#003366] bg-blue-50' : 'border-gray-200 dark:border-gray-700'}`}>
+          <label className={`relative cursor-pointer rounded-lg border-2 p-4 transition-colors duration-200 ${settings.theme === 'light' ? 'border-[#003366] bg-blue-50 dark:bg-gray-700 dark:border-blue-400' : 'border-gray-200 dark:border-gray-700 dark:bg-gray-800'}`}>
             <input
               type="radio"
               name="theme"

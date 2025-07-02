@@ -63,12 +63,12 @@ export const NotificationSettings: React.FC = () => {
     settings: Record<string, boolean>;
     category: keyof typeof settings;
   }) => (
-    <div className="bg-gray-50 rounded-lg p-6">
+    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
       <div className="flex items-center space-x-3 mb-4">
-        <Icon className="w-6 h-6 text-[#003366]" />
+        <Icon className="w-6 h-6 text-[#003366] dark:text-blue-200" />
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-          <p className="text-sm text-gray-600">{description}</p>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
+          <p className="text-sm text-gray-600 dark:text-gray-300">{description}</p>
         </div>
       </div>
 
@@ -76,7 +76,7 @@ export const NotificationSettings: React.FC = () => {
         {Object.entries(sectionSettings).map(([key, value]) => (
           <div key={key} className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-900">
+              <p className="text-sm font-medium text-gray-900 dark:text-white">
                 {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
               </p>
               <p className="text-xs text-gray-500">

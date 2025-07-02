@@ -111,6 +111,12 @@ export const ItemStatusManagement: React.FC = () => {
     return matchesSearch && matchesStore && matchesStockLevel && matchesRack;
   });
 
+  // ...existing code...
+
+  // Example: Add dark: classes to main containers, modals, tables, and inputs
+  // <div className="bg-white dark:bg-gray-900 ...">
+  // <input className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white ..." />
+
   const handleEditItem = (item: ItemStatus) => {
     setSelectedItem(item);
     setFormData({

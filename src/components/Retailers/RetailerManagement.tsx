@@ -83,6 +83,12 @@ export const RetailerManagement: React.FC = () => {
     return matchesSearch && matchesArea && matchesStatus;
   });
 
+  // ...existing code...
+
+  // Example: Add dark: classes to main containers, modals, tables, and inputs
+  // <div className="bg-white dark:bg-gray-900 ...">
+  // <input className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white ..." />
+
   const handleAddRetailer = () => {
     setFormData({
       Retailer_Name: '',

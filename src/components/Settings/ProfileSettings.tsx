@@ -57,11 +57,11 @@ export const ProfileSettings: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Profile Image Section */}
-      <div className="bg-gray-50 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile Picture</h3>
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Profile Picture</h3>
         <div className="flex items-center space-x-6">
           <div className="relative">
-            <div className="w-24 h-24 bg-[#003366] rounded-full flex items-center justify-center overflow-hidden">
+            <div className="w-24 h-24 bg-[#003366] dark:bg-blue-900 rounded-full flex items-center justify-center overflow-hidden">
               {profileImagePreview ? (
                 <img 
                   src={profileImagePreview} 

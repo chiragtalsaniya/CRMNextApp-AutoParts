@@ -76,6 +76,10 @@ export const UserManagement: React.FC = () => {
     return matchesSearch && matchesRole && matchesCompany;
   });
 
+  // Appearance settings (for dark mode, font size, etc.)
+  // import { useTheme } from '../../context/ThemeContext';
+  // const themeContext = useTheme();
+
   const handleAddUser = () => {
     setFormData({
       name: '',
@@ -89,6 +93,12 @@ export const UserManagement: React.FC = () => {
     setProfileImagePreview('');
     setShowAddModal(true);
   };
+
+  // ...existing code...
+
+  // Example: Add dark: classes to main containers, modals, tables, and inputs
+  // <div className="bg-white dark:bg-gray-900 ...">
+  // <input className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white ..." />
 
   const handleEditUser = (user: User) => {
     setSelectedUser(user);

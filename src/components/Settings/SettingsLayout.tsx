@@ -62,7 +62,7 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
           </nav>
         </div>
 
-        <div className="p-8">
+        <div className="p-8 bg-gray-50 dark:bg-gray-900">
           {React.cloneElement(children as React.ReactElement, { activeTab })}
         </div>
       </div>

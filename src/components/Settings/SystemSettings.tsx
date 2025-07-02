@@ -63,19 +63,19 @@ export const SystemSettings: React.FC = () => {
   return (
     <div className="space-y-8">
       {/* System Overview */}
-      <div className="bg-gray-50 rounded-lg p-6">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
         <div className="flex items-center space-x-3 mb-6">
-          <Server className="w-6 h-6 text-[#003366]" />
-          <h3 className="text-lg font-semibold text-gray-900">System Overview</h3>
+          <Server className="w-6 h-6 text-[#003366] dark:text-blue-200" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">System Overview</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {systemStats.map((stat, index) => (
-            <div key={index} className="bg-white rounded-lg p-4 border border-gray-200">
+            <div key={index} className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                  <p className="text-lg font-bold text-gray-900">{stat.value}</p>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{stat.label}</p>
+                  <p className="text-lg font-bold text-gray-900 dark:text-white">{stat.value}</p>
                 </div>
                 <div className={`w-3 h-3 rounded-full ${
                   stat.status === 'good' ? 'bg-green-500' :
