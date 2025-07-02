@@ -15,16 +15,45 @@ export const AppearanceSettings: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
 
+  // Apply appearance settings globally in CRM
+  const applyAppearanceSettings = (newSettings: typeof settings) => {
+    // Theme
+    themeContext.setTheme(newSettings.theme as typeof themeContext.theme);
+    // Primary color (set CSS variable)
+    document.documentElement.style.setProperty('--app-primary-color', newSettings.primaryColor);
+    // Font size (set CSS variable)
+    let fontSizeValue = '16px';
+    switch (newSettings.fontSize) {
+      case 'small': fontSizeValue = '14px'; break;
+      case 'medium': fontSizeValue = '16px'; break;
+      case 'large': fontSizeValue = '18px'; break;
+      case 'extra-large': fontSizeValue = '20px'; break;
+    }
+    document.documentElement.style.setProperty('--app-font-size', fontSizeValue);
+    // Compact mode (set class on body)
+    if (newSettings.compactMode) {
+      document.body.classList.add('crm-compact');
+    } else {
+      document.body.classList.remove('crm-compact');
+    }
+    // Animations (set class on body)
+    if (!newSettings.showAnimations) {
+      document.body.classList.add('crm-no-animations');
+    } else {
+      document.body.classList.remove('crm-no-animations');
+    }
+    // Language (set attribute for i18n, if used)
+    document.documentElement.setAttribute('lang', newSettings.language);
+    // Persist settings
+    localStorage.setItem('appearanceSettings', JSON.stringify(newSettings));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setMessage('');
-
     try {
-      // Apply theme
-      themeContext.setTheme(settings.theme as typeof themeContext.theme);
-      // Optionally, persist other settings to localStorage or backend here
-      localStorage.setItem('appearanceSettings', JSON.stringify(settings));
+      applyAppearanceSettings(settings);
       setMessage('Appearance settings updated successfully!');
     } catch (error) {
       setMessage('Failed to update appearance settings. Please try again.');
