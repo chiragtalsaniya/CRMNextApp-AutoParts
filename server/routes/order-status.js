@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import { authenticateToken, authorizeRoles } from '../middleware/auth.js';
+
 const router = express.Router();
-const { authenticateToken, authorizeRoles } = require('../middleware/auth');
 
 // PATCH /orders/:id/status
 router.patch('/:id/status', authenticateToken, authorizeRoles('admin', 'manager', 'storeman'), async (req, res) => {
@@ -16,5 +17,4 @@ router.patch('/:id/status', authenticateToken, authorizeRoles('admin', 'manager'
   return res.json({ success: true });
 });
 
-// For ES module compatibility
 export default router;
