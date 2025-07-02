@@ -208,11 +208,11 @@ export const ItemStatusManagement: React.FC = () => {
                   <Package className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">Edit Item Status</h2>
-                  <p className="text-gray-600">{selectedItem.Part_No} - {selectedItem.Branch_Code}</p>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">Edit Item Status</h2>
+                  <p className="text-gray-600 dark:text-gray-400">{selectedItem.Part_No} - {selectedItem.Branch_Code}</p>
                 </div>
               </div>
-              <button onClick={() => setShowEditModal(false)} className="text-gray-400 hover:text-gray-600">
+              <button onClick={() => setShowEditModal(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -221,35 +221,35 @@ export const ItemStatusManagement: React.FC = () => {
           <div className="p-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Stock Level A</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Stock Level A</label>
                 <input
                   type="number"
                   min="0"
                   value={formData.Part_A || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, Part_A: e.target.value }))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   placeholder="0"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Stock Level B</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Stock Level B</label>
                 <input
                   type="number"
                   min="0"
                   value={formData.Part_B || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, Part_B: e.target.value }))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   placeholder="0"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Stock Level C</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Stock Level C</label>
                 <input
                   type="number"
                   min="0"
                   value={formData.Part_C || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, Part_C: e.target.value }))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   placeholder="0"
                 />
               </div>
@@ -257,52 +257,52 @@ export const ItemStatusManagement: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Maximum Stock</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Maximum Stock</label>
                 <input
                   type="number"
                   min="1"
                   value={formData.Part_Max || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, Part_Max: e.target.value }))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   placeholder="100"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Rack Location</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Rack Location</label>
                 <input
                   type="text"
                   value={formData.Part_Rack || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, Part_Rack: e.target.value }))}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   placeholder="A-01-001"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Notes</label>
               <textarea
                 value={formData.Narr || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, Narr: e.target.value }))}
                 rows={3}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none resize-none"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 placeholder="Add notes about this item..."
               />
             </div>
 
             {/* Stock Preview */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h4 className="text-sm font-medium text-blue-900 mb-2">Stock Preview</h4>
+            <div className="bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+              <h4 className="text-sm font-medium text-blue-900 dark:text-blue-200 mb-2">Stock Preview</h4>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-blue-700">Total Stock</p>
-                  <p className="text-blue-900 font-semibold">
+                  <p className="text-blue-700 dark:text-blue-300">Total Stock</p>
+                  <p className="text-blue-900 dark:text-blue-100 font-semibold">
                     {(parseInt(formData.Part_A || '0') + parseInt(formData.Part_B || '0') + parseInt(formData.Part_C || '0'))} units
                   </p>
                 </div>
                 <div>
-                  <p className="text-blue-700">Stock Percentage</p>
-                  <p className="text-blue-900 font-semibold">
+                  <p className="text-blue-700 dark:text-blue-300">Stock Percentage</p>
+                  <p className="text-blue-900 dark:text-blue-100 font-semibold">
                     {Math.round(((parseInt(formData.Part_A || '0') + parseInt(formData.Part_B || '0') + parseInt(formData.Part_C || '0')) / parseInt(formData.Part_Max || '1')) * 100)}%
                   </p>
                 </div>
@@ -310,10 +310,10 @@ export const ItemStatusManagement: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
+          <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-4">
             <button
               onClick={() => setShowEditModal(false)}
-              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
             >
               Cancel
             </button>
@@ -340,22 +340,22 @@ export const ItemStatusManagement: React.FC = () => {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-          <div className="p-6 border-b border-gray-200">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto transition-colors">
+          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="w-12 h-12 bg-[#003366] rounded-lg flex items-center justify-center">
                   <Package className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">{selectedItem.Part_Name}</h2>
-                  <p className="text-gray-600">{selectedItem.Part_No} - {selectedItem.Branch_Name}</p>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">{selectedItem.Part_Name}</h2>
+                  <p className="text-gray-600 dark:text-gray-400">{selectedItem.Part_No} - {selectedItem.Branch_Name}</p>
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1 ${getStockLevelColor(selectedItem.stock_level)}`}>
                     {selectedItem.stock_level?.toUpperCase()}
                   </span>
                 </div>
               </div>
-              <button onClick={() => setShowViewModal(false)} className="text-gray-400 hover:text-gray-600">
+              <button onClick={() => setShowViewModal(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -364,59 +364,59 @@ export const ItemStatusManagement: React.FC = () => {
           <div className="p-6 space-y-6">
             {/* Stock Overview */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="bg-blue-50 p-4 rounded-lg">
+              <div className="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-blue-600">Total Stock</p>
-                    <p className="text-2xl font-bold text-blue-900">{selectedItem.total_stock}</p>
+                    <p className="text-sm text-blue-600 dark:text-blue-300">Total Stock</p>
+                    <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">{selectedItem.total_stock}</p>
                   </div>
-                  <Package className="w-8 h-8 text-blue-600" />
+                  <Package className="w-8 h-8 text-blue-600 dark:text-blue-300" />
                 </div>
               </div>
-              <div className="bg-green-50 p-4 rounded-lg">
+              <div className="bg-green-50 dark:bg-green-900 p-4 rounded-lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-green-600">Stock %</p>
-                    <p className="text-2xl font-bold text-green-900">{selectedItem.stock_percentage}%</p>
+                    <p className="text-sm text-green-600 dark:text-green-300">Stock %</p>
+                    <p className="text-2xl font-bold text-green-900 dark:text-green-100">{selectedItem.stock_percentage}%</p>
                   </div>
-                  <BarChart3 className="w-8 h-8 text-green-600" />
+                  <BarChart3 className="w-8 h-8 text-green-600 dark:text-green-300" />
                 </div>
               </div>
-              <div className="bg-purple-50 p-4 rounded-lg">
+              <div className="bg-purple-50 dark:bg-purple-900 p-4 rounded-lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-purple-600">Max Stock</p>
-                    <p className="text-2xl font-bold text-purple-900">{selectedItem.max_stock}</p>
+                    <p className="text-sm text-purple-600 dark:text-purple-300">Max Stock</p>
+                    <p className="text-2xl font-bold text-purple-900 dark:text-purple-100">{selectedItem.max_stock}</p>
                   </div>
-                  <TrendingUp className="w-8 h-8 text-purple-600" />
+                  <TrendingUp className="w-8 h-8 text-purple-600 dark:text-purple-300" />
                 </div>
               </div>
-              <div className="bg-orange-50 p-4 rounded-lg">
+              <div className="bg-orange-50 dark:bg-orange-900 p-4 rounded-lg">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-orange-600">Rack</p>
-                    <p className="text-lg font-bold text-orange-900">{selectedItem.Part_Rack || 'N/A'}</p>
+                    <p className="text-sm text-orange-600 dark:text-orange-300">Rack</p>
+                    <p className="text-lg font-bold text-orange-900 dark:text-orange-100">{selectedItem.Part_Rack || 'N/A'}</p>
                   </div>
-                  <MapPin className="w-8 h-8 text-orange-600" />
+                  <MapPin className="w-8 h-8 text-orange-600 dark:text-orange-300" />
                 </div>
               </div>
             </div>
 
             {/* Stock Breakdown */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Stock Breakdown</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Stock Breakdown</h3>
               <div className="grid grid-cols-3 gap-4">
-                <div className="bg-gray-50 p-4 rounded-lg text-center">
-                  <p className="text-sm font-medium text-gray-600">Level A</p>
-                  <p className="text-2xl font-bold text-gray-900">{selectedItem.Part_A || '0'}</p>
+                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg text-center">
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Level A</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{selectedItem.Part_A || '0'}</p>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-lg text-center">
-                  <p className="text-sm font-medium text-gray-600">Level B</p>
-                  <p className="text-2xl font-bold text-gray-900">{selectedItem.Part_B || '0'}</p>
+                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg text-center">
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Level B</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{selectedItem.Part_B || '0'}</p>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-lg text-center">
-                  <p className="text-sm font-medium text-gray-600">Level C</p>
-                  <p className="text-2xl font-bold text-gray-900">{selectedItem.Part_C || '0'}</p>
+                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg text-center">
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Level C</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{selectedItem.Part_C || '0'}</p>
                 </div>
               </div>
             </div>
@@ -424,52 +424,52 @@ export const ItemStatusManagement: React.FC = () => {
             {/* Part Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Part Information</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Part Information</h3>
                 <div className="space-y-3">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Category</p>
-                    <p className="text-gray-900">{selectedItem.Part_Catagory || 'Not specified'}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Category</p>
+                    <p className="text-gray-900 dark:text-gray-100">{selectedItem.Part_Catagory || 'Not specified'}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Focus Group</p>
-                    <p className="text-gray-900">{selectedItem.Focus_Group || 'Not specified'}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Focus Group</p>
+                    <p className="text-gray-900 dark:text-gray-100">{selectedItem.Focus_Group || 'Not specified'}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Price</p>
-                    <p className="text-gray-900">${((selectedItem.Part_Price || 0) / 100).toFixed(2)}</p>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Price</p>
+                    <p className="text-gray-900 dark:text-gray-100">${((selectedItem.Part_Price || 0) / 100).toFixed(2)}</p>
                   </div>
                 </div>
               </div>
 
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Transaction History</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Transaction History</h3>
                 <div className="space-y-3">
                   {selectedItem.LastSale && (
                     <div className="flex items-center space-x-3">
-                      <ShoppingCart className="w-4 h-4 text-gray-400" />
+                      <ShoppingCart className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Last Sale</p>
-                        <p className="text-gray-900">{safeFormat(selectedItem.LastSale, 'MMM dd, yyyy HH:mm')}</p>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Last Sale</p>
+                        <p className="text-gray-900 dark:text-gray-100">{safeFormat(selectedItem.LastSale, 'MMM dd, yyyy HH:mm')}</p>
                       </div>
                     </div>
                   )}
                   
                   {selectedItem.LastPurchase && (
                     <div className="flex items-center space-x-3">
-                      <TrendingUp className="w-4 h-4 text-gray-400" />
+                      <TrendingUp className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Last Purchase</p>
-                        <p className="text-gray-900">{safeFormat(selectedItem.LastPurchase, 'MMM dd, yyyy HH:mm')}</p>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Last Purchase</p>
+                        <p className="text-gray-900 dark:text-gray-100">{safeFormat(selectedItem.LastPurchase, 'MMM dd, yyyy HH:mm')}</p>
                       </div>
                     </div>
                   )}
                   
                   {selectedItem.Last_Sync && (
                     <div className="flex items-center space-x-3">
-                      <Clock className="w-4 h-4 text-gray-400" />
+                      <Clock className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Last Sync</p>
-                        <p className="text-gray-900">{safeFormat(selectedItem.Last_Sync, 'MMM dd, yyyy HH:mm')}</p>
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Last Sync</p>
+                        <p className="text-gray-900 dark:text-gray-100">{safeFormat(selectedItem.Last_Sync, 'MMM dd, yyyy HH:mm')}</p>
                       </div>
                     </div>
                   )}
@@ -480,15 +480,15 @@ export const ItemStatusManagement: React.FC = () => {
             {/* Notes */}
             {selectedItem.Narr && (
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Notes</h3>
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="text-gray-700">{selectedItem.Narr}</p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Notes</h3>
+                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                  <p className="text-gray-700 dark:text-gray-200">{selectedItem.Narr}</p>
                 </div>
               </div>
             )}
           </div>
 
-          <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
+          <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-4">
             <button
               onClick={() => {
                 setShowViewModal(false);

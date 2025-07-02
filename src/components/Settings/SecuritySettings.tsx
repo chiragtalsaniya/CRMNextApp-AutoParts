@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Save, Eye, EyeOff, Shield, Key, Smartphone, Clock } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
 
 export const SecuritySettings: React.FC = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -49,7 +50,7 @@ export const SecuritySettings: React.FC = () => {
   ];
 
   // Theme context for appearance settings
-  const { appearance } = require('../../context/ThemeContext').useTheme();
+  const { appearance } = useTheme();
   return (
     <div className={`space-y-8 transition-colors duration-200 bg-white dark:bg-gray-900 min-h-screen ${appearance.compactMode ? 'space-y-4' : ''}`} style={{ fontSize: 'var(--app-font-size)' }}>
       {/* Change Password */}

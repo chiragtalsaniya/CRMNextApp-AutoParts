@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Save, Upload, User, Mail, Phone, MapPin, Building2, Image as ImageIcon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 export const ProfileSettings: React.FC = () => {
   const { user } = useAuth();
+  const { appearance } = useTheme();
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -54,8 +56,6 @@ export const ProfileSettings: React.FC = () => {
     }
   };
 
-  // Theme context for appearance settings
-  const { appearance } = require('../../context/ThemeContext').useTheme();
   return (
     <div className={`space-y-6 transition-colors duration-200 bg-white dark:bg-gray-900 min-h-screen ${appearance.compactMode ? 'space-y-3' : ''}`} style={{ fontSize: 'var(--app-font-size)' }}>
       {/* Profile Image Section */}
