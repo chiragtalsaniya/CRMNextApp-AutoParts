@@ -41,7 +41,12 @@ export const OrderCreate: React.FC<{ onClose?: () => void }> = ({ onClose }) => 
   useEffect(() => {
     if (isSuperAdmin && company) {
       storesAPI.getStores({ company_id: company.id }).then(res => {
-        setStores(res.data || []);
+        let data = res.data;
+        if (data && !Array.isArray(data)) {
+          // If API returns { stores: [...] }
+          data = data.stores || [];
+        }
+        setStores(Array.isArray(data) ? data : []);
       });
     } else {
       setStores([]);
@@ -59,7 +64,11 @@ export const OrderCreate: React.FC<{ onClose?: () => void }> = ({ onClose }) => 
       const branchCode = store.Branch_Code || store.id;
       import('../../services/api').then(({ retailersAPI }) => {
         retailersAPI.getRetailers({ branch_code: branchCode }).then(res => {
-          setRetailers(res.data?.retailers || []);
+          let data = res.data;
+          if (data && !Array.isArray(data)) {
+            data = data.retailers || [];
+          }
+          setRetailers(Array.isArray(data) ? data : []);
         });
       });
     } else {
