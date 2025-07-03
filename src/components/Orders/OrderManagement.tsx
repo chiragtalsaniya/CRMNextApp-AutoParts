@@ -549,7 +549,25 @@ export const OrderManagement: React.FC = () => {
     setStatusLoading(true);
     setStatusError(null);
     try {
-      await ordersAPI.updateOrderStatus(selectedOrder.Order_Id, { status: selectedStatus, notes: statusNotes });
+      // Validate status transition on frontend (defensive, backend also validates)
+      const prevStatus = selectedOrder.Order_Status;
+      const validTransitions: Record<OrderStatus, OrderStatus[]> = {
+        New: ['Pending', 'Hold', 'Cancelled'],
+        Pending: ['Processing', 'Hold', 'Cancelled'],
+        Processing: ['Picked', 'Hold', 'Cancelled'],
+        Hold: ['New', 'Pending', 'Processing', 'Picked', 'Dispatched', 'Completed', 'Cancelled'],
+        Picked: ['Dispatched', 'Hold'],
+        Dispatched: ['Completed'],
+        Completed: [],
+        Cancelled: []
+      };
+      if (!prevStatus || !(prevStatus in validTransitions) || !validTransitions[prevStatus as OrderStatus].includes(selectedStatus as OrderStatus)) {
+        setStatusError(`Invalid status transition from ${prevStatus} to ${selectedStatus}`);
+        setStatusLoading(false);
+        return;
+      }
+      // Call API (ordersAPI.updateOrderStatus expects (id, status, notes?))
+      await ordersAPI.updateOrderStatus(selectedOrder.Order_Id, selectedStatus, statusNotes);
       // Optimistically update UI
       setSelectedOrder({ ...selectedOrder, Order_Status: selectedStatus, Remark: statusNotes || selectedOrder.Remark });
       setOrders(orders => orders.map(o => o.Order_Id === selectedOrder.Order_Id ? { ...o, Order_Status: selectedStatus } : o));

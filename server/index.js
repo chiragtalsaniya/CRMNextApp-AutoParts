@@ -89,8 +89,7 @@ app.use(cors({
     'X-App-Environment',
     'X-Request-ID',
     'Accept',
-    'Origin',
-    'X-Requested-With'
+    'Origin'
   ]
 }));
 
