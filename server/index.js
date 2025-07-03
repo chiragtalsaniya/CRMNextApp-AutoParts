@@ -36,31 +36,45 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Connect to database
-connectDB();
+connectDB().catch(err => {
+  console.error('❌ Database connection failed:', err);
+  process.exit(1);
+});
 
-app.set('trust proxy', false); // Changed from true to false for local/dev security
+// Trust proxy for production deployments behind reverse proxy/load balancer
+app.set('trust proxy', process.env.NODE_ENV === 'production' ? 1 : false);
+
 // Security middleware
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? undefined : false
 }));
 
 // Rate limiting
 const limiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: 10000, // Increased limit to 10,000 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // Use env variable for max requests
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 app.use('/api/', limiter);
 
 // CORS configuration
+const corsOrigins = process.env.CORS_ORIGIN 
+  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+  : [
+      'https://yogrind.shop',
+      'https://www.yogrind.shop',
+      'http://localhost:8081',
+      'https://localhost:8081',
+      'http://localhost:3000',
+      'https://localhost:3000',
+    ];
+
 app.use(cors({
-  origin: [
-    'https://zp1v56uxy8rdx5ypatb0ockcb9tr6a-oci3--8081--6e337437.local-credentialless.webcontainer-api.io',
-    'http://localhost:8081',
-    'https://localhost:8081',
-    // Add other development URLs as needed
-  ],
-  credentials: false, // Don't send cookies
+  origin: corsOrigins,
+  credentials: true, // Enable credentials for authentication
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: [
     'Content-Type',
@@ -74,7 +88,9 @@ app.use(cors({
     'X-Device-Platform',
     'X-App-Environment',
     'X-Request-ID',
-    'Accept'
+    'Accept',
+    'Origin',
+    'X-Requested-With'
   ]
 }));
 
@@ -114,13 +130,16 @@ app.use((req, res, next) => {
   next();
 });
 
-// Health check endpoint
+// Health check endpoint with more detailed info
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
     version: process.env.VITE_APP_VERSION || '1.0.0',
-    environment: process.env.NODE_ENV || 'development'
+    environment: process.env.NODE_ENV || 'development',
+    cors_origins: corsOrigins,
+    database: 'connected',
+    server: 'running'
   });
 });
 
@@ -161,10 +180,30 @@ app.use('*', (req, res) => {
 // Create HTTP server
 const server = http.createServer(app);
 
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 HTTP Server running on port ${PORT}`);
   console.log(`📊 API Documentation: http://localhost:${PORT}/api/health`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🔒 Trust Proxy: ${app.get('trust proxy')}`);
+  console.log(`🌐 CORS Origins: yogrind.shop, localhost`);
+});
+
+// Handle server errors
+server.on('error', (error) => {
+  if (error.code === 'EADDRINUSE') {
+    console.error(`❌ Port ${PORT} is already in use`);
+  } else {
+    console.error('❌ Server error:', error);
+  }
+  process.exit(1);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('👋 SIGTERM received, shutting down gracefully');
+  server.close(() => {
+    console.log('💤 Process terminated');
+  });
 });
 
 export default app;
