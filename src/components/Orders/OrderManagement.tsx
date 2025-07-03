@@ -16,7 +16,8 @@ import {
   Download,
   Upload,
   Zap,
-  MapPin
+  MapPin,
+  Circle
 } from 'lucide-react';
 import { OrderMaster, OrderItem, OrderStatus, NewOrderForm, getOrderStatusColor, timestampToDate, formatCurrency } from '../../types';
 import { format } from 'date-fns';
@@ -943,7 +944,6 @@ export const OrderManagement: React.FC = () => {
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Urgency</th>
                   {user?.role !== 'retailer' && (
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Branch</th>
                   )}
@@ -956,11 +956,20 @@ export const OrderManagement: React.FC = () => {
                 {Array.isArray(filteredOrders) ? filteredOrders.map((order) => (
                   <tr key={order.Order_Id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">#{order.Order_Id}</div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">{order.CRMOrderId}</div>
+                      <div className="flex items-center space-x-2">
+                        {/* Urgency icon in front of order number */}
+                        {order.Urgent_Status ? (
+                          <span className="inline-flex items-center" title="Urgent">
+                            <Zap className="w-4 h-4 text-orange-500 mr-1" />
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center" title="Normal">
+                            <Circle className="w-3 h-3 text-green-400 mr-1" />
+                          </span>
+                        )}
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">#{order.Order_Id}</span>
                         {order.PO_Number && (
-                          <div className="text-xs text-gray-400 dark:text-gray-500">PO: {order.PO_Number}</div>
+                          <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">PO: {order.PO_Number}</span>
                         )}
                       </div>
                     </td>
@@ -970,18 +979,6 @@ export const OrderManagement: React.FC = () => {
                         <span className="ml-1">{order.Order_Status}</span>
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {order.Urgent_Status ? (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                          <Zap className="w-3 h-3 mr-1" />
-                          Urgent
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          Normal
-                        </span>
-                      )}
-                    </td>
                     {user?.role !== 'retailer' && (
                       <td className="px-6 py-4 whitespace-nowrap">
                         {/* Cast order as OrderMasterWithUI for Branch_Name/Retailer_Name */}
@@ -989,7 +986,6 @@ export const OrderManagement: React.FC = () => {
                       </td>
                     )}
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {/* Cast order as OrderMasterWithUI for Branch_Name/Retailer_Name */}
                       <div className="text-sm text-gray-900 dark:text-gray-100">{(order as OrderMasterWithUI).Retailer_Name || `ID: ${order.Retailer_Id}` || 'Unknown'}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
