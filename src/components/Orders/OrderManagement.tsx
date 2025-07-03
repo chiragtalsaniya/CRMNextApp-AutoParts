@@ -1072,7 +1072,7 @@ export const OrderManagement: React.FC = () => {
             <DialogTitle className="text-lg font-bold mb-4">Update Order Status</DialogTitle>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Select Next Status</label>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {nextStatuses.map(status => {
                   const colorClass = getOrderStatusColor(status);
                   let iconName = '';
@@ -1103,30 +1103,39 @@ export const OrderManagement: React.FC = () => {
                     <button
                       key={status}
                       type="button"
-                      className={`flex items-center w-full px-4 py-3 rounded-lg border shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${isSelected ? 'border-[#003366] ring-2 ring-[#003366] bg-blue-50 dark:bg-blue-900' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700'} ${colorClass}`}
+                      className={`relative group flex flex-col items-center w-full px-5 py-5 rounded-2xl border transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-md ${isSelected ? 'border-[#003366] ring-2 ring-[#003366] bg-gradient-to-br from-blue-50/80 to-blue-100/60 dark:from-blue-900/80 dark:to-blue-950/60' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700'} ${colorClass}`}
                       onClick={() => setSelectedStatus(status)}
-                      style={{ fontWeight: isSelected ? 600 : 400, boxShadow: isSelected ? '0 2px 8px rgba(0,51,102,0.10)' : undefined }}
+                      style={{ fontWeight: isSelected ? 600 : 400, boxShadow: isSelected ? '0 4px 16px rgba(0,51,102,0.10)' : '0 1px 4px rgba(0,0,0,0.04)' }}
                       aria-pressed={isSelected}
+                      tabIndex={0}
                     >
-                      {IconComponent && <IconComponent className={`w-5 h-5 mr-3 ${isSelected ? '' : 'opacity-80'}`} />}
-                      <div className="flex flex-col items-start">
-                        <span className="capitalize text-base">{status}</span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                          {(() => {
-                            switch (status) {
-                              case 'New': return 'Order created, awaiting processing';
-                              case 'Pending': return 'Waiting for confirmation';
-                              case 'Processing': return 'Being processed and prepared';
-                              case 'Completed': return 'Order completed successfully';
-                              case 'Hold': return 'On hold, pending review';
-                              case 'Picked': return 'Items picked from inventory';
-                              case 'Dispatched': return 'Dispatched for delivery';
-                              case 'Cancelled': return 'Order has been cancelled';
-                              default: return 'Status unknown';
-                            }
-                          })()}
-                        </span>
-                      </div>
+                      <span className={`flex items-center justify-center w-12 h-12 rounded-full mb-2 transition-all ${isSelected ? 'bg-[#003366] text-white shadow-lg scale-105' : 'bg-gray-100 dark:bg-gray-700 text-[#003366] dark:text-blue-300'}`}>
+                        {IconComponent && <IconComponent className="w-7 h-7" />}
+                        {isSelected && (
+                          <span className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1 shadow-md animate-in fade-in zoom-in">
+                            <CheckCircle className="w-4 h-4" />
+                          </span>
+                        )}
+                      </span>
+                      <span className={`capitalize text-base font-semibold mb-1 ${isSelected ? 'text-[#003366] dark:text-blue-200' : 'text-gray-900 dark:text-gray-100'}`}>{status}</span>
+                      <span className="block text-xs text-gray-500 dark:text-gray-400 text-center min-h-[32px]">
+                        {(() => {
+                          switch (status) {
+                            case 'New': return 'Order created, awaiting processing';
+                            case 'Pending': return 'Waiting for confirmation';
+                            case 'Processing': return 'Being processed and prepared';
+                            case 'Completed': return 'Order completed successfully';
+                            case 'Hold': return 'On hold, pending review';
+                            case 'Picked': return 'Items picked from inventory';
+                            case 'Dispatched': return 'Dispatched for delivery';
+                            case 'Cancelled': return 'Order has been cancelled';
+                            default: return 'Status unknown';
+                          }
+                        })()}
+                      </span>
+                      {isSelected && (
+                        <span className="absolute inset-0 rounded-2xl ring-2 ring-[#003366] pointer-events-none animate-in fade-in" aria-hidden="true"></span>
+                      )}
                     </button>
                   );
                 })}
