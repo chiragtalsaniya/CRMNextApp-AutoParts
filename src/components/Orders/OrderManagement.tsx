@@ -214,6 +214,15 @@ export const OrderManagement: React.FC = () => {
     const orderUI = getOrderUI(selectedOrder);
     const items = orderUI.items || [];
     const orderTotal = items.reduce((total, item) => total + (item.ItemAmount || 0), 0);
+    // Inventory summary (from API)
+    const inventorySummary = (selectedOrder as any).inventory_summary || {
+      total_items: items.length,
+      available_items: 0,
+      out_of_stock_items: 0,
+      insufficient_stock_items: 0,
+      not_available_items: 0,
+      can_fulfill: false
+    };
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -251,7 +260,35 @@ export const OrderManagement: React.FC = () => {
 
           <div className="p-6 space-y-6">
             {/* Order Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Inventory Summary */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Inventory Summary</h3>
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Available Items</p>
+                    <p className="text-gray-900 dark:text-gray-100">{inventorySummary.available_items}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Out of Stock</p>
+                    <p className="text-gray-900 dark:text-gray-100">{inventorySummary.out_of_stock_items}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Insufficient Stock</p>
+                    <p className="text-gray-900 dark:text-gray-100">{inventorySummary.insufficient_stock_items}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Not Available</p>
+                    <p className="text-gray-900 dark:text-gray-100">{inventorySummary.not_available_items}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Can Fulfill</p>
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${inventorySummary.can_fulfill ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'}`}>
+                      {inventorySummary.can_fulfill ? 'Yes' : 'No'}
+                    </span>
+                  </div>
+                </div>
+              </div>
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Order Details</h3>
                 <div className="space-y-3">
@@ -364,10 +401,11 @@ export const OrderManagement: React.FC = () => {
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Amount</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Urgency</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Inventory</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
-                    {Array.isArray(items) ? items.map((item: OrderItem) => (
+                    {Array.isArray(items) ? items.map((item: OrderItem & any) => (
                       <tr key={item.Order_Item_Id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                         <td className="px-4 py-3">
                           <div>
@@ -415,6 +453,34 @@ export const OrderManagement: React.FC = () => {
                               Normal
                             </span>
                           )}
+                        </td>
+                        <td className="px-4 py-3">
+                          {/* Inventory status and details */}
+                          <div className="space-y-1">
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                              item.inventory_status === 'Available' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+                              item.inventory_status === 'Insufficient Stock' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
+                              item.inventory_status === 'Out of Stock' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' :
+                              'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
+                            }`}>
+                              {item.inventory_status || 'Unknown'}
+                            </span>
+                            {typeof item.total_stock === 'number' && (
+                              <p className="text-xs text-gray-500 dark:text-gray-400">Stock: {item.total_stock}</p>
+                            )}
+                            {(item.stock_level_a || item.stock_level_b || item.stock_level_c) && (
+                              <p className="text-xs text-gray-500 dark:text-gray-400">A:{item.stock_level_a || 0} B:{item.stock_level_b || 0} C:{item.stock_level_c || 0}</p>
+                            )}
+                            {item.rack_location && (
+                              <p className="text-xs text-gray-500 dark:text-gray-400">Rack: {item.rack_location}</p>
+                            )}
+                            {item.last_sale_date && (
+                              <p className="text-xs text-gray-500 dark:text-gray-400">Last Sale: {item.last_sale_date}</p>
+                            )}
+                            {item.last_purchase_date && (
+                              <p className="text-xs text-gray-500 dark:text-gray-400">Last Purchase: {item.last_purchase_date}</p>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     )) : null}
