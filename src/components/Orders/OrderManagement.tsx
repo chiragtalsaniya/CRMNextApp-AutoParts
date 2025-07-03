@@ -1075,47 +1075,21 @@ export const OrderManagement: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {nextStatuses.map(status => {
                   const colorClass = getOrderStatusColor(status);
-                  let iconName = '';
-                  switch (status) {
-                    case 'New': iconName = 'plus-circle'; break;
-                    case 'Processing': iconName = 'clock'; break;
-                    case 'Completed': iconName = 'check-circle'; break;
-                    case 'Hold': iconName = 'pause-circle'; break;
-                    case 'Picked': iconName = 'package'; break;
-                    case 'Dispatched': iconName = 'truck'; break;
-                    case 'Pending': iconName = 'clock'; break;
-                    case 'Cancelled': iconName = 'x-circle'; break;
-                    default: iconName = 'circle'; break;
-                  }
-                  let IconComponent = null;
-                  switch (iconName) {
-                    case 'plus-circle': IconComponent = PlusCircle; break;
-                    case 'clock': IconComponent = Clock; break;
-                    case 'check-circle': IconComponent = CheckCircle; break;
-                    case 'pause-circle': IconComponent = PauseCircle; break;
-                    case 'package': IconComponent = Package; break;
-                    case 'truck': IconComponent = Truck; break;
-                    case 'x-circle': IconComponent = XCircle; break;
-                    case 'circle': default: IconComponent = Circle; break;
-                  }
+                  // Use getStatusIcon (returns JSX icon)
+                  const IconComponent = getStatusIcon(status);
                   const isSelected = selectedStatus === status;
                   return (
                     <button
                       key={status}
                       type="button"
-                      className={`relative group flex flex-col items-center w-full px-5 py-5 rounded-2xl border transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-md ${isSelected ? 'border-[#003366] ring-2 ring-[#003366] bg-gradient-to-br from-blue-50/80 to-blue-100/60 dark:from-blue-900/80 dark:to-blue-950/60' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700'} ${colorClass}`}
+                      className={`relative group flex flex-col items-center w-full px-5 py-5 rounded-2xl border transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-md ${isSelected ? colorClass + ' border-2 ring-2 ring-offset-2 ring-[#003366] bg-opacity-90' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700'} `}
                       onClick={() => setSelectedStatus(status)}
                       style={{ fontWeight: isSelected ? 600 : 400, boxShadow: isSelected ? '0 4px 16px rgba(0,51,102,0.10)' : '0 1px 4px rgba(0,0,0,0.04)' }}
                       aria-pressed={isSelected}
                       tabIndex={0}
                     >
-                      <span className={`flex items-center justify-center w-12 h-12 rounded-full mb-2 transition-all ${isSelected ? 'bg-[#003366] text-white shadow-lg scale-105' : 'bg-gray-100 dark:bg-gray-700 text-[#003366] dark:text-blue-300'}`}>
-                        {IconComponent && <IconComponent className="w-7 h-7" />}
-                        {isSelected && (
-                          <span className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1 shadow-md animate-in fade-in zoom-in">
-                            <CheckCircle className="w-4 h-4" />
-                          </span>
-                        )}
+                      <span className={`flex items-center justify-center w-12 h-12 rounded-full mb-2 transition-all ${isSelected ? colorClass + ' shadow-lg scale-105' : 'bg-gray-100 dark:bg-gray-700 text-[#003366] dark:text-blue-300'}`}>
+                        {IconComponent && React.cloneElement(IconComponent, { className: 'w-7 h-7' })}
                       </span>
                       <span className={`capitalize text-base font-semibold mb-1 ${isSelected ? 'text-[#003366] dark:text-blue-200' : 'text-gray-900 dark:text-gray-100'}`}>{status}</span>
                       <span className="block text-xs text-gray-500 dark:text-gray-400 text-center min-h-[32px]">
@@ -1133,9 +1107,6 @@ export const OrderManagement: React.FC = () => {
                           }
                         })()}
                       </span>
-                      {isSelected && (
-                        <span className="absolute inset-0 rounded-2xl ring-2 ring-[#003366] pointer-events-none animate-in fade-in" aria-hidden="true"></span>
-                      )}
                     </button>
                   );
                 })}
