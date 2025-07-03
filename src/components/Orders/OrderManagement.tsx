@@ -1072,10 +1072,9 @@ export const OrderManagement: React.FC = () => {
             <DialogTitle className="text-lg font-bold mb-4">Update Order Status</DialogTitle>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Select Next Status</label>
-              <div className="space-y-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {nextStatuses.map(status => {
                   const colorClass = getOrderStatusColor(status);
-                  // Use the same icon logic as getStatusIcon
                   let iconName = '';
                   switch (status) {
                     case 'New': iconName = 'plus-circle'; break;
@@ -1099,16 +1098,35 @@ export const OrderManagement: React.FC = () => {
                     case 'x-circle': IconComponent = XCircle; break;
                     case 'circle': default: IconComponent = Circle; break;
                   }
+                  const isSelected = selectedStatus === status;
                   return (
                     <button
                       key={status}
                       type="button"
-                      className={`flex items-center w-full px-3 py-2 rounded-lg border ${selectedStatus === status ? 'border-[#003366] ring-2 ring-[#003366]' : 'border-gray-200 dark:border-gray-700'} bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none ${colorClass}`}
+                      className={`flex items-center w-full px-4 py-3 rounded-lg border shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 ${isSelected ? 'border-[#003366] ring-2 ring-[#003366] bg-blue-50 dark:bg-blue-900' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700'} ${colorClass}`}
                       onClick={() => setSelectedStatus(status)}
-                      style={{ fontWeight: selectedStatus === status ? 600 : 400 }}
+                      style={{ fontWeight: isSelected ? 600 : 400, boxShadow: isSelected ? '0 2px 8px rgba(0,51,102,0.10)' : undefined }}
+                      aria-pressed={isSelected}
                     >
-                      {IconComponent && <IconComponent className="w-5 h-5 mr-2" />}
-                      <span className="capitalize">{status}</span>
+                      {IconComponent && <IconComponent className={`w-5 h-5 mr-3 ${isSelected ? '' : 'opacity-80'}`} />}
+                      <div className="flex flex-col items-start">
+                        <span className="capitalize text-base">{status}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                          {(() => {
+                            switch (status) {
+                              case 'New': return 'Order created, awaiting processing';
+                              case 'Pending': return 'Waiting for confirmation';
+                              case 'Processing': return 'Being processed and prepared';
+                              case 'Completed': return 'Order completed successfully';
+                              case 'Hold': return 'On hold, pending review';
+                              case 'Picked': return 'Items picked from inventory';
+                              case 'Dispatched': return 'Dispatched for delivery';
+                              case 'Cancelled': return 'Order has been cancelled';
+                              default: return 'Status unknown';
+                            }
+                          })()}
+                        </span>
+                      </div>
                     </button>
                   );
                 })}
