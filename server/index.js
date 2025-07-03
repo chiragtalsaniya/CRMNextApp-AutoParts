@@ -95,7 +95,8 @@ app.use(cors({
 }));
 
 // Handle preflight requests
-app.options('*', cors());
+// Explicitly handle preflight OPTIONS for all API routes, always respond with CORS headers
+app.options('/api/*', cors());
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
