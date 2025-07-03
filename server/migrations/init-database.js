@@ -5,13 +5,7 @@ export const runMigrations = async () => {
   console.log('🔄 Starting database migrations...');
   
   try {
-    const connecti    // Order Status History table - Track order workflow status changes
-    await connection.query(`
-      CREATE TABLE IF NOT EXISTS order_status_history (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        order_id INT NOT NULL,
-        status ENUM('New', 'Pending', 'Processing', 'Picked', 'Dispatched', 'Completed', 'Cancelled', 'Hold') NOT NULL,
-        previous_status ENUM('New', 'Pending', 'Processing', 'Picked', 'Dispatched', 'Completed', 'Cancelled', 'Hold'),ait pool.getConnection();
+    const connection = await pool.getConnection();
     
     // Create database if it doesn't exist
     await connection.query(`CREATE DATABASE IF NOT EXISTS nextapp_crm`);
@@ -212,8 +206,8 @@ export const runMigrations = async () => {
       CREATE TABLE IF NOT EXISTS order_status_history (
         id INT AUTO_INCREMENT PRIMARY KEY,
         order_id INT NOT NULL,
-        status ENUM('New', 'Pending', 'Processing', 'Picked', 'Packed', 'Shipped', 'Delivered', 'Cancelled', 'Hold', 'Returned') NOT NULL,
-        previous_status ENUM('New', 'Pending', 'Processing', 'Picked', 'Packed', 'Shipped', 'Delivered', 'Cancelled', 'Hold', 'Returned'),
+        status ENUM('New', 'Pending', 'Processing', 'Picked', 'Dispatched', 'Completed', 'Cancelled', 'Hold') NOT NULL,
+        previous_status ENUM('New', 'Pending', 'Processing', 'Picked', 'Dispatched', 'Completed', 'Cancelled', 'Hold'),
         updated_by VARCHAR(50) NOT NULL,
         updated_by_role ENUM('super_admin', 'admin', 'manager', 'storeman', 'salesman', 'retailer'),
         notes TEXT,
