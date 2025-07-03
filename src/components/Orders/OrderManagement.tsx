@@ -1071,16 +1071,48 @@ export const OrderManagement: React.FC = () => {
           <div className="bg-white dark:bg-gray-900 rounded-xl shadow-xl p-8 max-w-md w-full z-10 border border-gray-200 dark:border-gray-700">
             <DialogTitle className="text-lg font-bold mb-4">Update Order Status</DialogTitle>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-1">Next Status</label>
-              <select
-                value={selectedStatus}
-                onChange={e => setSelectedStatus(e.target.value as OrderStatus)}
-                className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2"
-              >
-                {nextStatuses.map(status => (
-                  <option key={status} value={status}>{status}</option>
-                ))}
-              </select>
+              <label className="block text-sm font-medium mb-2">Select Next Status</label>
+              <div className="space-y-2">
+                {nextStatuses.map(status => {
+                  const colorClass = getOrderStatusColor(status);
+                  // Use the same icon logic as getStatusIcon
+                  let iconName = '';
+                  switch (status) {
+                    case 'New': iconName = 'plus-circle'; break;
+                    case 'Processing': iconName = 'clock'; break;
+                    case 'Completed': iconName = 'check-circle'; break;
+                    case 'Hold': iconName = 'pause-circle'; break;
+                    case 'Picked': iconName = 'package'; break;
+                    case 'Dispatched': iconName = 'truck'; break;
+                    case 'Pending': iconName = 'clock'; break;
+                    case 'Cancelled': iconName = 'x-circle'; break;
+                    default: iconName = 'circle'; break;
+                  }
+                  let IconComponent = null;
+                  switch (iconName) {
+                    case 'plus-circle': IconComponent = PlusCircle; break;
+                    case 'clock': IconComponent = Clock; break;
+                    case 'check-circle': IconComponent = CheckCircle; break;
+                    case 'pause-circle': IconComponent = PauseCircle; break;
+                    case 'package': IconComponent = Package; break;
+                    case 'truck': IconComponent = Truck; break;
+                    case 'x-circle': IconComponent = XCircle; break;
+                    case 'circle': default: IconComponent = Circle; break;
+                  }
+                  return (
+                    <button
+                      key={status}
+                      type="button"
+                      className={`flex items-center w-full px-3 py-2 rounded-lg border ${selectedStatus === status ? 'border-[#003366] ring-2 ring-[#003366]' : 'border-gray-200 dark:border-gray-700'} bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none ${colorClass}`}
+                      onClick={() => setSelectedStatus(status)}
+                      style={{ fontWeight: selectedStatus === status ? 600 : 400 }}
+                    >
+                      {IconComponent && <IconComponent className="w-5 h-5 mr-2" />}
+                      <span className="capitalize">{status}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-1">Notes (optional)</label>
