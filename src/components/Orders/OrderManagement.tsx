@@ -59,7 +59,7 @@ export const OrderManagement: React.FC = () => {
     New: ['Pending', 'Hold', 'Cancelled'],
     Pending: ['Processing', 'Hold', 'Cancelled'],
     Processing: ['Picked', 'Hold', 'Cancelled'],
-    Hold: ['New', 'Pending', 'Processing', 'Picked', 'Dispatched', 'Completed', 'Cancelled'],
+    Hold: ['New', 'Pending', 'Processing', 'Cancelled'],
     Picked: ['Dispatched', 'Hold'],
     Dispatched: ['Completed'],
     Completed: [],
@@ -519,14 +519,15 @@ export const OrderManagement: React.FC = () => {
                 <span>Edit Order</span>
               </button>
             )}
-            {user && ['admin', 'manager', 'storeman'].includes(user.role) && nextStatuses.length > 0 && (
-              <button
-                onClick={handleOpenStatusModal}
-                className="px-6 py-3 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
-              >
-                <Shield className="w-4 h-4" />
-                <span>Change Status</span>
-              </button>
+            {user && ['admin', 'manager', 'storeman'].includes(user.role) &&
+              validTransitions[selectedOrder.Order_Status as OrderStatus]?.length > 0 && (
+                <button
+                  onClick={handleOpenStatusModal}
+                  className="px-6 py-3 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
+                >
+                  <Shield className="w-4 h-4" />
+                  <span>Change Status</span>
+                </button>
             )}
           </div>
         </div>
@@ -567,6 +568,22 @@ export const OrderManagement: React.FC = () => {
         setStatusLoading(false);
         return;
       }
+
+      // Special validation for Processing to Picked transition
+      if ((prevStatus || '').toLowerCase() === 'processing' && (selectedStatus || '').toLowerCase() === 'picked') {
+        // Check if all items are picked
+        // Use getOrderUI to get items array with correct typing
+        const orderUI = getOrderUI(selectedOrder);
+        const allItemsPicked = (orderUI.items || []).every((item: any) => item.picked);
+        if (!allItemsPicked) {
+          // Use alert for error, or replace with your own toast/notification system
+          alert('All items must be picked before changing status to Picked');
+          setShowStatusModal(false);
+          setStatusLoading(false);
+          return;
+        }
+      }
+
       // Call API (ordersAPI.updateOrderStatus expects (id, status, notes?))
       await ordersAPI.updateOrderStatus(selectedOrder.Order_Id, selectedStatus, statusNotes);
       // Optimistically update UI
