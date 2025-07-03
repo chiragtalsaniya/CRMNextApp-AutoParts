@@ -172,23 +172,50 @@ router.get('/:id', authenticateToken, async (req, res) => {
       return res.status(403).json({ error: 'Access denied' });
     }
 
-    // Get order items
+    // Get order items with inventory status from the order's branch
     const itemsQuery = `
       SELECT 
         oi.*,
         p.Part_Name,
-        p.Part_Image
+        p.Part_Image,
+        p.Item_Status as part_status,
+        ist.Part_A as stock_level_a,
+        ist.Part_B as stock_level_b,
+        ist.Part_C as stock_level_c,
+        ist.Part_Max as max_stock,
+        ist.Part_Rack as rack_location,
+        ist.LastSale as last_sale_date,
+        ist.LastPurchase as last_purchase_date,
+        CASE 
+          WHEN ist.Part_No IS NULL THEN 'Not Available'
+          WHEN (COALESCE(ist.Part_A, 0) + COALESCE(ist.Part_B, 0) + COALESCE(ist.Part_C, 0)) <= 0 THEN 'Out of Stock'
+          WHEN (COALESCE(ist.Part_A, 0) + COALESCE(ist.Part_B, 0) + COALESCE(ist.Part_C, 0)) < oi.Order_Qty THEN 'Insufficient Stock'
+          ELSE 'Available'
+        END as inventory_status,
+        (COALESCE(ist.Part_A, 0) + COALESCE(ist.Part_B, 0) + COALESCE(ist.Part_C, 0)) as total_stock
       FROM order_items oi
       LEFT JOIN parts p ON oi.Part_Admin = p.Part_Number
+      LEFT JOIN item_status ist ON (oi.Part_Admin = ist.Part_No AND ist.Branch_Code = ?)
       WHERE oi.Order_Id = ?
       ORDER BY oi.Order_Srl
     `;
 
-    const items = await executeQuery(itemsQuery, [orderId]);
+    const items = await executeQuery(itemsQuery, [order.Branch, orderId]);
+
+    // Calculate inventory summary for the order
+    const inventorySummary = {
+      total_items: items.length,
+      available_items: items.filter(item => item.inventory_status === 'Available').length,
+      out_of_stock_items: items.filter(item => item.inventory_status === 'Out of Stock').length,
+      insufficient_stock_items: items.filter(item => item.inventory_status === 'Insufficient Stock').length,
+      not_available_items: items.filter(item => item.inventory_status === 'Not Available').length,
+      can_fulfill: items.every(item => item.inventory_status === 'Available')
+    };
 
     res.json({
       ...transformOrder(order),
-      items
+      items,
+      inventory_summary: inventorySummary
     });
   } catch (error) {
     console.error('Get order error:', error);
@@ -337,7 +364,7 @@ router.post('/',
   }
 );
 
-// Update order status
+// Update order status - Use order-status-history for comprehensive tracking
 router.patch('/:id/status', 
   authenticateToken,
   authorizeRoles('admin', 'manager', 'storeman'),
@@ -346,77 +373,122 @@ router.patch('/:id/status',
       const orderId = req.params.id;
       const { status, notes } = req.body;
 
-      const validStatuses = ['New', 'Processing', 'Completed', 'Hold', 'Picked', 'Dispatched', 'Pending', 'Cancelled'];
+      const validStatuses = ['New', 'Pending', 'Processing', 'Picked', 'Dispatched', 'Completed', 'Hold', 'Cancelled'];
       
       if (!validStatuses.includes(status)) {
         return res.status(400).json({ error: 'Invalid status' });
       }
 
-      // Update order status
-      const updateFields = ['Order_Status = ?'];
-      const updateParams = [status];
-
-      // Add status-specific fields
-      const currentTime = Date.now();
-      const userName = req.user.name;
-
-      switch (status) {
-        case 'Processing':
-          updateFields.push('Confirm_By = ?', 'Confirm_Date = ?');
-          updateParams.push(userName, currentTime);
-          break;
-        case 'Picked':
-          updateFields.push('Pick_By = ?', 'Pick_Date = ?');
-          updateParams.push(userName, currentTime);
-          break;
-        case 'Dispatched':
-          updateFields.push('Pack_By = ?', 'Pack_Date = ?');
-          updateParams.push(userName, currentTime);
-          break;
-        case 'Completed':
-          updateFields.push('Delivered_By = ?', 'Delivered_Date = ?');
-          updateParams.push(userName, currentTime);
-          break;
+      // Get current order status for validation
+      const currentOrder = await executeQuery('SELECT Order_Status FROM order_master WHERE Order_Id = ?', [orderId]);
+      if (!currentOrder.length) {
+        return res.status(404).json({ error: 'Order not found' });
       }
 
-      if (notes) {
-        updateFields.push('Remark = ?');
-        updateParams.push(notes);
+      const previousStatus = currentOrder[0].Order_Status;
+
+      // Validate status transition
+      const validTransitions = {
+        'New': ['Pending', 'Hold', 'Cancelled'],
+        'Pending': ['Processing', 'Hold', 'Cancelled'],
+        'Processing': ['Picked', 'Hold', 'Cancelled'],
+        'Hold': ['New', 'Pending', 'Processing', 'Picked', 'Dispatched', 'Completed', 'Cancelled'],
+        'Picked': ['Dispatched', 'Hold'],
+        'Dispatched': ['Completed'],
+        'Completed': [],
+        'Cancelled': []
+      };
+
+      if (!validTransitions[previousStatus]?.includes(status)) {
+        return res.status(400).json({ 
+          error: `Invalid status transition from ${previousStatus} to ${status}` 
+        });
       }
 
-      updateParams.push(orderId);
+      // Use transaction to update both order_master and order_status_history
+      const connection = await pool.getConnection();
+      await connection.beginTransaction();
 
-      const updateQuery = `
-        UPDATE order_master 
-        SET ${updateFields.join(', ')}, Last_Sync = ?
-        WHERE Order_Id = ?
-      `;
+      try {
+        const currentTime = Date.now();
+        const userId = req.user.id;
+        const userName = req.user.name;
+        const userRole = req.user.role;
 
-      updateParams.splice(-1, 0, currentTime); // Add Last_Sync before Order_Id
+        // Update order master status
+        const updateFields = ['Order_Status = ?', 'Last_Sync = ?'];
+        const updateParams = [status, currentTime];
 
-      // In PATCH /orders/:id/status, enforce status transition rules
-const validTransitions = {
-  New: ['Pending', 'Hold', 'Cancelled'],
-  Pending: ['Processing', 'Hold', 'Cancelled'],
-  Processing: ['Picked', 'Hold', 'Cancelled'],
-  Hold: ['New', 'Pending', 'Processing', 'Picked', 'Dispatched', 'Completed', 'Cancelled'],
-  Picked: ['Dispatched', 'Hold'],
-  Dispatched: ['Completed'],
-  Completed: [],
-  Cancelled: []
-};
-const currentOrder = await executeQuery('SELECT Order_Status FROM order_master WHERE Order_Id = ?', [orderId]);
-if (!currentOrder.length) {
-  return res.status(404).json({ error: 'Order not found' });
-}
-const currentStatus = currentOrder[0].Order_Status;
-if (!validTransitions[currentStatus] || !validTransitions[currentStatus].includes(status)) {
-  return res.status(400).json({ error: `Invalid status transition from ${currentStatus} to ${status}` });
-}
+        // Add status-specific fields
+        switch (status) {
+          case 'Processing':
+            updateFields.push('Confirm_By = ?', 'Confirm_Date = ?');
+            updateParams.push(userName, currentTime);
+            break;
+          case 'Picked':
+            updateFields.push('Pick_By = ?', 'Pick_Date = ?');
+            updateParams.push(userName, currentTime);
+            break;
+          case 'Dispatched':
+            updateFields.push('Pack_By = ?', 'Pack_Date = ?');
+            updateParams.push(userName, currentTime);
+            break;
+          case 'Completed':
+            updateFields.push('Delivered_By = ?', 'Delivered_Date = ?');
+            updateParams.push(userName, currentTime);
+            break;
+        }
 
-      await executeQuery(updateQuery, updateParams);
+        if (notes) {
+          updateFields.push('Remark = ?');
+          updateParams.push(notes);
+        }
 
-      res.json({ message: 'Order status updated successfully' });
+        updateParams.push(orderId);
+
+        const updateQuery = `
+          UPDATE order_master 
+          SET ${updateFields.join(', ')}
+          WHERE Order_Id = ?
+        `;
+
+        await connection.execute(updateQuery, updateParams);
+
+        // Insert status history record
+        await connection.execute(`
+          INSERT INTO order_status_history 
+          (order_id, status, previous_status, updated_by, updated_by_role, notes, timestamp, ip_address, user_agent)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `, [
+          orderId,
+          status,
+          previousStatus,
+          userId,
+          userRole,
+          notes || `Status updated to ${status}`,
+          currentTime,
+          req.ip,
+          req.get('User-Agent')
+        ]);
+
+        await connection.commit();
+        connection.release();
+
+        res.json({ 
+          message: 'Order status updated successfully',
+          data: {
+            orderId,
+            status,
+            previousStatus,
+            updatedBy: userName
+          }
+        });
+
+      } catch (error) {
+        await connection.rollback();
+        connection.release();
+        throw error;
+      }
 
     } catch (error) {
       console.error('Update order status error:', error);

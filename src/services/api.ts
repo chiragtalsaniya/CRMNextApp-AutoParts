@@ -178,11 +178,27 @@ export const ordersAPI = {
   createOrder: (orderData: any) => 
     api.post('/orders', orderData),
   
-  updateOrderStatus: (id: number, statusData: any) => 
-    api.patch(`/orders/${id}/status`, statusData),
+  updateOrder: (id: number, orderData: any) => 
+    api.put(`/orders/${id}`, orderData),
+  
+  updateOrderStatus: (id: number, status: string, notes?: string) => 
+    api.patch(`/orders/${id}/status`, { status, notes }),
+  
+  deleteOrder: (id: number) => 
+    api.delete(`/orders/${id}`),
   
   getOrderStats: () => 
-    api.get('/orders/stats/summary')
+    api.get('/orders/stats/summary'),
+
+  // Order Status History methods
+  getOrderStatusHistory: (orderId: number) => 
+    api.get(`/order-status-history/${orderId}`),
+  
+  updateOrderStatusWithHistory: (orderId: number, status: string, notes?: string, metadata?: any) => 
+    api.post(`/order-status-history/${orderId}/status`, { status, notes, metadata }),
+  
+  getOrderStatusStats: (timeframe?: number) => 
+    api.get('/order-status-history/stats/summary', { params: { timeframe } })
 };
 
 // Regions API

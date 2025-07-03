@@ -5,7 +5,13 @@ export const runMigrations = async () => {
   console.log('🔄 Starting database migrations...');
   
   try {
-    const connection = await pool.getConnection();
+    const connecti    // Order Status History table - Track order workflow status changes
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS order_status_history (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        order_id INT NOT NULL,
+        status ENUM('New', 'Pending', 'Processing', 'Picked', 'Dispatched', 'Completed', 'Cancelled', 'Hold') NOT NULL,
+        previous_status ENUM('New', 'Pending', 'Processing', 'Picked', 'Dispatched', 'Completed', 'Cancelled', 'Hold'),ait pool.getConnection();
     
     // Create database if it doesn't exist
     await connection.query(`CREATE DATABASE IF NOT EXISTS nextapp_crm`);
@@ -201,7 +207,32 @@ export const runMigrations = async () => {
     `);
     console.log('✅ Order Items table created');
 
-    // Item Status table
+    // Order Status History table - Track all status changes
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS order_status_history (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        order_id INT NOT NULL,
+        status ENUM('New', 'Pending', 'Processing', 'Picked', 'Packed', 'Shipped', 'Delivered', 'Cancelled', 'Hold', 'Returned') NOT NULL,
+        previous_status ENUM('New', 'Pending', 'Processing', 'Picked', 'Packed', 'Shipped', 'Delivered', 'Cancelled', 'Hold', 'Returned'),
+        updated_by VARCHAR(50) NOT NULL,
+        updated_by_role ENUM('super_admin', 'admin', 'manager', 'storeman', 'salesman', 'retailer'),
+        notes TEXT,
+        timestamp BIGINT NOT NULL,
+        ip_address VARCHAR(45),
+        user_agent TEXT,
+        system_generated BOOLEAN DEFAULT FALSE,
+        metadata JSON,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (order_id) REFERENCES order_master(Order_Id) ON DELETE CASCADE,
+        INDEX idx_order_status_order_id (order_id),
+        INDEX idx_order_status_timestamp (timestamp),
+        INDEX idx_order_status_updated_by (updated_by),
+        INDEX idx_order_status_status (status)
+      )
+    `);
+    console.log('✅ Order Status History table created');
+
+    // Item Status table - Tracks inventory levels for parts at store locations
     await connection.query(`
       CREATE TABLE IF NOT EXISTS item_status (
         Branch_Code VARCHAR(10) NOT NULL,
@@ -301,6 +332,10 @@ export const runMigrations = async () => {
       'CREATE INDEX idx_orders_date ON order_master(Place_Date)',
       'CREATE INDEX idx_order_items_order ON order_items(Order_Id)',
       'CREATE INDEX idx_order_items_part ON order_items(Part_Admin)',
+      'CREATE INDEX idx_order_status_history_order ON order_status_history(order_id)',
+      'CREATE INDEX idx_order_status_history_status ON order_status_history(status)',
+      'CREATE INDEX idx_order_status_history_timestamp ON order_status_history(timestamp)',
+      'CREATE INDEX idx_order_status_history_user ON order_status_history(updated_by)',
       'CREATE INDEX idx_item_status_branch ON item_status(Branch_Code)',
       'CREATE INDEX idx_item_status_part ON item_status(Part_No)',
       'CREATE INDEX idx_item_status_rack ON item_status(Part_Rack)',
@@ -379,6 +414,17 @@ export const runMigrations = async () => {
       ('NYC001', 'OF-003-MANN', 'NYC001-OF-003-MANN', '100', '80', '60', '200', 'C-01-005', 1704240000000, 1704153600000, 'Regular stock', 1704240000000),
       ('NYC002', 'SP-001-NGK', 'NYC002-SP-001-NGK', '30', '20', '15', '80', 'A-01-002', 1704326400000, 1704240000000, 'Medium moving', 1704326400000),
       ('NYC002', 'BP-002-BREMBO', 'NYC002-BP-002-BREMBO', '20', '12', '8', '40', 'B-01-001', 1704412800000, 1704326400000, 'Low stock alert', 1704412800000)
+    `);
+
+    // Insert sample order status history
+    await connection.query(`
+      INSERT IGNORE INTO order_status_history (order_id, status, previous_status, updated_by, updated_by_role, notes, timestamp, system_generated) VALUES 
+      (1, 'New', NULL, '5', 'salesman', 'Order created by sales team', 1704067200000, TRUE),
+      (1, 'Processing', 'New', '4', 'storeman', 'Order confirmed and processing started', 1704070800000, FALSE),
+      (1, 'Picked', 'Processing', '4', 'storeman', 'All items picked from inventory', 1704074400000, FALSE),
+      (1, 'Dispatched', 'Picked', '4', 'storeman', 'Order dispatched to customer', 1704078000000, FALSE),
+      (2, 'New', NULL, '5', 'salesman', 'Order created by sales team', 1704153600000, TRUE),
+      (2, 'Hold', 'New', '3', 'manager', 'Customer payment pending', 1704157200000, FALSE)
     `);
 
     console.log('✅ Sample data inserted');
