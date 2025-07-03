@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Toaster, toast } from 'sonner';
 import { 
   Search, 
   Eye, 
@@ -576,10 +577,9 @@ export const OrderManagement: React.FC = () => {
         const orderUI = getOrderUI(selectedOrder);
         const allItemsPicked = (orderUI.items || []).every((item: any) => item.picked);
         if (!allItemsPicked) {
-          // Use alert for error, or replace with your own toast/notification system
-          alert('All items must be picked before changing status to Picked');
           setShowStatusModal(false);
           setStatusLoading(false);
+          toast.error('All items must be picked before changing status to Picked');
           return;
         }
       }
@@ -597,8 +597,10 @@ export const OrderManagement: React.FC = () => {
     }
   };
 
-  return (
-    <div className="space-y-6 bg-white dark:bg-gray-900 min-h-screen transition-colors">
+return (
+    <>
+      <Toaster richColors position="top-center" theme="system" />
+      <div className="space-y-6 bg-white dark:bg-gray-900 min-h-screen transition-colors">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{getPageTitle()}</h1>
@@ -1155,5 +1157,6 @@ export const OrderManagement: React.FC = () => {
         </div>
       </Dialog>
     </div>
+    </>
   );
 };
