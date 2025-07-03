@@ -551,11 +551,12 @@ export const OrderManagement: React.FC = () => {
     try {
       // Validate status transition on frontend (defensive, backend also validates)
       const prevStatus = selectedOrder.Order_Status;
+      // Updated status transition rules per documentation
       const validTransitions: Record<OrderStatus, OrderStatus[]> = {
         New: ['Pending', 'Hold', 'Cancelled'],
         Pending: ['Processing', 'Hold', 'Cancelled'],
         Processing: ['Picked', 'Hold', 'Cancelled'],
-        Hold: ['New', 'Pending', 'Processing', 'Picked', 'Dispatched', 'Completed', 'Cancelled'],
+        Hold: ['New', 'Pending', 'Processing', 'Picked', 'Dispatched', 'Cancelled'], // Can return to previous or be cancelled
         Picked: ['Dispatched', 'Hold'],
         Dispatched: ['Completed'],
         Completed: [],
@@ -1013,9 +1014,26 @@ export const OrderManagement: React.FC = () => {
                       <button 
                         onClick={() => handleViewOrder(order)}
                         className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="View Order"
                       >
                         <Eye className="w-4 h-4" />
                       </button>
+                      {user && ['admin', 'manager', 'storeman'].includes(user.role) && (validTransitions[order.Order_Status as OrderStatus] || []).length > 0 && (
+                        <button
+                          onClick={() => {
+                            setSelectedOrder(order);
+                            setNextStatuses(validTransitions[order.Order_Status as OrderStatus] || []);
+                            setSelectedStatus((validTransitions[order.Order_Status as OrderStatus] || [])[0] || '');
+                            setStatusNotes('');
+                            setStatusError(null);
+                            setShowStatusModal(true);
+                          }}
+                          className="ml-2 p-1 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-blue-100 dark:hover:bg-blue-900 text-[#003366] dark:text-blue-400"
+                          title="Quick Change Status"
+                        >
+                          <Shield className="w-4 h-4" />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 )) : null}
