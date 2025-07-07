@@ -694,13 +694,13 @@ return (
                       {timelineSteps.length > 0 ? timelineSteps.map((step: any, idx: number) => (
                         <li key={step.key} className="flex-1 flex flex-col items-center group relative">
                           <div className="flex items-center">
-                            {/* Animated glowing border for active step */}
-                            <div className={`w-12 h-12 rounded-full flex items-center justify-center border-4 ${step.color} bg-gradient-to-br from-white/80 to-blue-50 dark:from-gray-900 dark:to-blue-950 shadow-lg transition-all duration-300 ${idx === timelineSteps.length - 1 ? 'ring-4 ring-blue-300/30 dark:ring-blue-900/40' : ''}`} title={step.label}>
-                              <span className="relative flex items-center justify-center w-8 h-8">
+                            {/* Animated glowing border for active step, with overflow visible for pulse */}
+                            <div className={`w-12 h-12 rounded-full flex items-center justify-center border-4 ${step.color} bg-gradient-to-br from-white/80 to-blue-50 dark:from-gray-900 dark:to-blue-950 shadow-lg transition-all duration-300 ${idx === timelineSteps.length - 1 ? 'ring-4 ring-blue-300/30 dark:ring-blue-900/40' : ''}`} title={step.label} style={{overflow: 'visible'}}>
+                              <span className="relative flex items-center justify-center w-8 h-8" style={{overflow: 'visible'}}>
                                 {step.icon}
-                                {/* Animated pulse for current step */}
+                                {/* Animated pulse for current step, with top offset to avoid cut-off */}
                                 {idx === timelineSteps.length - 1 && (
-                                  <span className="absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-30 animate-ping"></span>
+                                  <span className="absolute inline-flex h-[2.5rem] w-[2.5rem] -top-2 -left-2 rounded-full bg-blue-400 opacity-30 animate-ping z-0" style={{zIndex:0}}></span>
                                 )}
                               </span>
                             </div>
@@ -709,15 +709,15 @@ return (
                             )}
                           </div>
                           <div className="mt-3 text-xs text-center min-w-[90px]">
-                            <span className="block font-bold text-gray-900 dark:text-gray-100 tracking-wide uppercase">{step.label}</span>
+                            <span className="block font-bold tracking-wide uppercase text-blue-900 dark:text-blue-200">{step.label}</span>
                             {step.date && (
                               <span className="block text-[11px] text-blue-700 dark:text-blue-300 font-mono mt-0.5">{format(timestampToDate(step.date)!, 'MMM dd, yyyy HH:mm')}</span>
                             )}
                             {step.by && (
-                              <span className="block text-[11px] text-gray-400 dark:text-gray-500">by {step.by}</span>
+                              <span className="block text-[11px] text-gray-500 dark:text-gray-400">by {step.by}</span>
                             )}
                             {step.notes && (
-                              <span className="block text-[11px] text-blue-500 dark:text-blue-300 italic mt-0.5">{step.notes}</span>
+                              <span className="block text-[11px] text-blue-600 dark:text-blue-300 italic mt-0.5">{step.notes}</span>
                             )}
                           </div>
                         </li>
