@@ -317,43 +317,54 @@ export const OrderManagement: React.FC = () => {
                 </div>
               </div>
 
-              {/* Timeline */}
+              {/* Horizontal Timeline */}
               <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
-                <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-3">Order Timeline</h3>
-                <ol className="relative border-l border-gray-200 dark:border-gray-700 ml-2">
-                  {selectedOrder.Place_Date && (
-                    <li className="mb-6 ml-4">
-                      <div className="absolute w-3 h-3 bg-blue-600 rounded-full mt-1.5 -left-1.5 border border-white dark:border-gray-900" />
-                      <time className="mb-1 text-xs font-normal leading-none text-gray-400 dark:text-gray-500">Placed</time>
-                      <div className="text-sm text-gray-900 dark:text-gray-100">{format(timestampToDate(selectedOrder.Place_Date)!, 'MMM dd, yyyy HH:mm')}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">by {selectedOrder.Place_By}</div>
-                    </li>
-                  )}
-                  {selectedOrder.Confirm_Date && (
-                    <li className="mb-6 ml-4">
-                      <div className="absolute w-3 h-3 bg-green-600 rounded-full mt-1.5 -left-1.5 border border-white dark:border-gray-900" />
-                      <time className="mb-1 text-xs font-normal leading-none text-gray-400 dark:text-gray-500">Confirmed</time>
-                      <div className="text-sm text-gray-900 dark:text-gray-100">{format(timestampToDate(selectedOrder.Confirm_Date)!, 'MMM dd, yyyy HH:mm')}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">by {selectedOrder.Confirm_By}</div>
-                    </li>
-                  )}
-                  {selectedOrder.Pick_Date && (
-                    <li className="mb-6 ml-4">
-                      <div className="absolute w-3 h-3 bg-yellow-500 rounded-full mt-1.5 -left-1.5 border border-white dark:border-gray-900" />
-                      <time className="mb-1 text-xs font-normal leading-none text-gray-400 dark:text-gray-500">Picked</time>
-                      <div className="text-sm text-gray-900 dark:text-gray-100">{format(timestampToDate(selectedOrder.Pick_Date)!, 'MMM dd, yyyy HH:mm')}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">by {selectedOrder.Pick_By}</div>
-                    </li>
-                  )}
-                  {selectedOrder.Delivered_Date && (
-                    <li className="mb-6 ml-4">
-                      <div className="absolute w-3 h-3 bg-purple-600 rounded-full mt-1.5 -left-1.5 border border-white dark:border-gray-900" />
-                      <time className="mb-1 text-xs font-normal leading-none text-gray-400 dark:text-gray-500">Delivered</time>
-                      <div className="text-sm text-gray-900 dark:text-gray-100">{format(timestampToDate(selectedOrder.Delivered_Date)!, 'MMM dd, yyyy HH:mm')}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">by {selectedOrder.Delivered_By}</div>
-                    </li>
-                  )}
-                </ol>
+                <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-3">Order Status Timeline</h3>
+                <div className="flex flex-col gap-4">
+                  {/* Horizontal Stepper */}
+                  <div className="flex items-center justify-between w-full overflow-x-auto pb-2">
+                    {(() => {
+                      const steps = [
+                        { key: 'New', label: 'New', date: selectedOrder.Place_Date, by: selectedOrder.Place_By, color: 'bg-blue-500' },
+                        { key: 'Pending', label: 'Pending' },
+                        { key: 'Processing', label: 'Processing', date: selectedOrder.Confirm_Date, by: selectedOrder.Confirm_By, color: 'bg-yellow-500' },
+                        { key: 'Picked', label: 'Picked', date: selectedOrder.Pick_Date, by: selectedOrder.Pick_By, color: 'bg-green-500' },
+                        // Dispatched step: use DispatchId as a proxy for status, no date/by fields
+                        { key: 'Dispatched', label: 'Dispatched', color: 'bg-purple-500' },
+                        { key: 'Completed', label: 'Completed', color: 'bg-gray-700' },
+                        { key: 'Cancelled', label: 'Cancelled', color: 'bg-red-500' }
+                      ];
+                      const currentIdx = steps.findIndex(s => s.key === selectedOrder.Order_Status);
+                      return steps.map((step, idx) => {
+                        const isActive = idx === currentIdx;
+                        const isCompleted = idx < currentIdx;
+                        return (
+                          <React.Fragment key={step.key}>
+                            <div className="flex flex-col items-center min-w-[70px]">
+                              <div className={`w-7 h-7 flex items-center justify-center rounded-full border-2 text-xs font-bold transition-all
+                                ${isActive ? 'bg-blue-700 text-white border-blue-700 scale-110' :
+                                  isCompleted ? 'bg-green-600 text-white border-green-600' :
+                                  'bg-gray-200 dark:bg-gray-700 text-gray-500 border-gray-300 dark:border-gray-600'}`}
+                              >
+                                {idx + 1}
+                              </div>
+                              <span className="text-[11px] mt-1 text-center text-gray-700 dark:text-gray-300 w-16 font-medium">{step.label}</span>
+                              {step.date && (
+                                <span className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">{format(timestampToDate(step.date)!, 'MMM dd, HH:mm')}</span>
+                              )}
+                              {step.by && (
+                                <span className="text-[10px] text-gray-400 dark:text-gray-500">by {step.by}</span>
+                              )}
+                            </div>
+                            {idx < steps.length - 1 && (
+                              <div className={`flex-1 h-1 ${isCompleted ? 'bg-green-600' : 'bg-gray-200 dark:bg-gray-700'}`}></div>
+                            )}
+                          </React.Fragment>
+                        );
+                      });
+                    })()}
+                  </div>
+                </div>
               </div>
 
               {/* Inventory Summary */}
@@ -704,7 +715,7 @@ return (
                           <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Discounts</th>
                           <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Amount</th>
                           <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
-                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Urgency</th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Rack Location</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
@@ -746,16 +757,9 @@ return (
                               </span>
                             </td>
                             <td className="px-4 py-3">
-                              {item.Urgent_Status ? (
-                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
-                                  <Zap className="w-3 h-3 mr-1" />
-                                  Urgent
-                                </span>
-                              ) : (
-                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                  Normal
-                                </span>
-                              )}
+                              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200">
+                                {(item as any).rack_location || '-'}
+                              </span>
                             </td>
                           </tr>
                         )) : null}
