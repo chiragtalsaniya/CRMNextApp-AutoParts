@@ -509,7 +509,6 @@ export const OrderManagement: React.FC = () => {
             )}
           </div>
         </div>
-      </div>
     );
   };
 
