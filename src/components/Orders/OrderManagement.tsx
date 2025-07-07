@@ -216,7 +216,6 @@ export const OrderManagement: React.FC = () => {
     const orderUI = getOrderUI(selectedOrder);
     const items = orderUI.items || [];
     const orderTotal = items.reduce((total, item) => total + (item.ItemAmount || 0), 0);
-    // Inventory summary (from API)
     const inventorySummary = (selectedOrder as any).inventory_summary || {
       total_items: items.length,
       available_items: 0,
@@ -228,286 +227,169 @@ export const OrderManagement: React.FC = () => {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
-          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-[#003366] rounded-lg flex items-center justify-center">
-                  {getStatusIcon(selectedOrder.Order_Status)}
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Order #{selectedOrder.Order_Id}</h2>
-                  <p className="text-gray-600 dark:text-gray-400">{selectedOrder.CRMOrderId}</p>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getOrderStatusColor(selectedOrder.Order_Status)}`}>
-                      {selectedOrder.Order_Status}
-                    </span>
-                    {selectedOrder.Urgent_Status && (
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
-                        <Zap className="w-3 h-3 mr-1" />
-                        Urgent
-                      </span>
-                    )}
-                  </div>
-                </div>
+        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-gradient-to-br from-blue-900 to-blue-700 text-white">
+                {getStatusIcon(selectedOrder.Order_Status)}
               </div>
-              <button 
-                onClick={() => setShowOrderDetails(false)}
-                className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-              >
-                <XCircle className="w-6 h-6" />
-              </button>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Order #{selectedOrder.Order_Id}</h2>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${getOrderStatusColor(selectedOrder.Order_Status)}`}>{selectedOrder.Order_Status}</span>
+                  {selectedOrder.Urgent_Status && (
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 ml-2">
+                      <Zap className="w-3 h-3 mr-1" />Urgent
+                    </span>
+                  )}
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">{selectedOrder.CRMOrderId}</div>
+              </div>
             </div>
+            <button onClick={() => setShowOrderDetails(false)} className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300">
+              <XCircle className="w-7 h-7" />
+            </button>
           </div>
 
-          <div className="p-6 space-y-6">
-            {/* Order Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {/* Inventory Summary */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Inventory Summary</h3>
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Available Items</p>
-                    <p className="text-gray-900 dark:text-gray-100">{inventorySummary.available_items}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Out of Stock</p>
-                    <p className="text-gray-900 dark:text-gray-100">{inventorySummary.out_of_stock_items}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Insufficient Stock</p>
-                    <p className="text-gray-900 dark:text-gray-100">{inventorySummary.insufficient_stock_items}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Not Available</p>
-                    <p className="text-gray-900 dark:text-gray-100">{inventorySummary.not_available_items}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Can Fulfill</p>
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${inventorySummary.can_fulfill ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'}`}>
-                      {inventorySummary.can_fulfill ? 'Yes' : 'No'}
-                    </span>
-                  </div>
+          {/* Main Content */}
+          <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Left: Order & Retailer Info */}
+            <div className="space-y-6">
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+                <div className="mb-2 flex flex-wrap gap-2 items-center">
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400">PO:</span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{orderUI.PO_Number}</span>
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400 ml-4">Branch:</span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{orderUI.Branch_Name || orderUI.Branch}</span>
                 </div>
-              </div>
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Order Details</h3>
-                <div className="space-y-3">
+                <div className="mb-2 flex flex-wrap gap-2 items-center">
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Company:</span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{orderUI.Company_Name}</span>
+                </div>
+                <div className="mb-2 flex flex-wrap gap-2 items-center">
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Retailer:</span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{orderUI.Retailer_Name}</span>
+                </div>
+                <div className="mb-2 flex flex-wrap gap-2 items-center">
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Transport:</span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{orderUI.TransportBy || 'Not assigned'}</span>
+                </div>
+                <div className="mb-2 flex flex-wrap gap-2 items-center">
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Status Remark:</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">{selectedOrder.Remark || '-'}</span>
+                </div>
+                <div className="flex flex-wrap gap-4 mt-4">
                   <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">PO Number</p>
-                    <p className="text-gray-900 dark:text-gray-100">{orderUI.PO_Number || 'Not specified'}</p>
+                    <span className="block text-xs text-gray-500 dark:text-gray-400">PO Date</span>
+                    <span className="block text-sm text-gray-900 dark:text-gray-100">{orderUI.PO_Date ? format(timestampToDate(orderUI.PO_Date)!, 'MMM dd, yyyy') : '-'}</span>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Branch</p>
-                    <p className="text-gray-900 dark:text-gray-100">{orderUI.Branch_Name || orderUI.Branch || 'Not specified'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Urgency</p>
-                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${orderUI.Urgent_Status ? 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'}`}>
-                      {orderUI.Urgent_Status ? (
-                        <>
-                          <Zap className="w-3 h-3 mr-1" />
-                          Urgent
-                        </>
-                      ) : (
-                        'Normal'
-                      )}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Transport</p>
-                    <p className="text-gray-900 dark:text-gray-100">{orderUI.TransportBy || 'Not assigned'}</p>
+                    <span className="block text-xs text-gray-500 dark:text-gray-400">Order Placed By</span>
+                    <span className="block text-sm text-gray-900 dark:text-gray-100">{orderUI.Place_By}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Timeline</h3>
-                <div className="space-y-3">
+              {/* Timeline */}
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+                <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-3">Order Timeline</h3>
+                <ol className="relative border-l border-gray-200 dark:border-gray-700 ml-2">
                   {selectedOrder.Place_Date && (
-                    <div>
-                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Placed</p>
-                      <p className="text-gray-900 dark:text-gray-100">{format(timestampToDate(selectedOrder.Place_Date)!, 'MMM dd, yyyy HH:mm')}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">by {selectedOrder.Place_By}</p>
-                    </div>
+                    <li className="mb-6 ml-4">
+                      <div className="absolute w-3 h-3 bg-blue-600 rounded-full mt-1.5 -left-1.5 border border-white dark:border-gray-900" />
+                      <time className="mb-1 text-xs font-normal leading-none text-gray-400 dark:text-gray-500">Placed</time>
+                      <div className="text-sm text-gray-900 dark:text-gray-100">{format(timestampToDate(selectedOrder.Place_Date)!, 'MMM dd, yyyy HH:mm')}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">by {selectedOrder.Place_By}</div>
+                    </li>
                   )}
                   {selectedOrder.Confirm_Date && (
-                    <div>
-                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Confirmed</p>
-                      <p className="text-gray-900 dark:text-gray-100">{format(timestampToDate(selectedOrder.Confirm_Date)!, 'MMM dd, yyyy HH:mm')}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">by {selectedOrder.Confirm_By}</p>
-                    </div>
+                    <li className="mb-6 ml-4">
+                      <div className="absolute w-3 h-3 bg-green-600 rounded-full mt-1.5 -left-1.5 border border-white dark:border-gray-900" />
+                      <time className="mb-1 text-xs font-normal leading-none text-gray-400 dark:text-gray-500">Confirmed</time>
+                      <div className="text-sm text-gray-900 dark:text-gray-100">{format(timestampToDate(selectedOrder.Confirm_Date)!, 'MMM dd, yyyy HH:mm')}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">by {selectedOrder.Confirm_By}</div>
+                    </li>
                   )}
                   {selectedOrder.Pick_Date && (
-                    <div>
-                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Picked</p>
-                      <p className="text-gray-900 dark:text-gray-100">{format(timestampToDate(selectedOrder.Pick_Date)!, 'MMM dd, yyyy HH:mm')}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">by {selectedOrder.Pick_By}</p>
-                    </div>
+                    <li className="mb-6 ml-4">
+                      <div className="absolute w-3 h-3 bg-yellow-500 rounded-full mt-1.5 -left-1.5 border border-white dark:border-gray-900" />
+                      <time className="mb-1 text-xs font-normal leading-none text-gray-400 dark:text-gray-500">Picked</time>
+                      <div className="text-sm text-gray-900 dark:text-gray-100">{format(timestampToDate(selectedOrder.Pick_Date)!, 'MMM dd, yyyy HH:mm')}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">by {selectedOrder.Pick_By}</div>
+                    </li>
                   )}
                   {selectedOrder.Delivered_Date && (
-                    <div>
-                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Delivered</p>
-                      <p className="text-gray-900 dark:text-gray-100">{format(timestampToDate(selectedOrder.Delivered_Date)!, 'MMM dd, yyyy HH:mm')}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">by {selectedOrder.Delivered_By}</p>
-                    </div>
+                    <li className="mb-6 ml-4">
+                      <div className="absolute w-3 h-3 bg-purple-600 rounded-full mt-1.5 -left-1.5 border border-white dark:border-gray-900" />
+                      <time className="mb-1 text-xs font-normal leading-none text-gray-400 dark:text-gray-500">Delivered</time>
+                      <div className="text-sm text-gray-900 dark:text-gray-100">{format(timestampToDate(selectedOrder.Delivered_Date)!, 'MMM dd, yyyy HH:mm')}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">by {selectedOrder.Delivered_By}</div>
+                    </li>
                   )}
-                </div>
+                </ol>
               </div>
 
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Summary</h3>
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Items</p>
-                    <p className="text-gray-900 dark:text-gray-100">{items.length}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Amount</p>
-                    <p className="text-2xl font-bold text-[#003366] dark:text-blue-300">{formatCurrency(orderTotal)}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Retailer</p>
-                    <p className="text-gray-900 dark:text-gray-100">{orderUI.Retailer_Name || `ID: ${orderUI.Retailer_Id}` || 'Not specified'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Dispatch ID</p>
-                    <p className="text-gray-900 dark:text-gray-100">{orderUI.DispatchId || 'Not assigned'}</p>
-                  </div>
+              {/* Inventory Summary */}
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+                <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-3">Inventory Summary</h3>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="flex flex-col"><span className="text-gray-500">Total Items</span><span className="font-bold text-gray-900 dark:text-gray-100">{inventorySummary.total_items}</span></div>
+                  <div className="flex flex-col"><span className="text-gray-500">Available</span><span className="font-bold text-green-700 dark:text-green-300">{inventorySummary.available_items}</span></div>
+                  <div className="flex flex-col"><span className="text-gray-500">Out of Stock</span><span className="font-bold text-red-700 dark:text-red-300">{inventorySummary.out_of_stock_items}</span></div>
+                  <div className="flex flex-col"><span className="text-gray-500">Insufficient</span><span className="font-bold text-yellow-700 dark:text-yellow-300">{inventorySummary.insufficient_stock_items}</span></div>
+                  <div className="flex flex-col"><span className="text-gray-500">Not Available</span><span className="font-bold text-gray-700 dark:text-gray-300">{inventorySummary.not_available_items}</span></div>
+                  <div className="flex flex-col"><span className="text-gray-500">Can Fulfill</span><span className={`font-bold ${inventorySummary.can_fulfill ? 'text-green-700 dark:text-green-300' : 'text-red-700 dark:text-red-300'}`}>{inventorySummary.can_fulfill ? 'Yes' : 'No'}</span></div>
                 </div>
               </div>
             </div>
 
-            {/* Remarks */}
-            {selectedOrder.Remark && (
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Remarks</h3>
-                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                  <p className="text-gray-700 dark:text-gray-300">{selectedOrder.Remark}</p>
+            {/* Right: Order Items */}
+            <div className="space-y-6">
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">Order Items</h3>
+                  <span className="text-xs text-gray-500">Total: {formatCurrency(orderTotal)}</span>
                 </div>
-              </div>
-            )}
-
-            {/* Order Items */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Order Items</h3>
-              <div className="overflow-x-auto">
-                <table className="w-full border border-gray-200 dark:border-gray-700 rounded-lg">
-                  <thead className="bg-gray-50 dark:bg-gray-800">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Item</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Qty</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">MRP</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Discounts</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Amount</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Urgency</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Inventory</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
-                    {Array.isArray(items) ? items.map((item: OrderItem & any) => (
-                      <tr key={item.Order_Item_Id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                        <td className="px-4 py-3">
-                          <div>
-                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{item.Part_Salesman}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">{item.Part_Admin}</p>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <div>
-                            <p className="text-sm text-gray-900 dark:text-gray-100">Ordered: {item.Order_Qty}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">Dispatched: {item.Dispatch_Qty || 0}</p>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
-                          {formatCurrency(item.MRP)}
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="text-xs space-y-1">
-                            <p className="dark:text-gray-400">Basic: {item.Discount || 0}%</p>
-                            <p className="dark:text-gray-400">Scheme: {item.SchemeDisc || 0}%</p>
-                            <p className="dark:text-gray-400">Additional: {item.AdditionalDisc || 0}%</p>
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">
-                          {formatCurrency(item.ItemAmount)}
-                        </td>
-                        <td className="px-4 py-3">
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                            item.OrderItemStatus === 'Completed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                            item.OrderItemStatus === 'Dispatched' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
-                            item.OrderItemStatus === 'Processing' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-                            'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
-                          }`}>
-                            {item.OrderItemStatus}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">
-                          {item.Urgent_Status ? (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
-                              <Zap className="w-3 h-3 mr-1" />
-                              Urgent
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                              Normal
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3">
-                          {/* Inventory status and details */}
-                          <div className="space-y-1">
-                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                              item.inventory_status === 'Available' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                              item.inventory_status === 'Insufficient Stock' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-                              item.inventory_status === 'Out of Stock' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' :
-                              'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
-                            }`}>
-                              {item.inventory_status || 'Unknown'}
-                            </span>
-                            {typeof item.total_stock === 'number' && (
-                              <p className="text-xs text-gray-500 dark:text-gray-400">Stock: {item.total_stock}</p>
-                            )}
-                            {(item.stock_level_a || item.stock_level_b || item.stock_level_c) && (
-                              <p className="text-xs text-gray-500 dark:text-gray-400">A:{item.stock_level_a || 0} B:{item.stock_level_b || 0} C:{item.stock_level_c || 0}</p>
-                            )}
-                            {item.rack_location && (
-                              <p className="text-xs text-gray-500 dark:text-gray-400">Rack: {item.rack_location}</p>
-                            )}
-                            {item.last_sale_date && (
-                              <p className="text-xs text-gray-500 dark:text-gray-400">Last Sale: {item.last_sale_date}</p>
-                            )}
-                            {item.last_purchase_date && (
-                              <p className="text-xs text-gray-500 dark:text-gray-400">Last Purchase: {item.last_purchase_date}</p>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    )) : null}
-                  </tbody>
-                </table>
+                <div className="space-y-4">
+                  {items.map((item: any, idx: number) => (
+                    <div key={idx} className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-3 mb-1">
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${item.inventory_status === 'Available' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : item.inventory_status === 'Insufficient Stock' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' : item.inventory_status === 'Out of Stock' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'}`}>{item.inventory_status || 'Unknown'}</span>
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${item.OrderItemStatus === 'Completed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : item.OrderItemStatus === 'Dispatched' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : item.OrderItemStatus === 'Processing' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'}`}>{item.OrderItemStatus}</span>
+                        </div>
+                        <div className="font-semibold text-gray-900 dark:text-gray-100 text-base mb-1">{item.Part_Salesman}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">{item.Part_Admin}</div>
+                        <div className="flex flex-wrap gap-4 text-xs text-gray-500 dark:text-gray-400">
+                          <span>Qty: <span className="font-semibold text-gray-900 dark:text-gray-100">{item.Order_Qty}</span></span>
+                          <span>MRP: <span className="font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(item.MRP)}</span></span>
+                          <span>Amount: <span className="font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(item.ItemAmount)}</span></span>
+                          <span>Stock: <span className="font-semibold text-gray-900 dark:text-gray-100">{item.total_stock}</span></span>
+                          <span>Rack: <span className="font-semibold text-gray-900 dark:text-gray-100">{item.rack_location || '-'}</span></span>
+                        </div>
+                        <div className="flex flex-wrap gap-4 text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          <span>Discount: {item.Discount || 0}%</span>
+                          <span>Scheme: {item.SchemeDisc || 0}%</span>
+                          <span>Additional: {item.AdditionalDisc || 0}%</span>
+                          <span>Stock A: {item.stock_level_a || 0}</span>
+                          <span>Stock B: {item.stock_level_b || 0}</span>
+                          <span>Stock C: {item.stock_level_c || 0}</span>
+                        </div>
+                        <div className="flex flex-wrap gap-4 text-xs text-gray-400 mt-1">
+                          {item.last_sale_date && <span>Last Sale: {item.last_sale_date}</span>}
+                          {item.last_purchase_date && <span>Last Purchase: {item.last_purchase_date}</span>}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-
-            {/* Location Information */}
-            {(selectedOrder.Latitude && selectedOrder.Longitude) && (
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Delivery Location</h3>
-                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg flex items-center space-x-3">
-                  <MapPin className="w-5 h-5 text-gray-400 dark:text-gray-300" />
-                  <div>
-                    <p className="text-sm text-gray-900 dark:text-gray-100">
-                      Coordinates: {selectedOrder.Latitude}, {selectedOrder.Longitude}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
-          <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-4">
+          {/* Footer */}
+          <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex flex-col md:flex-row justify-end gap-4">
             <button
               onClick={() => setShowOrderDetails(false)}
               className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
@@ -515,7 +397,7 @@ export const OrderManagement: React.FC = () => {
               Close
             </button>
             {user?.role !== 'retailer' && (
-              <button className="px-6 py-3 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2">
+              <button className="px-6 py-3 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors flex items-center gap-2">
                 <Edit className="w-4 h-4" />
                 <span>Edit Order</span>
               </button>
@@ -524,7 +406,7 @@ export const OrderManagement: React.FC = () => {
               validTransitions[selectedOrder.Order_Status as OrderStatus]?.length > 0 && (
                 <button
                   onClick={handleOpenStatusModal}
-                  className="px-6 py-3 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
+                  className="px-6 py-3 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors flex items-center gap-2"
                 >
                   <Shield className="w-4 h-4" />
                   <span>Change Status</span>
