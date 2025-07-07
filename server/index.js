@@ -70,18 +70,25 @@ app.use('/api/', limiter);
 
 
 // CORS configuration with logging of incoming Origin header
-const corsOrigins = process.env.CORS_ORIGIN 
-  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
-  : [
-      'https://yogrind.shop',
-      'https://www.yogrind.shop',
-      'http://localhost:8081',
-      'https://localhost:8081',
-      'http://localhost:3000',
-      'https://localhost:3000',
-    ];
-
-
+// const corsOrigins = process.env.CORS_ORIGIN 
+//   ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+//   : [
+//       'https://yogrind.shop',
+//       'https://www.yogrind.shop',
+//       'http://localhost:8081',
+//       'https://localhost:8081',
+//       'http://localhost:3000',
+//       'https://localhost:3000',
+//     ];
+// Always allow both production and localhost/dev origins for CORS
+const corsOrigins = [
+  'https://yogrind.shop',
+  'https://www.yogrind.shop',
+  'http://localhost:8081',
+  'https://localhost:8081',
+  'http://localhost:3000',
+  'https://localhost:3000',
+];
 
 
 app.use(cors({
