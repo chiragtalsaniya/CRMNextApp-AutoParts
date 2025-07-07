@@ -689,7 +689,7 @@ return (
                 {/* Order Status Timeline (from statusHistory) */}
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-800 mb-6">
                   <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-3">Order Status Timeline</h3>
-                  <div className="w-full overflow-x-auto pb-2">
+                  <div className="w-full overflow-x-auto pb-2 p-5">
                     <ol className="flex items-center min-w-[600px] w-full justify-between relative">
                       {timelineSteps.length > 0 ? timelineSteps.map((step: any, idx: number) => (
                         <li key={step.key} className="flex-1 flex flex-col items-center group relative">
