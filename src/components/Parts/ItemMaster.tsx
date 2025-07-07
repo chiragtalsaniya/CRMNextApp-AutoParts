@@ -9,7 +9,6 @@ import {
   Download,
   Filter,
   Eye,
-  Copy,
   Star,
   Award,
   Tag,
@@ -18,108 +17,11 @@ import {
   CheckCircle,
   X
 } from 'lucide-react';
+
 import { Part, PartCategory, FocusGroup } from '../../types';
+import { partsAPI } from '../../services/api';
 
 
-const mockParts: Part[] = [
-  {
-    Part_Number: 'SP-001-NGK',
-    Part_Name: 'NGK Spark Plug - Standard',
-    Part_Price: 1299,
-    Part_Discount: '5%',
-    Part_Image: 'https://images.pexels.com/photos/190574/pexels-photo-190574.jpeg?auto=compress&cs=tinysrgb&w=400',
-    Part_MinQty: 10,
-    Part_BasicDisc: 5,
-    Part_SchemeDisc: 3,
-    Part_AdditionalDisc: 2,
-    Part_Application: 'Honda Civic, Toyota Corolla, Nissan Sentra',
-    GuruPoint: 50,
-    ChampionPoint: 75,
-    Alternate_PartNumber: 'NGK-6962, DENSO-K20TT',
-    T1: 150,
-    T2: 200,
-    T3: 175,
-    T4: 125,
-    T5: 100,
-    Is_Order_Pad: 1,
-    Item_Status: 'Active',
-    Order_Pad_Category: 1,
-    Previous_PartNumber: 'SP-001-OLD',
-    Focus_Group: 'Engine Components',
-    Part_Catagory: 'Ignition System',
-    Last_Sync: 1704067200000
-  },
-  {
-    Part_Number: 'BP-002-BREMBO',
-    Part_Name: 'Brembo Brake Pads - Front Set',
-    Part_Price: 4599,
-    Part_Discount: '10%',
-    Part_Image: 'https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=400',
-    Part_MinQty: 5,
-    Part_BasicDisc: 8,
-    Part_SchemeDisc: 5,
-    Part_AdditionalDisc: 3,
-    Part_Application: 'BMW 3 Series, Mercedes C-Class, Audi A4',
-    GuruPoint: 100,
-    ChampionPoint: 150,
-    Alternate_PartNumber: 'AKEBONO-ASP1424, BOSCH-BP1234',
-    T1: 25,
-    T2: 30,
-    T3: 28,
-    T4: 22,
-    T5: 20,
-    Is_Order_Pad: 1,
-    Item_Status: 'Active',
-    Order_Pad_Category: 2,
-    Previous_PartNumber: '',
-    Focus_Group: 'Brake System',
-    Part_Catagory: 'Brake Pads',
-    Last_Sync: 1704067200000
-  },
-  {
-    Part_Number: 'OF-003-MANN',
-    Part_Name: 'Mann Oil Filter - Premium',
-    Part_Price: 899,
-    Part_Discount: '0%',
-    Part_Image: 'https://images.pexels.com/photos/3807277/pexels-photo-3807277.jpeg?auto=compress&cs=tinysrgb&w=400',
-    Part_MinQty: 20,
-    Part_BasicDisc: 3,
-    Part_SchemeDisc: 2,
-    Part_AdditionalDisc: 1,
-    Part_Application: 'Universal - Most European Cars',
-    GuruPoint: 25,
-    ChampionPoint: 40,
-    Alternate_PartNumber: 'MAHLE-OC90, BOSCH-0451103316',
-    T1: 100,
-    T2: 120,
-    T3: 110,
-    T4: 95,
-    T5: 85,
-    Is_Order_Pad: 1,
-    Item_Status: 'Active',
-    Order_Pad_Category: 1,
-    Previous_PartNumber: 'OF-003-OLD',
-    Focus_Group: 'Engine Components',
-    Part_Catagory: 'Filters',
-    Last_Sync: 1704067200000
-  }
-];
-
-const mockCategories: PartCategory[] = [
-  { id: 1, name: 'Engine Components', description: 'Engine related parts and components' },
-  { id: 2, name: 'Brake System', description: 'Brake pads, discs, and related components' },
-  { id: 3, name: 'Suspension', description: 'Shock absorbers, springs, and suspension parts' },
-  { id: 4, name: 'Electrical', description: 'Electrical components and accessories' },
-  { id: 5, name: 'Body Parts', description: 'External and internal body components' }
-];
-
-const mockFocusGroups: FocusGroup[] = [
-  { id: 'engine', name: 'Engine Components', description: 'Core engine parts' },
-  { id: 'brake', name: 'Brake System', description: 'Braking components' },
-  { id: 'suspension', name: 'Suspension', description: 'Suspension and steering' },
-  { id: 'electrical', name: 'Electrical', description: 'Electrical systems' },
-  { id: 'body', name: 'Body Parts', description: 'Body and exterior parts' }
-];
 
 interface ItemMasterProps {
   onPartSelect?: (part: Part) => void;
@@ -127,9 +29,9 @@ interface ItemMasterProps {
 }
 
 export const ItemMaster: React.FC<ItemMasterProps> = ({ onPartSelect, selectionMode = false }) => {
-  const [parts, setParts] = useState<Part[]>(mockParts);
-  const [categories] = useState<PartCategory[]>(mockCategories);
-  const [focusGroups] = useState<FocusGroup[]>(mockFocusGroups);
+  const [parts, setParts] = useState<Part[]>([]);
+  const [categories, setCategories] = useState<PartCategory[]>([]);
+  const [focusGroups, setFocusGroups] = useState<FocusGroup[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedFocusGroup, setSelectedFocusGroup] = useState('All');
@@ -142,13 +44,23 @@ export const ItemMaster: React.FC<ItemMasterProps> = ({ onPartSelect, selectionM
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Fetch parts, categories, and focus groups from API
   useEffect(() => {
-    // Simulate data fetching
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setParts(mockParts);
-    }, 1000);
+    Promise.all([
+      partsAPI.getParts(),
+      partsAPI.getCategories(),
+      partsAPI.getFocusGroups()
+    ])
+      .then(([partsRes, catRes, fgRes]) => {
+        setParts(partsRes.data.parts || []);
+        setCategories(catRes.data || []);
+        setFocusGroups(fgRes.data || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
   }, []);
 
   const filteredParts = parts.filter(part => {
@@ -201,23 +113,43 @@ export const ItemMaster: React.FC<ItemMasterProps> = ({ onPartSelect, selectionM
     setShowViewModal(true);
   };
 
-  const handleSavePart = () => {
-    if (showEditModal && selectedPart) {
-      setParts(prev => prev.map(p => 
-        p.Part_Number === selectedPart.Part_Number ? { ...formData as Part } : p
-      ));
+  // Save (add or edit) part using API
+  const handleSavePart = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      if (showEditModal && selectedPart) {
+        await partsAPI.updatePart(selectedPart.Part_Number, formData);
+      } else if (showAddModal) {
+        await partsAPI.createPart(formData);
+      }
+      // Refresh parts list
+      const partsRes = await partsAPI.getParts();
+      setParts(partsRes.data.parts || []);
       setShowEditModal(false);
-    } else if (showAddModal) {
-      setParts(prev => [...prev, { ...formData as Part }]);
       setShowAddModal(false);
+      setFormData({});
+      setSelectedPart(null);
+    } catch (err) {
+      setError('Failed to save part');
+    } finally {
+      setLoading(false);
     }
-    setFormData({});
-    setSelectedPart(null);
   };
 
-  const handleDeletePart = (partNumber: string) => {
+  const handleDeletePart = async (partNumber: string) => {
     if (confirm('Are you sure you want to delete this part?')) {
-      setParts(prev => prev.filter(p => p.Part_Number !== partNumber));
+      setLoading(true);
+      setError(null);
+      try {
+        await partsAPI.deletePart(partNumber);
+        const partsRes = await partsAPI.getParts();
+        setParts(partsRes.data.parts || []);
+      } catch (err) {
+        setError('Failed to delete part');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 

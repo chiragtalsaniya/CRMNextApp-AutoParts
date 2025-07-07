@@ -134,8 +134,14 @@ export const partsAPI = {
     api.get('/parts/meta/focus-groups'),
   
   getLowStockParts: () => 
-    api.get('/parts/alerts/low-stock')
+    api.get('/parts/alerts/low-stock'),
+
+  // Add deletePart method to partsAPI
+  deletePart: (partNumber: string) => api.delete(`/parts/${partNumber}`)
 };
+
+// Add deletePart method to partsAPI
+partsAPI.deletePart = (partNumber: string) => api.delete(`/parts/${partNumber}`);
 
 // Item Status API
 export const itemStatusAPI = {

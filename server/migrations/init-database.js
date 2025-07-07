@@ -129,6 +129,7 @@ export const runMigrations = async () => {
         Previous_PartNumber VARCHAR(100),
         Focus_Group VARCHAR(100),
         Part_Catagory VARCHAR(100),
+        company_id VARCHAR(50),
         Last_Sync BIGINT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -394,10 +395,10 @@ export const runMigrations = async () => {
 
     // Insert parts
     await connection.query(`
-      INSERT IGNORE INTO parts (Part_Number, Part_Name, Part_Price, Part_MinQty, Part_BasicDisc, Part_SchemeDisc, Part_AdditionalDisc, Part_Application, Focus_Group, Part_Catagory, Item_Status) VALUES 
-      ('SP-001-NGK', 'NGK Spark Plug - Standard', 1299, 10, 5, 3, 2, 'Honda Civic, Toyota Corolla, Nissan Sentra', 'Engine Components', 'Ignition System', 'Active'),
-      ('BP-002-BREMBO', 'Brembo Brake Pads - Front Set', 4599, 5, 8, 5, 3, 'BMW 3 Series, Mercedes C-Class, Audi A4', 'Brake System', 'Brake Pads', 'Active'),
-      ('OF-003-MANN', 'Mann Oil Filter - Premium', 899, 20, 3, 2, 1, 'Universal - Most European Cars', 'Engine Components', 'Filters', 'Active')
+      INSERT IGNORE INTO parts (Part_Number, Part_Name, Part_Price, Part_MinQty, Part_BasicDisc, Part_SchemeDisc, Part_AdditionalDisc, Part_Application, Focus_Group, Part_Catagory, Item_Status, company_id) VALUES 
+      ('SP-001-NGK', 'NGK Spark Plug - Standard', 1299, 10, 5, 3, 2, 'Honda Civic, Toyota Corolla, Nissan Sentra', 'Engine Components', 'Ignition System', 'Active', '2081380'),
+      ('BP-002-BREMBO', 'Brembo Brake Pads - Front Set', 4599, 5, 8, 5, 3, 'BMW 3 Series, Mercedes C-Class, Audi A4', 'Brake System', 'Brake Pads', 'Active', '2081380'),
+      ('OF-003-MANN', 'Mann Oil Filter - Premium', 899, 20, 3, 2, 1, 'Universal - Most European Cars', 'Engine Components', 'Filters', 'Active', '2081380')
     `);
 
     // Insert item status

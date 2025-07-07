@@ -5,7 +5,7 @@ import { validateRequest, partCreateSchema } from '../middleware/validation.js';
 
 const router = express.Router();
 
-// Get parts with filtering and pagination
+// Get parts with filtering and pagination, including by Company_Id
 router.get('/', authenticateToken, async (req, res) => {
   try {
     const { 
@@ -15,7 +15,8 @@ router.get('/', authenticateToken, async (req, res) => {
       category,
       focus_group,
       status = 'Active',
-      order_pad_only
+      order_pad_only,
+      company_id
     } = req.query;
 
     let whereConditions = ['Item_Status = ?'];
@@ -39,6 +40,11 @@ router.get('/', authenticateToken, async (req, res) => {
 
     if (order_pad_only === 'true') {
       whereConditions.push('Is_Order_Pad = 1');
+    }
+
+    if (company_id) {
+      whereConditions.push('Company_Id = ?');
+      queryParams.push(company_id);
     }
 
     const whereClause = `WHERE ${whereConditions.join(' AND ')}`;
@@ -110,15 +116,20 @@ router.get('/:partNumber', authenticateToken, async (req, res) => {
   }
 });
 
-// Create new part
+// Create new part (requires Company_Id)
 router.post('/', 
   authenticateToken,
   authorizeRoles('super_admin', 'admin', 'manager'),
   validateRequest(partCreateSchema),
   async (req, res) => {
     try {
+      const { Company_Id, ...rest } = req.body;
+      if (!Company_Id) {
+        return res.status(400).json({ error: 'Company_Id is required' });
+      }
       const partData = {
-        ...req.body,
+        ...rest,
+        Company_Id,
         Last_Sync: Date.now()
       };
 
@@ -145,7 +156,8 @@ router.post('/',
 
       res.status(201).json({
         message: 'Part created successfully',
-        part_number: partData.Part_Number
+        part_number: partData.Part_Number,
+        company_id: partData.Company_Id
       });
     } catch (error) {
       console.error('Create part error:', error);
@@ -154,7 +166,7 @@ router.post('/',
   }
 );
 
-// Update part
+// Update part (allows updating Company_Id)
 router.put('/:partNumber',
   authenticateToken,
   authorizeRoles('super_admin', 'admin', 'manager'),
