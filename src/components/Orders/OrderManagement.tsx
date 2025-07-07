@@ -637,6 +637,20 @@ return (
         const orderUI = getOrderUI(selectedOrder);
         const items = orderUI.items || [];
         const orderTotal = items.reduce((total, item) => total + (item.ItemAmount || 0), 0);
+        // Build timeline steps from statusHistory
+        const statusHistory = (selectedOrder as any).status_history || [];
+        const timelineSteps = statusHistory.map((entry: any, idx: number) => {
+          return {
+            key: entry.status + '-' + entry.timestamp,
+            label: entry.status,
+            icon: getStatusIcon(entry.status),
+            color: getOrderStatusColor(entry.status),
+            date: entry.timestamp,
+            by: entry.updated_by_role,
+            notes: entry.notes,
+            idx
+          };
+        });
         return (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
@@ -672,6 +686,43 @@ return (
               </div>
 
               <div className="p-6 space-y-6">
+                {/* Order Status Timeline (from statusHistory) */}
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-800 mb-6">
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-3">Order Status Timeline</h3>
+                  <div className="w-full overflow-x-auto pb-2">
+                    <ol className="flex items-center min-w-[600px] w-full justify-between relative">
+                      {timelineSteps.length > 0 ? timelineSteps.map((step, idx) => (
+                        <li key={step.key} className="flex-1 flex flex-col items-center group relative">
+                          <div className="flex items-center">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${step.color} bg-white dark:bg-gray-900 z-10 transition-colors`} title={step.label}>
+                              {step.icon}
+                            </div>
+                            {idx < timelineSteps.length - 1 && (
+                              <div className="flex-1 h-1 mx-1 bg-gray-300 dark:bg-gray-700" />
+                            )}
+                          </div>
+                          <div className="mt-2 text-xs text-center">
+                            <span className="block font-semibold text-gray-900 dark:text-gray-100">{step.label}</span>
+                            {step.date && (
+                              <span className="block text-gray-500 dark:text-gray-400">{format(timestampToDate(step.date)!, 'MMM dd, yyyy HH:mm')}</span>
+                            )}
+                            {step.by && (
+                              <span className="block text-gray-400 dark:text-gray-500">by {step.by}</span>
+                            )}
+                            {step.notes && (
+                              <span className="block text-gray-400 dark:text-gray-500 italic">{step.notes}</span>
+                            )}
+                          </div>
+                        </li>
+                      )) : (
+                        <li className="flex-1 flex flex-col items-center">
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center border-2 bg-gray-200 dark:bg-gray-700 text-gray-400">?</div>
+                          <span className="mt-2 text-xs text-gray-400">No status history</span>
+                        </li>
+                      )}
+                    </ol>
+                  </div>
+                </div>
                 {/* Order Information */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <div className="space-y-4">
