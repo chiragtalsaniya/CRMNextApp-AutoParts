@@ -32,8 +32,16 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Log incoming Origin header for CORS/network debugging
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  console.log(`🌐 Incoming request: ${req.method} ${req.originalUrl} | Origin: ${origin || 'N/A'}`);
+  next();
+});
 
 // Connect to database
 connectDB().catch(err => {
@@ -60,7 +68,8 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// CORS configuration
+
+// CORS configuration with logging of incoming Origin header
 const corsOrigins = process.env.CORS_ORIGIN 
   ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
   : [
@@ -71,6 +80,14 @@ const corsOrigins = process.env.CORS_ORIGIN
       'http://localhost:3000',
       'https://localhost:3000',
     ];
+
+// Log incoming Origin header for CORS debugging
+app.use((req, res, next) => {
+  if (req.headers && req.headers.origin) {
+    console.log(`🛰️  Incoming CORS request Origin: ${req.headers.origin}`);
+  }
+  next();
+});
 
 app.use(cors({
   origin: corsOrigins,
