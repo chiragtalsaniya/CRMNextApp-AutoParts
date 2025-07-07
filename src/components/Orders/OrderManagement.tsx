@@ -56,7 +56,7 @@ export const OrderManagement: React.FC = () => {
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | ''>(''); // Fix selectedStatus useState type
   const [statusNotes, setStatusNotes] = useState('');
 
-  // Valid transitions map (should match backend)
+  // Valid transitions map (should match backend)add as 
   const validTransitions: Record<OrderStatus, OrderStatus[]> = {
     New: ['Pending', 'Hold', 'Cancelled'],
     Pending: ['Processing', 'Hold', 'Cancelled'],
@@ -777,6 +777,7 @@ return (
                           <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Amount</th>
                           <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
                           <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Rack Location</th>
+                          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
@@ -799,7 +800,7 @@ return (
                                 {(item as any).rack_location || '-'}
                               </span>
                             </td>
-                            <td className="px-4 py-3">
+                            <td className="px-4 py-3 text-center">
                               <button
                                 className="inline-flex items-center px-2 py-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800 text-xs font-medium transition-colors"
                                 onClick={() => handleOpenItemStatusModal(item)}
