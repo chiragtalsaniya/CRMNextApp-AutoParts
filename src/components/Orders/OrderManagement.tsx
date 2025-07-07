@@ -26,6 +26,7 @@ import { useAuth } from '../../context/AuthContext';
 import { NewOrderFormModal } from './NewOrderForm';
 import { ordersAPI } from '../../services/api';
 import { Dialog, DialogBackdrop, DialogTitle } from '@headlessui/react';
+import { ItemStatusModal } from '../ItemStatus/ItemStatusModal';
 
 
 
@@ -563,6 +564,19 @@ export const OrderManagement: React.FC = () => {
     }
   };
 
+  // Add state for item status modal
+  const [showItemStatusModal, setShowItemStatusModal] = useState(false);
+  const [selectedOrderItem, setSelectedOrderItem] = useState<OrderItem | null>(null);
+
+  const handleOpenItemStatusModal = (item: OrderItem) => {
+    setSelectedOrderItem(item);
+    setShowItemStatusModal(true);
+  };
+  const handleCloseItemStatusModal = () => {
+    setShowItemStatusModal(false);
+    setSelectedOrderItem(null);
+  };
+
 return (
     <>
       <Toaster richColors position="top-center" theme="system" />
@@ -768,45 +782,33 @@ return (
                       <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
                         {Array.isArray(items) ? items.map((item: OrderItem) => (
                           <tr key={item.Order_Item_Id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 font-semibold">{item.Part_Salesman || item.Part_Admin || '-'}</td>
+                            <td className="px-4 py-3">{item.Order_Qty}</td>
+                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{formatCurrency(item.MRP)}</td>
                             <td className="px-4 py-3">
-                              <div>
-                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{item.Part_Salesman}</p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">{item.Part_Admin}</p>
-                              </div>
+                              <span className="block">Basic: {item.Discount || 0}%</span>
+                              <span className="block">Scheme: {item.SchemeDisc || 0}%</span>
+                              <span className="block">Addl: {item.AdditionalDisc || 0}%</span>
                             </td>
+                            <td className="px-4 py-3">{formatCurrency(item.ItemAmount)}</td>
                             <td className="px-4 py-3">
-                              <div>
-                                <p className="text-sm text-gray-900 dark:text-gray-100">Ordered: {item.Order_Qty}</p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">Dispatched: {item.Dispatch_Qty || 0}</p>
-                              </div>
-                            </td>
-                            <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
-                              {formatCurrency(item.MRP)}
-                            </td>
-                            <td className="px-4 py-3">
-                              <div className="text-xs space-y-1">
-                                <p className="dark:text-gray-400">Basic: {item.Discount || 0}%</p>
-                                <p className="dark:text-gray-400">Scheme: {item.SchemeDisc || 0}%</p>
-                                <p className="dark:text-gray-400">Additional: {item.AdditionalDisc || 0}%</p>
-                              </div>
-                            </td>
-                            <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-gray-100">
-                              {formatCurrency(item.ItemAmount)}
-                            </td>
-                            <td className="px-4 py-3">
-                              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                item.OrderItemStatus === 'Completed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                                item.OrderItemStatus === 'Dispatched' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
-                                item.OrderItemStatus === 'Processing' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-                                'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
-                              }`}>
-                                {item.OrderItemStatus}
-                              </span>
+                              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${item.OrderItemStatus === 'Completed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : item.OrderItemStatus === 'Dispatched' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : item.OrderItemStatus === 'Processing' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'}`}>{item.OrderItemStatus}</span>
                             </td>
                             <td className="px-4 py-3">
                               <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200">
                                 {(item as any).rack_location || '-'}
                               </span>
+                            </td>
+                            <td className="px-4 py-3">
+                              <button
+                                className="inline-flex items-center px-2 py-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800 text-xs font-medium transition-colors"
+                                onClick={() => handleOpenItemStatusModal(item)}
+                                title="View Item Status"
+                              >
+                                <span className="sr-only">View Status</span>
+                                <Edit className="w-4 h-4 mr-1" />
+                                Status
+                              </button>
                             </td>
                           </tr>
                         )) : null}
@@ -839,7 +841,7 @@ return (
                   Close
                 </button>
                 {user?.role !== 'retailer' && (
-                  <button className="px-6 py-3 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2">
+                  <button className="px-6 py-3 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors flex items-center gap-2">
                     <Edit className="w-4 h-4" />
                     <span>Edit Order</span>
                   </button>
@@ -847,7 +849,7 @@ return (
                 {user && ['admin', 'manager', 'storeman'].includes(user.role) && nextStatuses.length > 0 && (
                   <button
                     onClick={handleOpenStatusModal}
-                    className="px-6 py-3 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
+                    className="px-6 py-3 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors flex items-center gap-2"
                   >
                     <Shield className="w-4 h-4" />
                     <span>Change Status</span>
@@ -1115,6 +1117,13 @@ return (
           </div>
         </div>
       </Dialog>
+
+      {/* Item Status Modal */}
+      <ItemStatusModal
+        item={selectedOrderItem as any}
+        open={showItemStatusModal}
+        onClose={handleCloseItemStatusModal}
+      />
     </div>
     </>
   );
