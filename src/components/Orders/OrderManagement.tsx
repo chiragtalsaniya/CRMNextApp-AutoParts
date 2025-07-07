@@ -265,7 +265,33 @@ export const OrderManagement: React.FC = () => {
                 </div>
                 <div className="mb-2 flex flex-wrap gap-2 items-center">
                   <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Company:</span>
-                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{orderUI.Company_Name}</span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{(orderUI as any).Company_Name || (selectedOrder as any).Company_Name || '-'}</span>
+              {/* Customization: Add a visual order status progress bar */}
+              <div className="mt-6">
+                <div className="flex items-center gap-2">
+                  {['New','Pending','Processing','Picked','Dispatched','Completed','Cancelled'].map((status, idx, arr) => {
+                    const currentStatus = selectedOrder.Order_Status || '';
+                    const statusIdx = arr.indexOf(currentStatus as string);
+                    return (
+                      <React.Fragment key={status}>
+                        <div className={`flex flex-col items-center`}>
+                          <div className={`w-7 h-7 flex items-center justify-center rounded-full border-2 text-xs font-bold
+                            ${currentStatus === status ? 'bg-blue-700 text-white border-blue-700' :
+                              statusIdx > idx ? 'bg-green-600 text-white border-green-600' :
+                              'bg-gray-200 dark:bg-gray-700 text-gray-500 border-gray-300 dark:border-gray-600'}`}
+                          >
+                            {idx + 1}
+                          </div>
+                          <span className="text-[10px] mt-1 text-center text-gray-500 dark:text-gray-400 w-14">{status}</span>
+                        </div>
+                        {idx < arr.length - 1 && (
+                          <div className={`flex-1 h-1 ${statusIdx > idx ? 'bg-green-600' : 'bg-gray-200 dark:bg-gray-700'}`}></div>
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
+              </div>
                 </div>
                 <div className="mb-2 flex flex-wrap gap-2 items-center">
                   <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Retailer:</span>
