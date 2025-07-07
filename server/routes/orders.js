@@ -212,10 +212,30 @@ router.get('/:id', authenticateToken, async (req, res) => {
       can_fulfill: items.every(item => item.inventory_status === 'Available')
     };
 
+    // Get order status history
+    const statusHistoryQuery = `
+      SELECT 
+        id,
+        order_id,
+        status,
+        previous_status,
+        updated_by,
+        updated_by_role,
+        notes,
+        timestamp,
+        ip_address,
+        user_agent
+      FROM order_status_history
+      WHERE order_id = ?
+      ORDER BY timestamp ASC
+    `;
+    const status_history = await executeQuery(statusHistoryQuery, [orderId]);
+
     res.json({
       ...transformOrder(order),
       items,
-      inventory_summary: inventorySummary
+      inventory_summary: inventorySummary,
+      status_history
     });
   } catch (error) {
     console.error('Get order error:', error);
