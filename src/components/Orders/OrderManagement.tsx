@@ -295,15 +295,14 @@ export const OrderManagement: React.FC = () => {
                         const borderClass = isActive || isCancelledStep ? 'border-2 border-[#003366] shadow-lg' : isCompleted ? 'border border-gray-300 dark:border-gray-600' : 'border border-gray-200 dark:border-gray-700';
                         // Connector
                         const showConnector = idx < steps.length - 1;
+                        // Animation and accessibility tweaks
                         return (
                           <React.Fragment key={step.key}>
-                            <li className="flex-1 flex flex-col items-center relative min-w-[80px]">
-                              <div className={`flex items-center justify-center w-10 h-10 rounded-full ${colorClass} ${borderClass} transition-all duration-200 mb-1`}
-                                aria-current={isActive || isCancelledStep ? 'step' : undefined}
-                                >
+                            <li className="flex-1 flex flex-col items-center relative min-w-[80px] group focus:outline-none" tabIndex={0} aria-label={step.label} aria-current={isActive || isCancelledStep ? 'step' : undefined}>
+                              <div className={`flex items-center justify-center w-10 h-10 rounded-full ${colorClass} ${borderClass} transition-all duration-300 mb-1 group-focus:ring-4 group-focus:ring-blue-200 dark:group-focus:ring-blue-900`}>
                                 {step.icon && React.cloneElement(step.icon, { className: 'w-5 h-5' })}
                               </div>
-                              <span className={`text-xs font-semibold ${isActive || isCancelledStep ? 'text-[#003366] dark:text-blue-200' : isCompleted ? 'text-gray-700 dark:text-gray-200' : 'text-gray-400 dark:text-gray-500'}`}>{step.label}</span>
+                              <span className={`text-xs font-semibold ${isActive || isCancelledStep ? 'text-[#003366] dark:text-blue-200' : isCompleted ? 'text-gray-700 dark:text-gray-200' : 'text-gray-400 dark:text-gray-500'} transition-colors duration-200`}>{step.label}</span>
                               {/* Date/by info if available */}
                               {step.date && (
                                 <span className="block text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">{format(timestampToDate(step.date)!, 'MMM dd, HH:mm')}</span>
@@ -311,6 +310,12 @@ export const OrderManagement: React.FC = () => {
                               {step.by && (
                                 <span className="block text-[10px] text-gray-400 dark:text-gray-500">by {step.by}</span>
                               )}
+                              {/* Tooltip for better UX */}
+                              <span className="absolute left-1/2 -translate-x-1/2 -bottom-8 z-10 hidden group-hover:block bg-gray-900 text-white text-xs rounded px-2 py-1 shadow-lg whitespace-nowrap pointer-events-none">
+                                {step.label}
+                                {step.date && ` • ${format(timestampToDate(step.date)!, 'MMM dd, HH:mm')}`}
+                                {step.by && ` • by ${step.by}`}
+                              </span>
                             </li>
                             {showConnector && (
                               <div className="absolute top-5 left-full w-8 h-1 flex items-center" aria-hidden="true">
