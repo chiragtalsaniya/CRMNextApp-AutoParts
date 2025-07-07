@@ -83,6 +83,7 @@ const corsOrigins = process.env.CORS_ORIGIN
 
 
 
+
 app.use(cors({
   origin: corsOrigins,
   credentials: true, // Enable credentials for authentication
@@ -105,8 +106,7 @@ app.use(cors({
 }));
 
 // Handle preflight requests
-// Explicitly handle preflight OPTIONS for all API routes, always respond with CORS headers
-app.options('/api/*', cors());
+app.options('*', cors());
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
