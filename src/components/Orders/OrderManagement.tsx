@@ -691,32 +691,39 @@ return (
                   <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-3">Order Status Timeline</h3>
                   <div className="w-full overflow-x-auto pb-2">
                     <ol className="flex items-center min-w-[600px] w-full justify-between relative">
-                      {timelineSteps.length > 0 ? timelineSteps.map((step, idx) => (
+                      {timelineSteps.length > 0 ? timelineSteps.map((step: any, idx: number) => (
                         <li key={step.key} className="flex-1 flex flex-col items-center group relative">
                           <div className="flex items-center">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${step.color} bg-white dark:bg-gray-900 z-10 transition-colors`} title={step.label}>
-                              {step.icon}
+                            {/* Animated glowing border for active step */}
+                            <div className={`w-12 h-12 rounded-full flex items-center justify-center border-4 ${step.color} bg-gradient-to-br from-white/80 to-blue-50 dark:from-gray-900 dark:to-blue-950 shadow-lg transition-all duration-300 ${idx === timelineSteps.length - 1 ? 'ring-4 ring-blue-300/30 dark:ring-blue-900/40' : ''}`} title={step.label}>
+                              <span className="relative flex items-center justify-center w-8 h-8">
+                                {step.icon}
+                                {/* Animated pulse for current step */}
+                                {idx === timelineSteps.length - 1 && (
+                                  <span className="absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-30 animate-ping"></span>
+                                )}
+                              </span>
                             </div>
                             {idx < timelineSteps.length - 1 && (
-                              <div className="flex-1 h-1 mx-1 bg-gray-300 dark:bg-gray-700" />
+                              <div className="flex-1 h-1 mx-1 bg-gradient-to-r from-blue-200 via-blue-400 to-blue-600 dark:from-blue-900 dark:via-blue-700 dark:to-blue-500 opacity-60 rounded-full transition-all duration-300" />
                             )}
                           </div>
-                          <div className="mt-2 text-xs text-center">
-                            <span className="block font-semibold text-gray-900 dark:text-gray-100">{step.label}</span>
+                          <div className="mt-3 text-xs text-center min-w-[90px]">
+                            <span className="block font-bold text-gray-900 dark:text-gray-100 tracking-wide uppercase">{step.label}</span>
                             {step.date && (
-                              <span className="block text-gray-500 dark:text-gray-400">{format(timestampToDate(step.date)!, 'MMM dd, yyyy HH:mm')}</span>
+                              <span className="block text-[11px] text-blue-700 dark:text-blue-300 font-mono mt-0.5">{format(timestampToDate(step.date)!, 'MMM dd, yyyy HH:mm')}</span>
                             )}
                             {step.by && (
-                              <span className="block text-gray-400 dark:text-gray-500">by {step.by}</span>
+                              <span className="block text-[11px] text-gray-400 dark:text-gray-500">by {step.by}</span>
                             )}
                             {step.notes && (
-                              <span className="block text-gray-400 dark:text-gray-500 italic">{step.notes}</span>
+                              <span className="block text-[11px] text-blue-500 dark:text-blue-300 italic mt-0.5">{step.notes}</span>
                             )}
                           </div>
                         </li>
                       )) : (
                         <li className="flex-1 flex flex-col items-center">
-                          <div className="w-10 h-10 rounded-full flex items-center justify-center border-2 bg-gray-200 dark:bg-gray-700 text-gray-400">?</div>
+                          <div className="w-12 h-12 rounded-full flex items-center justify-center border-4 bg-gray-200 dark:bg-gray-700 text-gray-400">?</div>
                           <span className="mt-2 text-xs text-gray-400">No status history</span>
                         </li>
                       )}
