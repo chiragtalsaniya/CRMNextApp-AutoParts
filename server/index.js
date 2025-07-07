@@ -81,13 +81,7 @@ const corsOrigins = process.env.CORS_ORIGIN
       'https://localhost:3000',
     ];
 
-// Log incoming Origin header for CORS debugging
-app.use((req, res, next) => {
-  if (req.headers && req.headers.origin) {
-    console.log(`🛰️  Incoming CORS request Origin: ${req.headers.origin}`);
-  }
-  next();
-});
+
 
 app.use(cors({
   origin: corsOrigins,
