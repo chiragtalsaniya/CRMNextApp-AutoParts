@@ -446,7 +446,7 @@ router.post('/:branchCode/:partNo/purchase',
       const { quantity, notes } = req.body;
 
       // Check store access
-      if (req.user.role !== 'super_admin' && req.user.store_id !== branchCode) {
+      if (!hasStoreAccess(req.user, branchCode)) {
         return res.status(403).json({ error: 'Access denied to this store' });
       }
 
@@ -481,6 +481,33 @@ router.post('/:branchCode/:partNo/purchase',
     }
   }
 );
+
+// Singleton function for store access check
+/**
+ * Checks if a user has access to a store, given the user object, branchCode, and (optionally) stores array.
+ * - super_admin: always allowed
+ * - admin: must match company_id with store's company_id
+ * - manager/storeman/salesman: must match store_id with branchCode
+ * - others: denied
+ *
+ * @param {object} user - The user object (req.user)
+ * @param {string} branchCode - The branch code to check
+ * @param {Array} [stores] - Optional array of store objects (with company_id)
+ * @returns {boolean}
+ */
+function hasStoreAccess(user, branchCode, stores = []) {
+  if (user.role === 'super_admin') return true;
+  if (user.role === 'admin') {
+    if (stores.length > 0 && user.company_id !== stores[0].company_id) {
+      return false;
+    }
+    return true;
+  }
+  if (['manager', 'storeman', 'salesman'].includes(user.role)) {
+    return user.store_id === branchCode;
+  }
+  return false;
+};
 
 // Get low stock items by store
 router.get('/alerts/low-stock', 
@@ -562,32 +589,6 @@ router.get('/stats/:branchCode', authenticateToken, async (req, res) => {
     if (!hasStoreAccess(req.user, branchCode)) {
       return res.status(403).json({ error: 'Access denied to this store' });
     }
-// Singleton function for store access check
-/**
- * Checks if a user has access to a store, given the user object, branchCode, and (optionally) stores array.
- * - super_admin: always allowed
- * - admin: must match company_id with store's company_id
- * - manager/storeman/salesman: must match store_id with branchCode
- * - others: denied
- *
- * @param {object} user - The user object (req.user)
- * @param {string} branchCode - The branch code to check
- * @param {Array} [stores] - Optional array of store objects (with company_id)
- * @returns {boolean}
- */
-function hasStoreAccess(user, branchCode, stores = []) {
-  if (user.role === 'super_admin') return true;
-  if (user.role === 'admin') {
-    if (stores.length > 0 && user.company_id !== stores[0].company_id) {
-      return false;
-    }
-    return true;
-  }
-  if (['manager', 'storeman', 'salesman'].includes(user.role)) {
-    return user.store_id === branchCode;
-  }
-  return false;
-}
 
     const statsQuery = `
       SELECT 
