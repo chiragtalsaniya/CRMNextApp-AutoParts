@@ -268,28 +268,60 @@ export const OrderManagement: React.FC = () => {
                   <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{(orderUI as any).Company_Name || (selectedOrder as any).Company_Name || '-'}</span>
               {/* Customization: Add a visual order status progress bar */}
               <div className="mt-6">
-                <div className="flex items-center gap-2">
-                  {['New','Pending','Processing','Picked','Dispatched','Completed','Cancelled'].map((status, idx, arr) => {
-                    const currentStatus = selectedOrder.Order_Status || '';
-                    const statusIdx = arr.indexOf(currentStatus as string);
-                    return (
-                      <React.Fragment key={status}>
-                        <div className={`flex flex-col items-center`}>
-                          <div className={`w-7 h-7 flex items-center justify-center rounded-full border-2 text-xs font-bold
-                            ${currentStatus === status ? 'bg-blue-700 text-white border-blue-700' :
-                              statusIdx > idx ? 'bg-green-600 text-white border-green-600' :
-                              'bg-gray-200 dark:bg-gray-700 text-gray-500 border-gray-300 dark:border-gray-600'}`}
-                          >
-                            {idx + 1}
-                          </div>
-                          <span className="text-[10px] mt-1 text-center text-gray-500 dark:text-gray-400 w-14">{status}</span>
-                        </div>
-                        {idx < arr.length - 1 && (
-                          <div className={`flex-1 h-1 ${statusIdx > idx ? 'bg-green-600' : 'bg-gray-200 dark:bg-gray-700'}`}></div>
-                        )}
-                      </React.Fragment>
-                    );
-                  })}
+                {/* Modern Horizontal Stepper Timeline */}
+                <div className="w-full overflow-x-auto pb-2">
+                  <ol className="flex items-center min-w-[600px] w-full justify-between relative">
+                    {(() => {
+                      // Define steps with color and icon logic
+                      const steps = [
+                        { key: 'New', label: 'New', icon: getStatusIcon('New'), color: getOrderStatusColor('New'), date: selectedOrder.Place_Date, by: selectedOrder.Place_By },
+                        { key: 'Pending', label: 'Pending', icon: getStatusIcon('Pending'), color: getOrderStatusColor('Pending') },
+                        { key: 'Processing', label: 'Processing', icon: getStatusIcon('Processing'), color: getOrderStatusColor('Processing'), date: selectedOrder.Confirm_Date, by: selectedOrder.Confirm_By },
+                        { key: 'Picked', label: 'Picked', icon: getStatusIcon('Picked'), color: getOrderStatusColor('Picked'), date: selectedOrder.Pick_Date, by: selectedOrder.Pick_By },
+                        { key: 'Dispatched', label: 'Dispatched', icon: getStatusIcon('Dispatched'), color: getOrderStatusColor('Dispatched') },
+                        { key: 'Completed', label: 'Completed', icon: getStatusIcon('Completed'), color: getOrderStatusColor('Completed') },
+                        { key: 'Cancelled', label: 'Cancelled', icon: getStatusIcon('Cancelled'), color: getOrderStatusColor('Cancelled') }
+                      ];
+                      const currentIdx = steps.findIndex(s => s.key === selectedOrder.Order_Status);
+                      // If cancelled, highlight only up to cancelled
+                      const isCancelled = selectedOrder.Order_Status === 'Cancelled';
+                      return steps.map((step, idx) => {
+                        // Step state
+                        const isActive = idx === currentIdx && !isCancelled;
+                        const isCompleted = idx < currentIdx && !isCancelled;
+                        const isCancelledStep = isCancelled && step.key === 'Cancelled';
+                        // Color classes
+                        const colorClass = isActive || isCancelledStep ? step.color + ' text-white' : isCompleted ? step.color.replace('bg-', 'bg-opacity-30 text-') + ' text-gray-900 dark:text-gray-100' : 'bg-gray-200 dark:bg-gray-700 text-gray-400';
+                        const borderClass = isActive || isCancelledStep ? 'border-2 border-[#003366] shadow-lg' : isCompleted ? 'border border-gray-300 dark:border-gray-600' : 'border border-gray-200 dark:border-gray-700';
+                        // Connector
+                        const showConnector = idx < steps.length - 1;
+                        return (
+                          <React.Fragment key={step.key}>
+                            <li className="flex-1 flex flex-col items-center relative min-w-[80px]">
+                              <div className={`flex items-center justify-center w-10 h-10 rounded-full ${colorClass} ${borderClass} transition-all duration-200 mb-1`}
+                                aria-current={isActive || isCancelledStep ? 'step' : undefined}
+                                >
+                                {step.icon && React.cloneElement(step.icon, { className: 'w-5 h-5' })}
+                              </div>
+                              <span className={`text-xs font-semibold ${isActive || isCancelledStep ? 'text-[#003366] dark:text-blue-200' : isCompleted ? 'text-gray-700 dark:text-gray-200' : 'text-gray-400 dark:text-gray-500'}`}>{step.label}</span>
+                              {/* Date/by info if available */}
+                              {step.date && (
+                                <span className="block text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">{format(timestampToDate(step.date)!, 'MMM dd, HH:mm')}</span>
+                              )}
+                              {step.by && (
+                                <span className="block text-[10px] text-gray-400 dark:text-gray-500">by {step.by}</span>
+                              )}
+                            </li>
+                            {showConnector && (
+                              <div className="absolute top-5 left-full w-8 h-1 flex items-center" aria-hidden="true">
+                                <div className={`w-full h-1 rounded-full ${idx < currentIdx && !isCancelled ? steps[idx].color : 'bg-gray-200 dark:bg-gray-700'} transition-all`}></div>
+                              </div>
+                            )}
+                          </React.Fragment>
+                        );
+                      });
+                    })()}
+                  </ol>
                 </div>
               </div>
                 </div>
