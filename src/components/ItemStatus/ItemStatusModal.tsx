@@ -1,6 +1,6 @@
 import React from 'react';
-import { Package, MapPin, BarChart3, TrendingUp, ShoppingCart, X, Edit } from 'lucide-react';
-import { ItemStatus, getStockLevelColor, timestampToDate } from '../../types';
+import { Package, MapPin, BarChart3, TrendingUp, ShoppingCart, TrendingDown, AlertTriangle, Clock, X, Edit } from 'lucide-react';
+import { ItemStatus, getStockLevelColor, formatStockDisplay, timestampToDate } from '../../types';
 import { format } from 'date-fns';
 
 interface ItemStatusModalProps {
@@ -22,8 +22,8 @@ export const ItemStatusModal: React.FC<ItemStatusModalProps> = ({ item, open, on
               <Package className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{item.Part_Name || 'Item'}</h2>
-              <p className="text-gray-600 dark:text-gray-400">{item.Part_No || ''}</p>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{item.Part_Name || item.Part_Salesman || 'Item'}</h2>
+              <p className="text-gray-600 dark:text-gray-400">{item.Part_No || item.Part_Admin}</p>
               {item.stock_level && (
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-1 ${getStockLevelColor(item.stock_level)}`}>
                   {item.stock_level?.toUpperCase()}
@@ -68,7 +68,7 @@ export const ItemStatusModal: React.FC<ItemStatusModalProps> = ({ item, open, on
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-orange-600 dark:text-orange-300">Rack</p>
-                  <p className="text-lg font-bold text-orange-900 dark:text-orange-100">{item.Part_Rack || 'N/A'}</p>
+                  <p className="text-lg font-bold text-orange-900 dark:text-orange-100">{item.Part_Rack || item.rack_location || 'N/A'}</p>
                 </div>
                 <MapPin className="w-8 h-8 text-orange-600 dark:text-orange-300" />
               </div>
@@ -79,15 +79,15 @@ export const ItemStatusModal: React.FC<ItemStatusModalProps> = ({ item, open, on
             <div className="grid grid-cols-3 gap-4">
               <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg text-center">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Level A</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{item.Part_A || '0'}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{item.Part_A || item.stock_level_a || '0'}</p>
               </div>
               <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg text-center">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Level B</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{item.Part_B || '0'}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{item.Part_B || item.stock_level_b || '0'}</p>
               </div>
               <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg text-center">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Level C</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{item.Part_C || '0'}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{item.Part_C || item.stock_level_c || '0'}</p>
               </div>
             </div>
           </div>
