@@ -103,6 +103,7 @@ router.get('/', authenticateToken, async (req, res) => {
 const pageNum = parseInt(page, 10);
 const offsetNum = (pageNum - 1) * limitNum;
 
+
 // Safe and compatible: inline LIMIT/OFFSET into SQL (not as ? placeholders)
 const ordersQuery = `
   SELECT 
@@ -110,7 +111,10 @@ const ordersQuery = `
     r.Retailer_Name,
     r.Contact_Person,
     s.Branch_Name,
-    s.Company_Name
+    s.Company_Name,
+    (
+      SELECT COUNT(*) FROM order_items oi WHERE oi.Order_Id = om.Order_Id
+    ) AS item_count
   FROM order_master om
   LEFT JOIN retailers r ON om.Retailer_Id = r.Retailer_Id
   LEFT JOIN stores s ON om.Branch = s.Branch_Code
@@ -121,7 +125,7 @@ const ordersQuery = `
 
 const orders = await executeQuery(ordersQuery, queryParams);
 res.json({
-  orders: Array.isArray(orders) ? orders.map(transformOrder) : [],
+  orders: Array.isArray(orders) ? orders.map(o => ({ ...transformOrder(o), item_count: o.item_count })) : [],
   pagination: {
     page: pageNum,
     limit: limitNum,
@@ -130,9 +134,6 @@ res.json({
   }
 });
 
-  
-
-    
   } catch (error) {
     console.error('Get orders error:', error);
     res.status(500).json({ error: 'Internal server error' });
