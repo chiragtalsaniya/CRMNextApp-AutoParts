@@ -393,11 +393,12 @@ export const runMigrations = async () => {
       ('6', 'Michael Johnson', 'retailer@downtownauto.com', ?, 'retailer', NULL, NULL, 1)
     `, [hashedPassword, hashedPassword, hashedPassword, hashedPassword, hashedPassword, hashedPassword]);
 
+
     // Ensure company_id column exists in parts table (for legacy DBs)
-    await connection.query(`
-      ALTER TABLE parts
-      ADD COLUMN IF NOT EXISTS company_id VARCHAR(50)
-    `);
+    const [columns] = await connection.query(`SHOW COLUMNS FROM parts LIKE 'company_id'`);
+    if (columns.length === 0) {
+      await connection.query(`ALTER TABLE parts ADD COLUMN company_id VARCHAR(50)`);
+    }
 
     // Insert parts
     await connection.query(`
