@@ -100,16 +100,38 @@ router.get('/:partNumber', authenticateToken, async (req, res) => {
   try {
     const partNumber = req.params.partNumber;
 
-    const parts = await executeQuery(
-      'SELECT * FROM parts WHERE Part_Number = ?',
-      [partNumber]
-    );
+    // Join with category_master and category_master_pad for category info
+    const partQuery = `
+      SELECT 
+        p.*,
+        cm.category_id as category_id,
+        cm.category_name as category_name,
+        cmpad.category_id as order_pad_category_id,
+        cmpad.category_name as order_pad_category_name
+      FROM parts p
+      LEFT JOIN category_master cm ON p.Part_Catagory = cm.category_name
+      LEFT JOIN category_master_pad cmpad ON p.Order_Pad_Category = cmpad.category_id
+      WHERE p.Part_Number = ?
+    `;
+    const parts = await executeQuery(partQuery, [partNumber]);
 
     if (parts.length === 0) {
       return res.status(404).json({ error: 'Part not found' });
     }
 
-    res.json(parts[0]);
+    // Return part with category info grouped
+    const part = parts[0];
+    res.json({
+      ...part,
+      part_category: {
+        id: part.category_id,
+        name: part.category_name
+      },
+      order_pad_category: {
+        id: part.order_pad_category_id,
+        name: part.order_pad_category_name
+      }
+    });
   } catch (error) {
     console.error('Get part error:', error);
     res.status(500).json({ error: 'Internal server error' });

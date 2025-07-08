@@ -99,40 +99,94 @@ router.get('/', authenticateToken, async (req, res) => {
     const countResult = await executeQuery(countQuery, queryParams);
     const total = countResult[0].total;
 
+
     const limitNum = parseInt(limit, 10);
-const pageNum = parseInt(page, 10);
-const offsetNum = (pageNum - 1) * limitNum;
+    const pageNum = parseInt(page, 10);
+    const offsetNum = (pageNum - 1) * limitNum;
 
+    // Get orders (with item count)
+    const ordersQuery = `
+      SELECT 
+        om.*,
+        r.Retailer_Name,
+        r.Contact_Person,
+        s.Branch_Name,
+        s.Company_Name,
+        (
+          SELECT COUNT(*) FROM order_items oi WHERE oi.Order_Id = om.Order_Id
+        ) AS item_count
+      FROM order_master om
+      LEFT JOIN retailers r ON om.Retailer_Id = r.Retailer_Id
+      LEFT JOIN stores s ON om.Branch = s.Branch_Code
+      ${whereClause}
+      ORDER BY om.Place_Date DESC
+      LIMIT ${limitNum} OFFSET ${offsetNum}
+    `;
 
-// Safe and compatible: inline LIMIT/OFFSET into SQL (not as ? placeholders)
-const ordersQuery = `
-  SELECT 
-    om.*,
-    r.Retailer_Name,
-    r.Contact_Person,
-    s.Branch_Name,
-    s.Company_Name,
-    (
-      SELECT COUNT(*) FROM order_items oi WHERE oi.Order_Id = om.Order_Id
-    ) AS item_count
-  FROM order_master om
-  LEFT JOIN retailers r ON om.Retailer_Id = r.Retailer_Id
-  LEFT JOIN stores s ON om.Branch = s.Branch_Code
-  ${whereClause}
-  ORDER BY om.Place_Date DESC
-  LIMIT ${limitNum} OFFSET ${offsetNum}
-`;
+    const orders = await executeQuery(ordersQuery, queryParams);
 
-const orders = await executeQuery(ordersQuery, queryParams);
-res.json({
-  orders: Array.isArray(orders) ? orders.map(o => ({ ...transformOrder(o), item_count: o.item_count })) : [],
-  pagination: {
-    page: pageNum,
-    limit: limitNum,
-    total,
-    pages: Math.ceil(total / limitNum)
-  }
-});
+    // For each order, fetch its items with category info (like /orders/:id, but only category fields)
+    const orderIds = orders.map(o => o.Order_Id);
+    let itemsByOrder = {};
+    if (orderIds.length > 0) {
+      // Get all items for these orders, with category info
+      const itemsQuery = `
+        SELECT 
+          oi.Order_Id,
+          oi.Order_Srl,
+          oi.Part_Admin,
+          oi.Order_Qty,
+          p.Part_Name,
+          p.Part_Catagory,
+          cm.category_id as category_id,
+          cm.category_name as category_name,
+          p.Order_Pad_Category,
+          cmpad.category_id as order_pad_category_id,
+          cmpad.category_name as order_pad_category_name
+        FROM order_items oi
+        LEFT JOIN parts p ON oi.Part_Admin = p.Part_Number
+        LEFT JOIN category_master cm ON p.Part_Catagory = cm.category_name
+        LEFT JOIN category_master_pad cmpad ON p.Order_Pad_Category = cmpad.category_id
+        WHERE oi.Order_Id IN (${orderIds.map(() => '?').join(',')})
+        ORDER BY oi.Order_Id, oi.Order_Srl
+      `;
+      const items = await executeQuery(itemsQuery, orderIds);
+      // Group by order
+      itemsByOrder = items.reduce((acc, item) => {
+        if (!acc[item.Order_Id]) acc[item.Order_Id] = [];
+        acc[item.Order_Id].push({
+          order_srl: item.Order_Srl,
+          part_admin: item.Part_Admin,
+          part_name: item.Part_Name,
+          order_qty: item.Order_Qty,
+          part_category: {
+            id: item.category_id,
+            name: item.category_name
+          },
+          order_pad_category: {
+            id: item.order_pad_category_id,
+            name: item.order_pad_category_name
+          }
+        });
+        return acc;
+      }, {});
+    }
+
+    res.json({
+      orders: Array.isArray(orders)
+        ? orders.map(o => ({
+            ...transformOrder(o),
+            item_count: o.item_count,
+            items: itemsByOrder[o.Order_Id] || []
+          }))
+        : [],
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        pages: Math.ceil(total / limitNum)
+      }
+    });
 
   } catch (error) {
     console.error('Get orders error:', error);
@@ -145,7 +199,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
   try {
     const orderId = req.params.id;
 
-    // Get order details
+    // Get order details (with category info for parts)
     const orderQuery = `
       SELECT 
         om.*,
@@ -173,13 +227,19 @@ router.get('/:id', authenticateToken, async (req, res) => {
       return res.status(403).json({ error: 'Access denied' });
     }
 
-    // Get order items with inventory status from the order's branch
+    // Get order items with inventory status and category info from the order's branch
     const itemsQuery = `
       SELECT 
         oi.*,
         p.Part_Name,
         p.Part_Image,
         p.Item_Status as part_status,
+        p.Part_Catagory,
+        cm.category_id as category_id,
+        cm.category_name as category_name,
+        p.Order_Pad_Category,
+        cmpad.category_id as order_pad_category_id,
+        cmpad.category_name as order_pad_category_name,
         ist.Part_A as stock_level_a,
         ist.Part_B as stock_level_b,
         ist.Part_C as stock_level_c,
@@ -196,6 +256,8 @@ router.get('/:id', authenticateToken, async (req, res) => {
         (COALESCE(ist.Part_A, 0) + COALESCE(ist.Part_B, 0) + COALESCE(ist.Part_C, 0)) as total_stock
       FROM order_items oi
       LEFT JOIN parts p ON oi.Part_Admin = p.Part_Number
+      LEFT JOIN category_master cm ON p.Part_Catagory = cm.category_name
+      LEFT JOIN category_master_pad cmpad ON p.Order_Pad_Category = cmpad.category_id
       LEFT JOIN item_status ist ON (oi.Part_Admin = ist.Part_No AND ist.Branch_Code = ?)
       WHERE oi.Order_Id = ?
       ORDER BY oi.Order_Srl
