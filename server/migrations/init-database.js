@@ -132,10 +132,35 @@ export const runMigrations = async () => {
         company_id VARCHAR(50),
         Last_Sync BIGINT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        FOREIGN KEY (Order_Pad_Category) REFERENCES category_master_pad(category_id),
+        FOREIGN KEY (Part_Catagory) REFERENCES category_master(category_name)
       )
     `);
     console.log('✅ Parts table created');
+
+    // Category master tables
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS category_master (
+        category_id INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        category_name VARCHAR(500) DEFAULT NULL,
+        company_id VARCHAR(50) DEFAULT NULL,
+        LastSync DECIMAL(20,0) DEFAULT NULL
+      ) ENGINE=InnoDB DEFAULT CHARSET=latin1
+    `);
+    console.log('✅ category_master table created');
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS category_master_pad (
+        category_id INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        category_name VARCHAR(500) DEFAULT NULL,
+        category_image VARCHAR(150) DEFAULT NULL,
+        parent_id INT(5) DEFAULT NULL,
+        company_id VARCHAR(50) DEFAULT NULL,
+        LastSync DECIMAL(20,0) DEFAULT NULL
+      ) ENGINE=InnoDB DEFAULT CHARSET=latin1
+    `);
+    console.log('✅ category_master_pad table created');
 
     // Order Master table
     await connection.query(`

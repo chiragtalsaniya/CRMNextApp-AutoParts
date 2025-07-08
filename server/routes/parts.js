@@ -239,19 +239,32 @@ router.patch('/:partNumber/stock',
 );
 
 // Get part categories
+// Get all categories from category_master (main categories)
 router.get('/meta/categories', authenticateToken, async (req, res) => {
   try {
     const categories = await executeQuery(`
-      SELECT DISTINCT Part_Catagory as category, COUNT(*) as count
-      FROM parts 
-      WHERE Part_Catagory IS NOT NULL AND Part_Catagory != ''
-      GROUP BY Part_Catagory
-      ORDER BY Part_Catagory
+      SELECT category_id, category_name
+      FROM category_master
+      ORDER BY category_name
     `);
-
     res.json(categories);
   } catch (error) {
     console.error('Get categories error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Get all order pad categories from category_master_pad
+router.get('/meta/order-pad-categories', authenticateToken, async (req, res) => {
+  try {
+    const padCategories = await executeQuery(`
+      SELECT category_id, category_name, category_image, parent_id
+      FROM category_master_pad
+      ORDER BY category_name
+    `);
+    res.json(padCategories);
+  } catch (error) {
+    console.error('Get order pad categories error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
