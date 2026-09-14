@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, UserRole } from '../types';
 import { authAPI, companiesAPI, storesAPI, retailersAPI } from '../services/api';
 
@@ -30,7 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [allStoreIds, setAllStoreIds] = useState<string[]>([]);
   const [allRetailerIds, setAllRetailerIds] = useState<number[]>([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const initializeAuth = async () => {
       try {
         // Check if user is already authenticated
@@ -56,7 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initializeAuth();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (loading) return;
     // Fetch all companies if user is super_admin
     const fetchAllCompanies = async () => {
@@ -79,7 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     fetchAllCompanies();
   }, [user, loading]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Fetch all stores for super_admin or company stores for admin
     const fetchAllStores = async () => {
       if (user?.role === 'super_admin') {

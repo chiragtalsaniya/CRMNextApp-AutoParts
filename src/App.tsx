@@ -16,7 +16,6 @@ import { ItemStatus } from './pages/ItemStatus';
 import { Reports } from './pages/Reports';
 import { Settings } from './pages/Settings';
 import { Unauthorized } from './pages/Unauthorized';
-import TransportPage from './pages/Transport';
 
 const AppRoutes: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -122,14 +121,6 @@ const AppRoutes: React.FC = () => {
         <ProtectedRoute allowedRoles={['super_admin', 'admin', 'manager', 'storeman', 'salesman', 'retailer']}>
           <DashboardLayout>
             <Settings />
-          </DashboardLayout>
-        </ProtectedRoute>
-      } />
-      
-      <Route path="/transport" element={
-        <ProtectedRoute allowedRoles={['super_admin', 'admin', 'manager']}>
-          <DashboardLayout>
-            <TransportPage />
           </DashboardLayout>
         </ProtectedRoute>
       } />

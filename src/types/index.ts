@@ -192,7 +192,6 @@ export interface NewOrderForm {
   urgent: boolean;
   remark?: string;
   items: NewOrderItemForm[];
-  branch?: string; // Added branch for order placement
 }
 
 export interface NewOrderItemForm {
@@ -228,13 +227,11 @@ export interface LegacyOrderItem {
 }
 
 export interface Transport {
-  id: number;
+  id: string;
   store_id: string;
   type: string;
   provider: string;
   contact_number: string;
-  created_at: string;
-  updated_at: string;
 }
 
 export interface Region {

@@ -29,7 +29,7 @@ router.get('/', authenticateToken, async (req, res) => {
 
     // Additional filters
     if (search) {
-      whereConditions.push('(s.Branch_Code LIKE ? OR s.Branch_Name LIKE ? OR s.Branch_Manager LIKE ?)');
+      whereConditions.push('(Branch_Code LIKE ? OR Branch_Name LIKE ? OR Branch_Manager LIKE ?)');
       const searchTerm = `%${search}%`;
       queryParams.push(searchTerm, searchTerm, searchTerm);
     }
@@ -89,7 +89,7 @@ router.get('/:branchCode', authenticateToken, async (req, res) => {
     const stores = await executeQuery(
       `SELECT s.*, c.name as company_name 
        FROM stores s
-       LEFT JOIN companies c ON scompany_id = c.id
+       LEFT JOIN companies c ON s.company_id = c.id
        WHERE s.Branch_Code = ?`,
       [branchCode]
     );
@@ -316,65 +316,5 @@ router.delete('/:branchCode',
     }
   }
 );
-
-// RESTful: Get stores for a company by companyId param
-router.get('/companies/:companyId/stores', authenticateToken, async (req, res) => {
-  try {
-    const { page = 1, limit = 50, search } = req.query;
-    const companyId = req.params.companyId;
-
-    let whereConditions = ['company_id = ?'];
-    let queryParams = [companyId];
-
-    // Role-based filtering (reuse existing logic)
-    if (req.user.role !== 'super_admin') {
-      if (req.user.company_id && req.user.company_id !== companyId) {
-        return res.status(403).json({ error: 'Access denied' });
-      }
-    }
-
-    // Additional filters
-    if (search) {
-      whereConditions.push('(s.Branch_Code LIKE ? OR s.Branch_Name LIKE ? OR s.Branch_Manager LIKE ?)');
-      const searchTerm = `%${search}%`;
-      queryParams.push(searchTerm, searchTerm, searchTerm);
-    }
-
-    const whereClause = whereConditions.length > 0 ?
-      `WHERE ${whereConditions.join(' AND ')}` : '';
-
-    // Get total count
-    const countQuery = `SELECT COUNT(*) as total FROM stores ${whereClause}`;
-    const countResult = await executeQuery(countQuery, queryParams);
-    const total = countResult[0].total;
-
-    // Pagination
-    const safeLimit = Number.isFinite(Number(limit)) && Number(limit) > 0 ? Number(limit) : 50;
-    const safePage = Number.isFinite(Number(page)) && Number(page) > 0 ? Number(page) : 1;
-    const offset = (safePage - 1) * safeLimit;
-
-    const storesQuery = `
-      SELECT s.*, c.name as company_name
-      FROM stores s
-      LEFT JOIN companies c ON s.company_id = c.id
-      ${whereClause}
-      ORDER BY s.Branch_Name
-      LIMIT ${safeLimit} OFFSET ${offset}`;
-    const stores = await executeQuery(storesQuery, queryParams);
-
-    res.json({
-      stores,
-      pagination: {
-        page: safePage,
-        limit: safeLimit,
-        total,
-        pages: Math.ceil(total / safeLimit)
-      }
-    });
-  } catch (error) {
-    console.error('Get stores by company error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
 
 export default router;

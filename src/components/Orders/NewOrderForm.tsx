@@ -3,7 +3,6 @@ import { X, Plus, Minus, Trash2, Search, Package, AlertTriangle, Save, Calculato
 import { NewOrderForm, NewOrderItemForm, Part, Retailer, dateToTimestamp, formatCurrency } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { ItemMaster } from '../Parts/ItemMaster';
-import { storesAPI } from '../../services/api';
 
 interface NewOrderFormProps {
   isOpen: boolean;
@@ -68,26 +67,6 @@ export const NewOrderFormModal: React.FC<NewOrderFormProps> = ({ isOpen, onClose
     existingIndex: -1,
     newPart: {} as Part
   });
-  const [branch, setBranch] = useState<string>(user?.store_id || '');
-  const [stores, setStores] = useState<any[]>([]);
-  const [storeLoading, setStoreLoading] = useState(false);
-  const [storeError, setStoreError] = useState<string | null>(null);
-
-  // Fetch stores for admin/manager if no store_id
-  useEffect(() => {
-    if ((user?.role === 'admin' || user?.role === 'manager') && !user?.store_id && user?.company_id) {
-      setStoreLoading(true);
-      storesAPI.getStores({ company_id: user.company_id })
-        .then(res => {
-          setStores(res.data?.stores || []); // Use res.data.stores for correct API response
-          setStoreLoading(false);
-        })
-        .catch(() => {
-          setStoreError('Failed to load stores');
-          setStoreLoading(false);
-        });
-    }
-  }, [user]);
 
   useEffect(() => {
     if (formData.retailer_id) {
@@ -273,11 +252,13 @@ export const NewOrderFormModal: React.FC<NewOrderFormProps> = ({ isOpen, onClose
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!validateForm()) {
       return;
     }
+
     try {
-      onSubmit({ ...formData, branch });
+      onSubmit(formData);
       resetForm();
       onClose();
     } catch (error) {
@@ -297,7 +278,6 @@ export const NewOrderFormModal: React.FC<NewOrderFormProps> = ({ isOpen, onClose
     setSelectedRetailer(null);
     setValidationErrors({});
     setDuplicateConfirmation({ show: false, existingIndex: -1, newPart: {} as Part });
-    setBranch(user?.store_id || '');
   };
 
   const handleClose = () => {
@@ -306,10 +286,6 @@ export const NewOrderFormModal: React.FC<NewOrderFormProps> = ({ isOpen, onClose
   };
 
   if (!isOpen) return null;
-
-  // Branch logic for form rendering
-  const showStoreDropdown = (user?.role === 'admin' || user?.role === 'manager') && !user?.store_id;
-  const showStoreReadonly = ['salesman', 'retailer', 'storeman', 'admin', 'manager'].includes(user?.role || '') && user?.store_id;
 
   return (
     <>
@@ -333,56 +309,6 @@ export const NewOrderFormModal: React.FC<NewOrderFormProps> = ({ isOpen, onClose
           </div>
 
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
-            {/* Branch selection for order placement */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Branch</label>
-              {showStoreDropdown && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    <User className="w-4 h-4 inline mr-1" />
-                    Store *
-                  </label>
-                  <select
-                    value={branch}
-                    onChange={e => setBranch(e.target.value)}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none ${
-                      storeError ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                    }`}
-                    required
-                  >
-                    <option value="">Select Store</option>
-                    {(Array.isArray(stores) ? stores : []).map((store: any) => (
-                      <option key={store.Branch_Code} value={store.Branch_Code}>
-                        {store.Branch_Name}
-                      </option>
-                    ))}
-                  </select>
-                  {storeError && (
-                    <p className="mt-1 text-sm text-red-600">{storeError}</p>
-                  )}
-                </div>
-              )}
-              {showStoreReadonly && (
-                <input
-                  type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm bg-gray-100 text-gray-700 sm:text-sm"
-                  value={user?.store_id}
-                  readOnly
-                  disabled
-                />
-              )}
-              {!showStoreDropdown && !showStoreReadonly && (
-                <input
-                  type="text"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                  value={branch}
-                  onChange={e => setBranch(e.target.value)}
-                  placeholder="Enter branch code or name"
-                  required
-                />
-              )}
-            </div>
-
             {validationErrors.general && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center space-x-3">
                 <ExclamationTriangle className="w-5 h-5 text-red-600 flex-shrink-0" />
@@ -405,7 +331,7 @@ export const NewOrderFormModal: React.FC<NewOrderFormProps> = ({ isOpen, onClose
                   required
                 >
                   <option value={0}>Select Retailer</option>
-                  {(Array.isArray(retailers) ? retailers : []).map((retailer: Retailer) => (
+                  {retailers.map(retailer => (
                     <option key={retailer.Retailer_Id} value={retailer.Retailer_Id}>
                       {retailer.Retailer_Name} - {retailer.Contact_Person}
                     </option>
@@ -529,7 +455,7 @@ export const NewOrderFormModal: React.FC<NewOrderFormProps> = ({ isOpen, onClose
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {(Array.isArray(formData.items) ? formData.items : []).map((item: NewOrderItemForm, index: number) => (
+                  {formData.items.map((item, index) => (
                     <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 items-end">
                         <div className="lg:col-span-2">

@@ -5,7 +5,7 @@ import { validateRequest, partCreateSchema } from '../middleware/validation.js';
 
 const router = express.Router();
 
-// Get parts with filtering and pagination, including by Company_Id
+// Get parts with filtering and pagination
 router.get('/', authenticateToken, async (req, res) => {
   try {
     const { 
@@ -15,8 +15,7 @@ router.get('/', authenticateToken, async (req, res) => {
       category,
       focus_group,
       status = 'Active',
-      order_pad_only,
-      company_id
+      order_pad_only
     } = req.query;
 
     let whereConditions = ['Item_Status = ?'];
@@ -42,11 +41,6 @@ router.get('/', authenticateToken, async (req, res) => {
       whereConditions.push('Is_Order_Pad = 1');
     }
 
-    if (company_id) {
-      whereConditions.push('Company_Id = ?');
-      queryParams.push(company_id);
-    }
-
     const whereClause = `WHERE ${whereConditions.join(' AND ')}`;
 
     // Get total count
@@ -54,31 +48,16 @@ router.get('/', authenticateToken, async (req, res) => {
     const countResult = await executeQuery(countQuery, queryParams);
     const total = countResult[0].total;
 
-    // Ensure limit and offset are always integers for MySQL
-    const safeLimit = Number.isInteger(Number(limit)) && Number(limit) > 0 ? parseInt(limit, 10) : 50;
-    const safePage = Number.isInteger(Number(page)) && Number(page) > 0 ? parseInt(page, 10) : 1;
-    const offset = (safePage - 1) * safeLimit;
-
-    // Defensive: log and validate limit/page before using
-    if (isNaN(safeLimit) || safeLimit <= 0) {
-      console.error('Invalid limit value:', limit);
-      return res.status(400).json({ error: 'Invalid limit value' });
-    }
-    if (isNaN(safePage) || safePage <= 0) {
-      console.error('Invalid page value:', page);
-      return res.status(400).json({ error: 'Invalid page value' });
-    }
-
-    // Get parts with pagination (inline LIMIT/OFFSET, not as placeholders)
+    // Get parts with pagination
+    const offset = (page - 1) * limit;
     const partsQuery = `
       SELECT * FROM parts 
       ${whereClause}
       ORDER BY Part_Name ASC
-      LIMIT ${safeLimit} OFFSET ${offset}
+      LIMIT ? OFFSET ?
     `;
 
-    // Only pass queryParams for WHERE conditions
-    const parts = await executeQuery(partsQuery, queryParams);
+    const parts = await executeQuery(partsQuery, [...queryParams, parseInt(limit), offset]);
 
     res.json({
       parts,
@@ -100,58 +79,31 @@ router.get('/:partNumber', authenticateToken, async (req, res) => {
   try {
     const partNumber = req.params.partNumber;
 
-    // Join with category_master and category_master_pad for category info
-    const partQuery = `
-      SELECT 
-        p.*,
-        cm.category_id as category_id,
-        cm.category_name as category_name,
-        cmpad.category_id as order_pad_category_id,
-        cmpad.category_name as order_pad_category_name
-      FROM parts p
-      LEFT JOIN category_master cm ON p.Part_Catagory = cm.category_name
-      LEFT JOIN category_master_pad cmpad ON p.Order_Pad_Category = cmpad.category_id
-      WHERE p.Part_Number = ?
-    `;
-    const parts = await executeQuery(partQuery, [partNumber]);
+    const parts = await executeQuery(
+      'SELECT * FROM parts WHERE Part_Number = ?',
+      [partNumber]
+    );
 
     if (parts.length === 0) {
       return res.status(404).json({ error: 'Part not found' });
     }
 
-    // Return part with category info grouped
-    const part = parts[0];
-    res.json({
-      ...part,
-      part_category: {
-        id: part.category_id,
-        name: part.category_name
-      },
-      order_pad_category: {
-        id: part.order_pad_category_id,
-        name: part.order_pad_category_name
-      }
-    });
+    res.json(parts[0]);
   } catch (error) {
     console.error('Get part error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Create new part (requires Company_Id)
+// Create new part
 router.post('/', 
   authenticateToken,
   authorizeRoles('super_admin', 'admin', 'manager'),
   validateRequest(partCreateSchema),
   async (req, res) => {
     try {
-      const { Company_Id, ...rest } = req.body;
-      if (!Company_Id) {
-        return res.status(400).json({ error: 'Company_Id is required' });
-      }
       const partData = {
-        ...rest,
-        Company_Id,
+        ...req.body,
         Last_Sync: Date.now()
       };
 
@@ -178,8 +130,7 @@ router.post('/',
 
       res.status(201).json({
         message: 'Part created successfully',
-        part_number: partData.Part_Number,
-        company_id: partData.Company_Id
+        part_number: partData.Part_Number
       });
     } catch (error) {
       console.error('Create part error:', error);
@@ -188,7 +139,7 @@ router.post('/',
   }
 );
 
-// Update part (allows updating Company_Id)
+// Update part
 router.put('/:partNumber',
   authenticateToken,
   authorizeRoles('super_admin', 'admin', 'manager'),
@@ -261,32 +212,19 @@ router.patch('/:partNumber/stock',
 );
 
 // Get part categories
-// Get all categories from category_master (main categories)
 router.get('/meta/categories', authenticateToken, async (req, res) => {
   try {
     const categories = await executeQuery(`
-      SELECT category_id, category_name
-      FROM category_master
-      ORDER BY category_name
+      SELECT DISTINCT Part_Catagory as category, COUNT(*) as count
+      FROM parts 
+      WHERE Part_Catagory IS NOT NULL AND Part_Catagory != ''
+      GROUP BY Part_Catagory
+      ORDER BY Part_Catagory
     `);
+
     res.json(categories);
   } catch (error) {
     console.error('Get categories error:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// Get all order pad categories from category_master_pad
-router.get('/meta/order-pad-categories', authenticateToken, async (req, res) => {
-  try {
-    const padCategories = await executeQuery(`
-      SELECT category_id, category_name, category_image, parent_id
-      FROM category_master_pad
-      ORDER BY category_name
-    `);
-    res.json(padCategories);
-  } catch (error) {
-    console.error('Get order pad categories error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

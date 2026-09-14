@@ -3,7 +3,7 @@ import { User, Shield, Bell, Database, Palette, Globe } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 interface SettingsLayoutProps {
-  children: (props: { activeTab: string }) => React.ReactNode;
+  children: React.ReactNode;
 }
 
 interface SettingsTab {
@@ -62,8 +62,8 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({ children }) => {
           </nav>
         </div>
 
-        <div className="p-8 bg-gray-50 dark:bg-gray-900">
-          {children({ activeTab })}
+        <div className="p-8">
+          {React.cloneElement(children as React.ReactElement, { activeTab })}
         </div>
       </div>
     </div>

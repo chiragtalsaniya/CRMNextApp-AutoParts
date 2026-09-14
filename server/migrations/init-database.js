@@ -129,38 +129,12 @@ export const runMigrations = async () => {
         Previous_PartNumber VARCHAR(100),
         Focus_Group VARCHAR(100),
         Part_Catagory VARCHAR(100),
-        company_id VARCHAR(50),
         Last_Sync BIGINT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (Order_Pad_Category) REFERENCES category_master_pad(category_id),
-        FOREIGN KEY (Part_Catagory) REFERENCES category_master(category_name)
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )
     `);
     console.log('✅ Parts table created');
-
-    // Category master tables
-    await connection.query(`
-      CREATE TABLE IF NOT EXISTS category_master (
-        category_id INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        category_name VARCHAR(500) DEFAULT NULL,
-        company_id VARCHAR(50) DEFAULT NULL,
-        LastSync DECIMAL(20,0) DEFAULT NULL
-      ) ENGINE=InnoDB DEFAULT CHARSET=latin1
-    `);
-    console.log('✅ category_master table created');
-
-    await connection.query(`
-      CREATE TABLE IF NOT EXISTS category_master_pad (
-        category_id INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        category_name VARCHAR(500) DEFAULT NULL,
-        category_image VARCHAR(150) DEFAULT NULL,
-        parent_id INT(5) DEFAULT NULL,
-        company_id VARCHAR(50) DEFAULT NULL,
-        LastSync DECIMAL(20,0) DEFAULT NULL
-      ) ENGINE=InnoDB DEFAULT CHARSET=latin1
-    `);
-    console.log('✅ category_master_pad table created');
 
     // Order Master table
     await connection.query(`
@@ -227,32 +201,7 @@ export const runMigrations = async () => {
     `);
     console.log('✅ Order Items table created');
 
-    // Order Status History table - Track all status changes
-    await connection.query(`
-      CREATE TABLE IF NOT EXISTS order_status_history (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        order_id INT NOT NULL,
-        status ENUM('New', 'Pending', 'Processing', 'Picked', 'Dispatched', 'Completed', 'Cancelled', 'Hold') NOT NULL,
-        previous_status ENUM('New', 'Pending', 'Processing', 'Picked', 'Dispatched', 'Completed', 'Cancelled', 'Hold'),
-        updated_by VARCHAR(50) NOT NULL,
-        updated_by_role ENUM('super_admin', 'admin', 'manager', 'storeman', 'salesman', 'retailer'),
-        notes TEXT,
-        timestamp BIGINT NOT NULL,
-        ip_address VARCHAR(45),
-        user_agent TEXT,
-        system_generated BOOLEAN DEFAULT FALSE,
-        metadata JSON,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (order_id) REFERENCES order_master(Order_Id) ON DELETE CASCADE,
-        INDEX idx_order_status_order_id (order_id),
-        INDEX idx_order_status_timestamp (timestamp),
-        INDEX idx_order_status_updated_by (updated_by),
-        INDEX idx_order_status_status (status)
-      )
-    `);
-    console.log('✅ Order Status History table created');
-
-    // Item Status table - Tracks inventory levels for parts at store locations
+    // Item Status table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS item_status (
         Branch_Code VARCHAR(10) NOT NULL,
@@ -289,15 +238,14 @@ export const runMigrations = async () => {
     // Transport table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS transport (
-        id INT NOT NULL AUTO_INCREMENT,
-        store_id VARCHAR(15) DEFAULT NULL,
-        type VARCHAR(100) DEFAULT NULL,
-        provider VARCHAR(255) DEFAULT NULL,
-        contact_number VARCHAR(50) DEFAULT NULL,
-        created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        PRIMARY KEY (id)
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        store_id VARCHAR(15),
+        type VARCHAR(100),
+        provider VARCHAR(255),
+        contact_number VARCHAR(50),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      )
     `);
     console.log('✅ Transport table created');
 
@@ -352,10 +300,6 @@ export const runMigrations = async () => {
       'CREATE INDEX idx_orders_date ON order_master(Place_Date)',
       'CREATE INDEX idx_order_items_order ON order_items(Order_Id)',
       'CREATE INDEX idx_order_items_part ON order_items(Part_Admin)',
-      'CREATE INDEX idx_order_status_history_order ON order_status_history(order_id)',
-      'CREATE INDEX idx_order_status_history_status ON order_status_history(status)',
-      'CREATE INDEX idx_order_status_history_timestamp ON order_status_history(timestamp)',
-      'CREATE INDEX idx_order_status_history_user ON order_status_history(updated_by)',
       'CREATE INDEX idx_item_status_branch ON item_status(Branch_Code)',
       'CREATE INDEX idx_item_status_part ON item_status(Part_No)',
       'CREATE INDEX idx_item_status_rack ON item_status(Part_Rack)',
@@ -418,19 +362,12 @@ export const runMigrations = async () => {
       ('6', 'Michael Johnson', 'retailer@downtownauto.com', ?, 'retailer', NULL, NULL, 1)
     `, [hashedPassword, hashedPassword, hashedPassword, hashedPassword, hashedPassword, hashedPassword]);
 
-
-    // Ensure company_id column exists in parts table (for legacy DBs)
-    const [columns] = await connection.query(`SHOW COLUMNS FROM parts LIKE 'company_id'`);
-    if (columns.length === 0) {
-      await connection.query(`ALTER TABLE parts ADD COLUMN company_id VARCHAR(50)`);
-    }
-
     // Insert parts
     await connection.query(`
-      INSERT IGNORE INTO parts (Part_Number, Part_Name, Part_Price, Part_MinQty, Part_BasicDisc, Part_SchemeDisc, Part_AdditionalDisc, Part_Application, Focus_Group, Part_Catagory, Item_Status, company_id) VALUES 
-      ('SP-001-NGK', 'NGK Spark Plug - Standard', 1299, 10, 5, 3, 2, 'Honda Civic, Toyota Corolla, Nissan Sentra', 'Engine Components', 'Ignition System', 'Active', '2081380'),
-      ('BP-002-BREMBO', 'Brembo Brake Pads - Front Set', 4599, 5, 8, 5, 3, 'BMW 3 Series, Mercedes C-Class, Audi A4', 'Brake System', 'Brake Pads', 'Active', '2081380'),
-      ('OF-003-MANN', 'Mann Oil Filter - Premium', 899, 20, 3, 2, 1, 'Universal - Most European Cars', 'Engine Components', 'Filters', 'Active', '2081380')
+      INSERT IGNORE INTO parts (Part_Number, Part_Name, Part_Price, Part_MinQty, Part_BasicDisc, Part_SchemeDisc, Part_AdditionalDisc, Part_Application, Focus_Group, Part_Catagory, Item_Status) VALUES 
+      ('SP-001-NGK', 'NGK Spark Plug - Standard', 1299, 10, 5, 3, 2, 'Honda Civic, Toyota Corolla, Nissan Sentra', 'Engine Components', 'Ignition System', 'Active'),
+      ('BP-002-BREMBO', 'Brembo Brake Pads - Front Set', 4599, 5, 8, 5, 3, 'BMW 3 Series, Mercedes C-Class, Audi A4', 'Brake System', 'Brake Pads', 'Active'),
+      ('OF-003-MANN', 'Mann Oil Filter - Premium', 899, 20, 3, 2, 1, 'Universal - Most European Cars', 'Engine Components', 'Filters', 'Active')
     `);
 
     // Insert item status
@@ -441,17 +378,6 @@ export const runMigrations = async () => {
       ('NYC001', 'OF-003-MANN', 'NYC001-OF-003-MANN', '100', '80', '60', '200', 'C-01-005', 1704240000000, 1704153600000, 'Regular stock', 1704240000000),
       ('NYC002', 'SP-001-NGK', 'NYC002-SP-001-NGK', '30', '20', '15', '80', 'A-01-002', 1704326400000, 1704240000000, 'Medium moving', 1704326400000),
       ('NYC002', 'BP-002-BREMBO', 'NYC002-BP-002-BREMBO', '20', '12', '8', '40', 'B-01-001', 1704412800000, 1704326400000, 'Low stock alert', 1704412800000)
-    `);
-
-    // Insert sample order status history
-    await connection.query(`
-      INSERT IGNORE INTO order_status_history (order_id, status, previous_status, updated_by, updated_by_role, notes, timestamp, system_generated) VALUES 
-      (1, 'New', NULL, '5', 'salesman', 'Order created by sales team', 1704067200000, TRUE),
-      (1, 'Processing', 'New', '4', 'storeman', 'Order confirmed and processing started', 1704070800000, FALSE),
-      (1, 'Picked', 'Processing', '4', 'storeman', 'All items picked from inventory', 1704074400000, FALSE),
-      (1, 'Dispatched', 'Picked', '4', 'storeman', 'Order dispatched to customer', 1704078000000, FALSE),
-      (2, 'New', NULL, '5', 'salesman', 'Order created by sales team', 1704153600000, TRUE),
-      (2, 'Hold', 'New', '3', 'manager', 'Customer payment pending', 1704157200000, FALSE)
     `);
 
     console.log('✅ Sample data inserted');

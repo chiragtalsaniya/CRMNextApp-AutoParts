@@ -13,7 +13,6 @@
     "dev:full": "concurrently \"npm run dev\" \"npm run server\""
   },
   "dependencies": {
-    "@headlessui/react": "^2.2.4",
     "@types/react-tooltip": "^3.11.0",
     "axios": "^1.6.0",
     "date-fns": "^3.0.6",
@@ -27,7 +26,6 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.21.1",
     "react-tooltip": "^5.29.1",
-    "sonner": "^2.0.6",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

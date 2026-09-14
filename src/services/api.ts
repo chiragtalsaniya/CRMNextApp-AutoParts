@@ -134,14 +134,8 @@ export const partsAPI = {
     api.get('/parts/meta/focus-groups'),
   
   getLowStockParts: () => 
-    api.get('/parts/alerts/low-stock'),
-
-  // Add deletePart method to partsAPI
-  deletePart: (partNumber: string) => api.delete(`/parts/${partNumber}`)
+    api.get('/parts/alerts/low-stock')
 };
-
-// Add deletePart method to partsAPI
-partsAPI.deletePart = (partNumber: string) => api.delete(`/parts/${partNumber}`);
 
 // Item Status API
 export const itemStatusAPI = {
@@ -184,27 +178,11 @@ export const ordersAPI = {
   createOrder: (orderData: any) => 
     api.post('/orders', orderData),
   
-  updateOrder: (id: number, orderData: any) => 
-    api.put(`/orders/${id}`, orderData),
-  
-  updateOrderStatus: (id: number, status: string, notes?: string) => 
-    api.patch(`/orders/${id}/status`, { status, notes }),
-  
-  deleteOrder: (id: number) => 
-    api.delete(`/orders/${id}`),
+  updateOrderStatus: (id: number, statusData: any) => 
+    api.patch(`/orders/${id}/status`, statusData),
   
   getOrderStats: () => 
-    api.get('/orders/stats/summary'),
-
-  // Order Status History methods
-  getOrderStatusHistory: (orderId: number) => 
-    api.get(`/order-status-history/${orderId}`),
-  
-  updateOrderStatusWithHistory: (orderId: number, status: string, notes?: string, metadata?: any) => 
-    api.post(`/order-status-history/${orderId}/status`, { status, notes, metadata }),
-  
-  getOrderStatusStats: (timeframe?: number) => 
-    api.get('/order-status-history/stats/summary', { params: { timeframe } })
+    api.get('/orders/stats/summary')
 };
 
 // Regions API
@@ -244,13 +222,4 @@ export const reportsAPI = {
       params,
       responseType: 'blob'
     })
-};
-
-// Transport API
-export const transportAPI = {
-  getTransports: (params?: any) => api.get('/transport', { params }),
-  getTransport: (id: number) => api.get(`/transport/${id}`),
-  createTransport: (data: any) => api.post('/transport', data),
-  updateTransport: (id: number, data: any) => api.put(`/transport/${id}`, data),
-  deleteTransport: (id: number) => api.delete(`/transport/${id}`),
 };

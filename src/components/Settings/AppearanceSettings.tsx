@@ -3,9 +3,8 @@ import { Save, Palette, Monitor, Sun, Moon } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
 export const AppearanceSettings: React.FC = () => {
-  const themeContext = useTheme();
   const [settings, setSettings] = useState({
-    theme: (themeContext.theme as string) || 'light',
+    theme: 'light',
     primaryColor: '#003366',
     fontSize: 'medium',
     compactMode: false,
@@ -14,46 +13,15 @@ export const AppearanceSettings: React.FC = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
-
-  // Apply appearance settings globally in CRM
-  const applyAppearanceSettings = (newSettings: typeof settings) => {
-    // Theme
-    themeContext.setTheme(newSettings.theme as typeof themeContext.theme);
-    // Primary color (set CSS variable)
-    document.documentElement.style.setProperty('--app-primary-color', newSettings.primaryColor);
-    // Font size (set CSS variable)
-    let fontSizeValue = '16px';
-    switch (newSettings.fontSize) {
-      case 'small': fontSizeValue = '14px'; break;
-      case 'medium': fontSizeValue = '16px'; break;
-      case 'large': fontSizeValue = '18px'; break;
-      case 'extra-large': fontSizeValue = '20px'; break;
-    }
-    document.documentElement.style.setProperty('--app-font-size', fontSizeValue);
-    // Compact mode (set class on body)
-    if (newSettings.compactMode) {
-      document.body.classList.add('crm-compact');
-    } else {
-      document.body.classList.remove('crm-compact');
-    }
-    // Animations (set class on body)
-    if (!newSettings.showAnimations) {
-      document.body.classList.add('crm-no-animations');
-    } else {
-      document.body.classList.remove('crm-no-animations');
-    }
-    // Language (set attribute for i18n, if used)
-    document.documentElement.setAttribute('lang', newSettings.language);
-    // Persist settings
-    localStorage.setItem('appearanceSettings', JSON.stringify(newSettings));
-  };
+  const { theme, setTheme } = useTheme();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setMessage('');
+
     try {
-      applyAppearanceSettings(settings);
+      await new Promise(resolve => setTimeout(resolve, 1000));
       setMessage('Appearance settings updated successfully!');
     } catch (error) {
       setMessage('Failed to update appearance settings. Please try again.');
@@ -64,15 +32,10 @@ export const AppearanceSettings: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    setSettings(prev => {
-      const newSettings = {
-        ...prev,
-        [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
-      };
-      // Live update theme if changed
-      if (name === 'theme') themeContext.setTheme(value as typeof themeContext.theme);
-      return newSettings;
-    });
+    setSettings(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+    }));
   };
 
   const colorOptions = [
@@ -84,25 +47,23 @@ export const AppearanceSettings: React.FC = () => {
     { name: 'Orange', value: '#ea580c' }
   ];
 
-  // Theme context for appearance settings
-  const { appearance } = useTheme();
   return (
-    <form onSubmit={handleSubmit} className={`space-y-8 transition-colors duration-200 bg-white dark:bg-gray-900 ${appearance.compactMode ? 'space-y-4' : ''}`} style={{ fontSize: 'var(--app-font-size)' }}>
+    <form onSubmit={handleSubmit} className="space-y-8">
       {/* Theme Selection */}
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
         <div className="flex items-center space-x-3 mb-6">
           <Palette className="w-6 h-6 text-[#003366] dark:text-blue-200" />
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Theme</h3>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <label className={`relative cursor-pointer rounded-lg border-2 p-4 transition-colors duration-200 ${settings.theme === 'light' ? 'border-[#003366] bg-blue-50 dark:bg-gray-700 dark:border-blue-400' : 'border-gray-200 dark:border-gray-700 dark:bg-gray-800'}`}>
+          <label className={`relative cursor-pointer rounded-lg border-2 p-4 ${theme === 'light' ? 'border-[#003366] bg-blue-50' : 'border-gray-200 dark:border-gray-700'}`}>
             <input
               type="radio"
               name="theme"
               value="light"
-              checked={settings.theme === 'light'}
-              onChange={handleInputChange}
+              checked={theme === 'light'}
+              onChange={() => setTheme('light')}
               className="sr-only"
             />
             <div className="flex items-center space-x-3">
@@ -114,13 +75,13 @@ export const AppearanceSettings: React.FC = () => {
             </div>
           </label>
 
-          <label className={`relative cursor-pointer rounded-lg border-2 p-4 transition-colors duration-200 ${settings.theme === 'dark' ? 'border-[#003366] bg-blue-50 dark:bg-gray-700 dark:border-blue-400' : 'border-gray-200 dark:border-gray-700 dark:bg-gray-800'}`}>
+          <label className={`relative cursor-pointer rounded-lg border-2 p-4 ${theme === 'dark' ? 'border-[#003366] bg-blue-50' : 'border-gray-200 dark:border-gray-700'}`}>
             <input
               type="radio"
               name="theme"
               value="dark"
-              checked={settings.theme === 'dark'}
-              onChange={handleInputChange}
+              checked={theme === 'dark'}
+              onChange={() => setTheme('dark')}
               className="sr-only"
             />
             <div className="flex items-center space-x-3">
@@ -132,13 +93,13 @@ export const AppearanceSettings: React.FC = () => {
             </div>
           </label>
 
-          <label className={`relative cursor-pointer rounded-lg border-2 p-4 transition-colors duration-200 ${settings.theme === 'auto' ? 'border-[#003366] bg-blue-50 dark:bg-gray-700 dark:border-blue-400' : 'border-gray-200 dark:border-gray-700 dark:bg-gray-800'}`}>
+          <label className={`relative cursor-pointer rounded-lg border-2 p-4 ${theme === 'auto' ? 'border-[#003366] bg-blue-50' : 'border-gray-200 dark:border-gray-700'}`}>
             <input
               type="radio"
               name="theme"
               value="auto"
-              checked={settings.theme === 'auto'}
-              onChange={handleInputChange}
+              checked={theme === 'auto'}
+              onChange={() => setTheme('auto')}
               className="sr-only"
             />
             <div className="flex items-center space-x-3">
@@ -153,17 +114,17 @@ export const AppearanceSettings: React.FC = () => {
       </div>
 
       {/* Color Scheme */}
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
+      <div className="bg-gray-50 rounded-lg p-6">
         <div className="flex items-center space-x-3 mb-6">
-          <Palette className="w-6 h-6 text-[#003366] dark:text-blue-200" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Primary Color</h3>
+          <Palette className="w-6 h-6 text-[#003366]" />
+          <h3 className="text-lg font-semibold text-gray-900">Primary Color</h3>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {colorOptions.map((color) => (
             <label
               key={color.value}
-              className={`relative cursor-pointer rounded-lg border-2 p-4 flex items-center space-x-3 transition-colors duration-200 ${settings.primaryColor === color.value ? 'border-[#003366] dark:border-blue-400 bg-blue-50 dark:bg-gray-700' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'}`}
+              className={`relative cursor-pointer rounded-lg border-2 p-4 ${settings.primaryColor === color.value ? 'border-gray-400' : 'border-gray-200'}`}
             >
               <input
                 type="radio"
@@ -173,36 +134,36 @@ export const AppearanceSettings: React.FC = () => {
                 onChange={handleInputChange}
                 className="sr-only"
               />
-              <span
-                className="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600 mr-3"
-                style={{ backgroundColor: color.value }}
-              />
-              <span className="text-gray-900 dark:text-white font-medium">{color.name}</span>
-              {settings.primaryColor === color.value && (
-                <span className="ml-auto text-xs px-2 py-1 rounded bg-[#003366] text-white dark:bg-blue-500">Selected</span>
-              )}
+              <div className="flex items-center space-x-3">
+                <div
+                  className="w-6 h-6 rounded-full border border-gray-300"
+                  style={{ backgroundColor: color.value }}
+                />
+                <span className="font-medium text-gray-900">{color.name}</span>
+              </div>
             </label>
           ))}
         </div>
       </div>
 
       {/* Display Options */}
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-100 dark:border-gray-700">
+      <div className="bg-gray-50 rounded-lg p-6">
         <div className="flex items-center space-x-3 mb-6">
-          <Monitor className="w-6 h-6 text-[#003366] dark:text-blue-200" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Display Options</h3>
+          <Monitor className="w-6 h-6 text-[#003366]" />
+          <h3 className="text-lg font-semibold text-gray-900">Display Options</h3>
         </div>
 
         <div className="space-y-6">
-          {/* Font Size Dropdown */}
           <div>
-            <label htmlFor="fontSize" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Font Size</label>
+            <label htmlFor="fontSize" className="block text-sm font-medium text-gray-700 mb-2">
+              Font Size
+            </label>
             <select
               id="fontSize"
               name="fontSize"
               value={settings.fontSize}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
             >
               <option value="small">Small</option>
               <option value="medium">Medium</option>
@@ -211,15 +172,16 @@ export const AppearanceSettings: React.FC = () => {
             </select>
           </div>
 
-          {/* Language Dropdown */}
           <div>
-            <label htmlFor="language" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Language</label>
+            <label htmlFor="language" className="block text-sm font-medium text-gray-700 mb-2">
+              Language
+            </label>
             <select
               id="language"
               name="language"
               value={settings.language}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] dark:focus:ring-blue-500 focus:border-transparent outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
             >
               <option value="en">English</option>
               <option value="es">Spanish</option>
@@ -230,40 +192,40 @@ export const AppearanceSettings: React.FC = () => {
             </select>
           </div>
 
-          {/* Compact Mode Toggle */}
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">Compact Mode</p>
-              <p className="text-xs text-gray-500 dark:text-gray-300">Reduce spacing for denser layout</p>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-900">Compact Mode</p>
+                <p className="text-xs text-gray-500">Reduce spacing and padding for more content</p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="compactMode"
+                  checked={settings.compactMode}
+                  onChange={handleInputChange}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#003366]"></div>
+              </label>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                name="compactMode"
-                checked={settings.compactMode}
-                onChange={handleInputChange}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 dark:after:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#003366] dark:peer-checked:bg-blue-500"></div>
-            </label>
-          </div>
 
-          {/* Animations Toggle */}
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">Show Animations</p>
-              <p className="text-xs text-gray-500 dark:text-gray-300">Enable or disable UI animations</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-900">Show Animations</p>
+                <p className="text-xs text-gray-500">Enable smooth transitions and animations</p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="showAnimations"
+                  checked={settings.showAnimations}
+                  onChange={handleInputChange}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#003366]"></div>
+              </label>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                name="showAnimations"
-                checked={settings.showAnimations}
-                onChange={handleInputChange}
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 dark:after:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#003366] dark:peer-checked:bg-blue-500"></div>
-            </label>
           </div>
         </div>
       </div>

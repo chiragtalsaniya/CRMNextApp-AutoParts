@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 import { 
   Plus, 
   Search, 
@@ -73,12 +72,6 @@ export const RegionManagement: React.FC = () => {
     return matchesSearch && matchesStore;
   });
 
-  // ...existing code...
-
-  // Example: Add dark: classes to main containers, modals, tables, and inputs
-  // <div className="bg-white dark:bg-gray-900 ...">
-  // <input className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white ..." />
-
   const handleAddRegion = () => {
     setFormData({
       id: '',
@@ -132,17 +125,11 @@ export const RegionManagement: React.FC = () => {
 
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700 transition-colors">
-          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+          <div className="p-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{title}</h2>
-              <button
-                type="button"
-                onClick={onClose}
-                className="p-1 rounded-lg bg-transparent hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-800"
-                title="Close"
-                aria-label="Close"
-              >
+              <h2 className="text-xl font-bold text-gray-900">{title}</h2>
+              <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -151,35 +138,35 @@ export const RegionManagement: React.FC = () => {
           <div className="p-6 space-y-6">
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Region ID *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Region ID *</label>
                 <input
                   type="text"
                   value={formData.id || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, id: e.target.value }))}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
                   placeholder="Enter region ID (e.g., NYC-REGION-1)"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Region Name *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Region Name *</label>
                 <input
                   type="text"
                   value={formData.name || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
                   placeholder="Enter region name"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Store *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Store *</label>
                 <select
                   value={formData.store_id || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, store_id: e.target.value }))}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
                   required
                 >
                   <option value="">Select Store</option>
@@ -193,18 +180,16 @@ export const RegionManagement: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-4">
+          <div className="p-6 border-t border-gray-200 flex justify-end space-x-4">
             <button
-              type="button"
               onClick={onClose}
-              className="min-w-[120px] px-5 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
+              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
             >
               Cancel
             </button>
             <button
-              type="button"
               onClick={handleSaveRegion}
-              className="min-w-[120px] px-5 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors"
+              className="px-6 py-3 bg-[#003366] text-white rounded-lg hover:bg-blue-800 transition-colors"
             >
               Save Region
             </button>
@@ -310,67 +295,54 @@ export const RegionManagement: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 bg-white dark:bg-gray-900 min-h-screen transition-colors">
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Region Management</h1>
-          <p className="text-gray-600 dark:text-gray-400">Manage geographical regions and territories</p>
+          <h1 className="text-2xl font-bold text-gray-900">Region Management</h1>
+          <p className="text-gray-600">Manage geographical regions and territories</p>
         </div>
         <div className="flex space-x-3">
-          <button
-            type="button"
-            className="flex items-center px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-600 transition-colors mr-2"
-            aria-label="Import Regions"
-            title="Import Regions"
-          >
-            <Upload className="w-5 h-5 mr-2" />
-            Import
+          <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2">
+            <Upload className="w-5 h-5" />
+            <span>Import</span>
           </button>
-          <button
-            type="button"
-            className="flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-800 transition-colors mr-2"
-            aria-label="Export Regions"
-            title="Export Regions"
-          >
-            <Download className="w-5 h-5 mr-2" />
-            Export
+          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2">
+            <Download className="w-5 h-5" />
+            <span>Export</span>
           </button>
-          <button
-            type="button"
+          <button 
             onClick={handleAddRegion}
-            className="flex items-center px-4 py-2 rounded-lg bg-[#003366] text-white font-semibold hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#003366] transition-colors"
-            aria-label="Add Region"
-            title="Add Region"
+            className="bg-[#003366] text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition-colors flex items-center space-x-2"
           >
-            <Plus className="w-5 h-5 mr-2" />
-            Add Region
+            <Plus className="w-5 h-5" />
+            <span>Add Region</span>
           </button>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div className="flex items-center space-x-3 mb-4">
-          <Filter className="w-5 h-5 text-[#003366] dark:text-blue-400" />
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Filters</h3>
+          <Filter className="w-5 h-5 text-[#003366]" />
+          <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
               placeholder="Search regions..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-3 w-full border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              className="pl-10 pr-4 py-3 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
             />
           </div>
           
           <select
             value={selectedStore}
             onChange={(e) => setSelectedStore(e.target.value)}
-            className="px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            className="px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#003366] focus:border-transparent outline-none"
           >
             <option value="all">All Stores</option>
             {stores.map(store => (
@@ -380,36 +352,36 @@ export const RegionManagement: React.FC = () => {
             ))}
           </select>
 
-          <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center">
+          <div className="text-sm text-gray-600 flex items-center">
             <span className="font-medium">{filteredRegions.length}</span> regions found
           </div>
         </div>
       </div>
 
       {/* Regions Table */}
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-800">
+            <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Region</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Store</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Created By</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Statistics</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Region</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Store</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created By</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statistics</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+            <tbody className="bg-white divide-y divide-gray-200">
               {filteredRegions.map((region) => (
-                <tr key={region.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                <tr key={region.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="w-10 h-10 bg-[#003366] rounded-lg flex items-center justify-center mr-3">
                         <MapPin className="w-5 h-5 text-white" />
                       </div>
                       <div>
-                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{region.name}</div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">{region.id}</div>
+                        <div className="text-sm font-medium text-gray-900">{region.name}</div>
+                        <div className="text-sm text-gray-500">{region.id}</div>
                       </div>
                     </div>
                   </td>
@@ -417,37 +389,37 @@ export const RegionManagement: React.FC = () => {
                     <div className="flex items-center">
                       <Store className="w-4 h-4 text-gray-400 mr-2" />
                       <div>
-                      <div className="text-sm text-gray-900 dark:text-gray-100">{getStoreName(region.store_id)}</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">{region.store_id}</div>
+                        <div className="text-sm text-gray-900">{getStoreName(region.store_id)}</div>
+                        <div className="text-sm text-gray-500">{region.store_id}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 dark:text-gray-100">User ID: {region.created_by}</div>
+                    <div className="text-sm text-gray-900">User ID: {region.created_by}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="space-y-1">
-                      <div className="text-sm text-gray-900 dark:text-gray-100">12 Retailers</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">156 Orders</div>
+                      <div className="text-sm text-gray-900">12 Retailers</div>
+                      <div className="text-sm text-gray-500">156 Orders</div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-2">
                       <button 
                         onClick={() => handleViewRegion(region)}
-                    className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-2 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition-colors"
+                        className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors"
                       >
                         <Eye className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => handleEditRegion(region)}
-                    className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 p-2 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition-colors"
+                        className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors"
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => handleDeleteRegion(region.id)}
-                    className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 p-2 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg transition-colors"
+                        className="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 rounded-lg transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
